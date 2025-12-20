@@ -8,6 +8,9 @@ use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Config\PhpConfigLoader;
 use LPwork\Config\PhpConfigRepository;
 use LPwork\Environment\Env;
+use LPwork\Redis\Contract\RedisConnectionInterface;
+use LPwork\Redis\PredisConnection;
+use LPwork\Redis\RedisConnectionManager;
 use LPwork\Provider\Contract\ProviderInterface;
 
 /**
@@ -35,6 +38,28 @@ class CommonProvider implements ProviderInterface
                 $configs = $loader->loadDirectory($configDirectory);
 
                 return new PhpConfigRepository($configs);
+            }),
+            RedisConnectionManager::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): RedisConnectionManager {
+                $connections = $config->get("redis.connections", []);
+                $default = $config->getString(
+                    "redis.default_connection",
+                    "default",
+                );
+
+                return new RedisConnectionManager($connections, $default);
+            }),
+            RedisConnectionInterface::class => \DI\factory(static function (
+                RedisConnectionManager $manager,
+                ConfigRepositoryInterface $config,
+            ): RedisConnectionInterface {
+                $default = $config->getString(
+                    "redis.default_connection",
+                    "default",
+                );
+
+                return $manager->get($default);
             }),
         ]);
     }
