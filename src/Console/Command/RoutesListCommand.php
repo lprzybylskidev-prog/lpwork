@@ -34,7 +34,7 @@ class RoutesListCommand extends Command
     protected function configure(): void
     {
         $this->setName("lpwork:routes:list")
-            ->setAliases(["routes:list", "lpwork:routes"])
+            ->setAliases(["routes:list"])
             ->setDescription("List registered HTTP routes");
     }
 
