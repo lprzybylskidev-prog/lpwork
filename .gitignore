@@ -1,10 +1,12 @@
 /vendor/
+
 .env
 .env.*
 !.env.example
 
 /storage/*
 !/storage/.gitkeep
+!/storage/db.sqlite3.example
 
 /app/*
 !/app/.gitkeep
@@ -33,3 +35,6 @@ Thumbs.db
 *.phar
 
 project_rules.txt
+
+db.sqlite3
+db.sqlite3-journal
