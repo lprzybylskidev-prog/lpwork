@@ -8,6 +8,7 @@ use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Config\PhpConfigLoader;
 use LPwork\Config\PhpConfigRepository;
 use LPwork\Environment\Env;
+use LPwork\Filesystem\FilesystemManager;
 use LPwork\Database\Contract\DatabaseConnectionInterface;
 use LPwork\Database\DatabaseConnectionManager;
 use LPwork\Redis\Contract\RedisConnectionInterface;
@@ -84,6 +85,17 @@ class CommonProvider implements ProviderInterface
                 );
 
                 return $manager->get($default);
+            }),
+            FilesystemManager::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): FilesystemManager {
+                $disks = $config->get("filesystem.disks", []);
+                $default = $config->getString(
+                    "filesystem.default_disk",
+                    "local",
+                );
+
+                return new FilesystemManager($disks, $default);
             }),
         ]);
     }
