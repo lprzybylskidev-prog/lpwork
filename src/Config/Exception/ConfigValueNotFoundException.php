@@ -6,6 +6,4 @@ namespace LPwork\Config\Exception;
 /**
  * Thrown when a configuration value is missing and no default was provided.
  */
-class ConfigValueNotFoundException extends \RuntimeException
-{
-}
+class ConfigValueNotFoundException extends \RuntimeException {}

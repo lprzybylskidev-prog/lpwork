@@ -11,10 +11,10 @@ enum RuntimeType: string
     /**
      * Indicates execution in CLI context.
      */
-    case Cli = 'cli';
+    case Cli = "cli";
 
     /**
      * Indicates execution in HTTP context.
      */
-    case Http = 'http';
+    case Http = "http";
 }

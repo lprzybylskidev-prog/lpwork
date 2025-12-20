@@ -27,8 +27,10 @@ class CommonProvider implements ProviderInterface
 
                 return Env::fromArray($envVars);
             }),
-            ConfigRepositoryInterface::class => \DI\factory(static function (Env $env): ConfigRepositoryInterface {
-                $configDirectory = \dirname(__DIR__, 2) . '/config/configs';
+            ConfigRepositoryInterface::class => \DI\factory(static function (
+                Env $env,
+            ): ConfigRepositoryInterface {
+                $configDirectory = \dirname(__DIR__, 2) . "/config/configs";
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
 

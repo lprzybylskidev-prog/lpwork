@@ -6,6 +6,4 @@ namespace LPwork\Environment\Exception;
 /**
  * Thrown when an environment variable cannot be converted to the requested type.
  */
-class EnvValueInvalidException extends \RuntimeException
-{
-}
+class EnvValueInvalidException extends \RuntimeException {}

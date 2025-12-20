@@ -33,7 +33,9 @@ class Bootstrap
         $runtimeType = $this->detectRuntimeType();
         $container = $this->buildContainer($runtimeType);
 
-        $this->configurePhpRuntime($container->get(ConfigRepositoryInterface::class));
+        $this->configurePhpRuntime(
+            $container->get(ConfigRepositoryInterface::class),
+        );
         $this->runKernel($runtimeType, $container);
     }
 
@@ -44,7 +46,7 @@ class Bootstrap
      */
     private function detectRuntimeType(): RuntimeType
     {
-        if (\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
+        if (\in_array(\PHP_SAPI, ["cli", "phpdbg"], true)) {
             return RuntimeType::Cli;
         }
 
@@ -99,8 +101,10 @@ class Bootstrap
      *
      * @return void
      */
-    private function runKernel(RuntimeType $runtimeType, Container $container): void
-    {
+    private function runKernel(
+        RuntimeType $runtimeType,
+        Container $container,
+    ): void {
         if ($runtimeType === RuntimeType::Cli) {
             $container->get(CliKernel::class)->run();
 
@@ -119,7 +123,7 @@ class Bootstrap
     {
         $dotenv = new Dotenv();
         $root = \dirname(__DIR__, 2);
-        $envFile = $root . '/.env';
+        $envFile = $root . "/.env";
 
         if (\is_file($envFile)) {
             $dotenv->loadEnv($envFile);
@@ -133,26 +137,27 @@ class Bootstrap
      *
      * @return void
      */
-    private function configurePhpRuntime(ConfigRepositoryInterface $config): void
-    {
-        $timezone = $config->getString('app.timezone', 'UTC');
+    private function configurePhpRuntime(
+        ConfigRepositoryInterface $config,
+    ): void {
+        $timezone = $config->getString("app.timezone", "UTC");
         \date_default_timezone_set($timezone);
 
         $errorReportingMask = $this->resolveErrorReportingMask(
-            $config->getString('php.error_reporting', 'E_ALL'),
+            $config->getString("php.error_reporting", "E_ALL"),
         );
         \error_reporting($errorReportingMask);
 
-        $errorLog = $config->getString('php.error_log', '');
-        if ($errorLog !== '') {
-            \ini_set('log_errors', '1');
-            \ini_set('error_log', $errorLog);
+        $errorLog = $config->getString("php.error_log", "");
+        if ($errorLog !== "") {
+            \ini_set("log_errors", "1");
+            \ini_set("error_log", $errorLog);
         }
 
-        \ini_set('memory_limit', $config->getString('php.memory_limit', '-1'));
+        \ini_set("memory_limit", $config->getString("php.memory_limit", "-1"));
 
-        $maxExecutionTime = $config->getInt('php.max_execution_time', 0);
-        \ini_set('max_execution_time', (string) $maxExecutionTime);
+        $maxExecutionTime = $config->getInt("php.max_execution_time", 0);
+        \ini_set("max_execution_time", (string) $maxExecutionTime);
     }
 
     /**
@@ -166,7 +171,7 @@ class Bootstrap
     {
         $normalized = \trim($expression);
 
-        if ($normalized === '') {
+        if ($normalized === "") {
             return \E_ALL;
         }
 
@@ -174,19 +179,28 @@ class Bootstrap
             return (int) $normalized;
         }
 
-        $tokens = \preg_split('/\s*([|&])\s*/', $normalized, -1, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY);
+        $tokens = \preg_split(
+            "/\s*([|&])\s*/",
+            $normalized,
+            -1,
+            \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY,
+        );
 
         if ($tokens === false || $tokens === []) {
-            throw new InvalidArgumentException('Error reporting expression could not be tokenized.');
+            throw new InvalidArgumentException(
+                "Error reporting expression could not be tokenized.",
+            );
         }
 
         $result = null;
         $pendingOperator = null;
 
         foreach ($tokens as $token) {
-            if ($token === '|' || $token === '&') {
+            if ($token === "|" || $token === "&") {
                 if ($pendingOperator !== null) {
-                    throw new InvalidArgumentException('Unexpected operator sequence in error reporting expression.');
+                    throw new InvalidArgumentException(
+                        "Unexpected operator sequence in error reporting expression.",
+                    );
                 }
 
                 $pendingOperator = $token;
@@ -201,10 +215,12 @@ class Bootstrap
             }
 
             if ($pendingOperator === null) {
-                throw new InvalidArgumentException('Missing operator in error reporting expression.');
+                throw new InvalidArgumentException(
+                    "Missing operator in error reporting expression.",
+                );
             }
 
-            if ($pendingOperator === '|') {
+            if ($pendingOperator === "|") {
                 $result |= $operand;
             } else {
                 $result &= $operand;
@@ -214,11 +230,15 @@ class Bootstrap
         }
 
         if ($result === null) {
-            throw new InvalidArgumentException('Empty error reporting expression.');
+            throw new InvalidArgumentException(
+                "Empty error reporting expression.",
+            );
         }
 
         if ($pendingOperator !== null) {
-            throw new InvalidArgumentException('Trailing operator in error reporting expression.');
+            throw new InvalidArgumentException(
+                "Trailing operator in error reporting expression.",
+            );
         }
 
         return $result;
@@ -236,13 +256,15 @@ class Bootstrap
         $token = \trim($token);
 
         $negated = false;
-        while (\str_starts_with($token, '~')) {
+        while (\str_starts_with($token, "~")) {
             $negated = !$negated;
             $token = \substr($token, 1);
         }
 
-        if ($token === '') {
-            throw new InvalidArgumentException('Empty operand in error reporting expression.');
+        if ($token === "") {
+            throw new InvalidArgumentException(
+                "Empty operand in error reporting expression.",
+            );
         }
 
         if (\ctype_digit($token)) {
@@ -250,7 +272,9 @@ class Bootstrap
         } else {
             $constantName = \strtoupper($token);
             if (!\defined($constantName)) {
-                throw new InvalidArgumentException(\sprintf('Unknown error reporting constant "%s".', $token));
+                throw new InvalidArgumentException(
+                    \sprintf('Unknown error reporting constant "%s".', $token),
+                );
             }
 
             /** @var int $value */

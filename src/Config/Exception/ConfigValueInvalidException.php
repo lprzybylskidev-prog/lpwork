@@ -6,6 +6,4 @@ namespace LPwork\Config\Exception;
 /**
  * Thrown when a configuration value cannot be converted to the requested type.
  */
-class ConfigValueInvalidException extends \RuntimeException
-{
-}
+class ConfigValueInvalidException extends \RuntimeException {}

@@ -37,7 +37,9 @@ class PhpConfigRepository implements ConfigRepositoryInterface
                 return $default;
             }
 
-            throw new ConfigValueNotFoundException(\sprintf('Config namespace "%s" is missing.', $namespace));
+            throw new ConfigValueNotFoundException(
+                \sprintf('Config namespace "%s" is missing.', $namespace),
+            );
         }
 
         $value = $this->configs[$namespace];
@@ -52,7 +54,9 @@ class PhpConfigRepository implements ConfigRepositoryInterface
                     return $default;
                 }
 
-                throw new ConfigValueNotFoundException(\sprintf('Config key "%s" is missing.', $key));
+                throw new ConfigValueNotFoundException(
+                    \sprintf('Config key "%s" is missing.', $key),
+                );
             }
 
             $value = $value[$segment];
@@ -85,7 +89,9 @@ class PhpConfigRepository implements ConfigRepositoryInterface
             return (string) $value;
         }
 
-        throw new ConfigValueInvalidException(\sprintf('Config key "%s" is not string-convertible.', $key));
+        throw new ConfigValueInvalidException(
+            \sprintf('Config key "%s" is not string-convertible.', $key),
+        );
     }
 
     /**
@@ -108,7 +114,9 @@ class PhpConfigRepository implements ConfigRepositoryInterface
             return (int) $value;
         }
 
-        throw new ConfigValueInvalidException(\sprintf('Config key "%s" is not integer-convertible.', $key));
+        throw new ConfigValueInvalidException(
+            \sprintf('Config key "%s" is not integer-convertible.', $key),
+        );
     }
 
     /**
@@ -131,7 +139,9 @@ class PhpConfigRepository implements ConfigRepositoryInterface
             return (float) $value;
         }
 
-        throw new ConfigValueInvalidException(\sprintf('Config key "%s" is not float-convertible.', $key));
+        throw new ConfigValueInvalidException(
+            \sprintf('Config key "%s" is not float-convertible.', $key),
+        );
     }
 
     /**
@@ -153,11 +163,11 @@ class PhpConfigRepository implements ConfigRepositoryInterface
         if (\is_string($value)) {
             $normalized = \strtolower($value);
 
-            if (\in_array($normalized, ['1', 'true', 'yes', 'on'], true)) {
+            if (\in_array($normalized, ["1", "true", "yes", "on"], true)) {
                 return true;
             }
 
-            if (\in_array($normalized, ['0', 'false', 'no', 'off', ''], true)) {
+            if (\in_array($normalized, ["0", "false", "no", "off", ""], true)) {
                 return false;
             }
         }
@@ -166,7 +176,9 @@ class PhpConfigRepository implements ConfigRepositoryInterface
             return $value !== 0.0 && $value !== 0;
         }
 
-        throw new ConfigValueInvalidException(\sprintf('Config key "%s" is not boolean-convertible.', $key));
+        throw new ConfigValueInvalidException(
+            \sprintf('Config key "%s" is not boolean-convertible.', $key),
+        );
     }
 
     /**
@@ -194,7 +206,7 @@ class PhpConfigRepository implements ConfigRepositoryInterface
      */
     private function splitKey(string $key): array
     {
-        $parts = \explode('.', $key);
+        $parts = \explode(".", $key);
         $namespace = (string) \array_shift($parts);
 
         return [$namespace, $parts === [] ? null : $parts];

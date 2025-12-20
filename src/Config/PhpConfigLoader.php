@@ -37,10 +37,10 @@ class PhpConfigLoader
         $configs = [];
 
         /** @var array<int, string> $files */
-        $files = \glob(\rtrim($directory, '/\\') . '/*.php') ?: [];
+        $files = \glob(\rtrim($directory, "/\\") . "/*.php") ?: [];
 
         foreach ($files as $file) {
-            $configName = \basename($file, '.php');
+            $configName = \basename($file, ".php");
             $configs[$configName] = $this->loadFile($file);
         }
 
@@ -60,7 +60,9 @@ class PhpConfigLoader
         })($this->env, $file);
 
         if (!\is_array($config)) {
-            throw new ConfigFileInvalidException(\sprintf('Config file "%s" must return an array.', $file));
+            throw new ConfigFileInvalidException(
+                \sprintf('Config file "%s" must return an array.', $file),
+            );
         }
 
         return $config;

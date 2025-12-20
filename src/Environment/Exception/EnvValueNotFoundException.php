@@ -6,6 +6,4 @@ namespace LPwork\Environment\Exception;
 /**
  * Thrown when a requested environment variable is missing.
  */
-class EnvValueNotFoundException extends \RuntimeException
-{
-}
+class EnvValueNotFoundException extends \RuntimeException {}
