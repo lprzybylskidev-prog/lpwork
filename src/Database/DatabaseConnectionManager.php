@@ -28,7 +28,7 @@ class DatabaseConnectionManager
 
     /**
      * @param array<string, array<string, mixed>> $configurations
-     * @param string                              $defaultConnection
+     * @param string $defaultConnection
      */
     public function __construct(
         array $configurations,
@@ -68,5 +68,25 @@ class DatabaseConnectionManager
         $this->connections[$connectionName] = $connection;
 
         return $connection;
+    }
+
+    /**
+     * Returns configured connection names.
+     *
+     * @return array<int, string>
+     */
+    public function getConnectionNames(): array
+    {
+        return \array_keys($this->configurations);
+    }
+
+    /**
+     * Returns the default connection name.
+     *
+     * @return string
+     */
+    public function getDefaultConnectionName(): string
+    {
+        return $this->defaultConnection;
     }
 }

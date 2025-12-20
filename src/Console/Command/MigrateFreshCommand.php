@@ -42,10 +42,10 @@ class MigrateFreshCommand extends Command
         ConfigRepositoryInterface $config,
         SeederRunner $seederRunner,
     ) {
-        parent::__construct();
         $this->runner = $runner;
         $this->config = $config;
         $this->seederRunner = $seederRunner;
+        parent::__construct();
     }
 
     /**
@@ -60,13 +60,19 @@ class MigrateFreshCommand extends Command
                 "connection",
                 InputArgument::OPTIONAL,
                 "Connection name",
-                "default",
+                $this->runner->getDefaultConnectionName(),
             )
             ->addOption(
                 "seed",
                 null,
                 InputOption::VALUE_NONE,
                 "Run seeders after migration",
+            )
+            ->addOption(
+                "all",
+                null,
+                InputOption::VALUE_NONE,
+                "Run fresh migration for all configured connections",
             );
     }
 
@@ -89,13 +95,23 @@ class MigrateFreshCommand extends Command
 
         $connection = (string) $input->getArgument("connection");
 
-        $this->runner->fresh($connection);
-        $output->writeln(
-            \sprintf(
-                '<info>Fresh migration completed for connection "%s".</info>',
-                $connection,
-            ),
-        );
+        if ($input->getOption("all")) {
+            $results = $this->runner->freshAll();
+
+            foreach ($results as $name => $executed) {
+                $this->renderExecutedMigrations($output, $name, $executed);
+
+                if ($input->getOption("seed")) {
+                    $this->seederRunner->seed($name);
+                    $output->writeln("<info>Seeders executed.</info>");
+                }
+            }
+
+            return Command::SUCCESS;
+        }
+
+        $executed = $this->runner->fresh($connection);
+        $this->renderExecutedMigrations($output, $connection, $executed);
 
         if ($input->getOption("seed")) {
             $this->seederRunner->seed($connection);
@@ -103,5 +119,49 @@ class MigrateFreshCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Renders executed migrations for a connection.
+     *
+     * @param OutputInterface                        $output
+     * @param string                                 $connection
+     * @param array<int, array<string, string>> $executed
+     *
+     * @return void
+     */
+    private function renderExecutedMigrations(
+        OutputInterface $output,
+        string $connection,
+        array $executed,
+    ): void {
+        if ($executed === []) {
+            $output->writeln(
+                \sprintf(
+                    '<comment>No pending migrations for connection "%s".</comment>',
+                    $connection,
+                ),
+            );
+
+            return;
+        }
+
+        $output->writeln(
+            \sprintf(
+                '<info>Fresh migration completed for connection "%s":</info>',
+                $connection,
+            ),
+        );
+
+        foreach ($executed as $migration) {
+            $output->writeln(
+                \sprintf(
+                    "- %s (%s) [%s]",
+                    $migration["version"],
+                    $migration["description"],
+                    $migration["class"],
+                ),
+            );
+        }
     }
 }
