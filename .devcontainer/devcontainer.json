@@ -38,7 +38,9 @@
                 "recca0120.vscode-phpunit",
 
                 "usernamehw.errorlens",
-                "esbenp.prettier-vscode"
+                "esbenp.prettier-vscode",
+                "eamodio.gitlens",
+                "cweijan.vscode-mysql-client2"
             ]
         }
     }
