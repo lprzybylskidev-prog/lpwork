@@ -34,29 +34,31 @@ class MigrateCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName('lpwork:migrate')
-            ->setAliases(['migrate'])
-            ->setDescription('Run database migrations')
+        $this->setName("lpwork:migrate")
+            ->setAliases(["migrate"])
+            ->setDescription("Run database migrations")
             ->addArgument(
-                'connection',
+                "connection",
                 InputArgument::OPTIONAL,
-                'Connection name',
+                "Connection name",
                 $this->runner->getDefaultConnectionName(),
             )
             ->addOption(
-                'all',
+                "all",
                 null,
                 InputOption::VALUE_NONE,
-                'Run migrations for all configured connections',
+                "Run migrations for all configured connections",
             );
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        if ($input->getOption('all')) {
+    protected function execute(
+        InputInterface $input,
+        OutputInterface $output,
+    ): int {
+        if ($input->getOption("all")) {
             $results = $this->runner->migrateAll();
 
             foreach ($results as $name => $executed) {
@@ -66,7 +68,7 @@ class MigrateCommand extends Command
             return Command::SUCCESS;
         }
 
-        $connection = (string) $input->getArgument('connection');
+        $connection = (string) $input->getArgument("connection");
         $executed = $this->runner->migrate($connection);
 
         $this->renderExecutedMigrations($output, $connection, $executed);
@@ -100,16 +102,19 @@ class MigrateCommand extends Command
         }
 
         $output->writeln(
-            \sprintf('<info>Migrations completed for connection "%s":</info>', $connection),
+            \sprintf(
+                '<info>Migrations completed for connection "%s":</info>',
+                $connection,
+            ),
         );
 
         foreach ($executed as $migration) {
             $output->writeln(
                 \sprintf(
-                    '- %s (%s) [%s]',
-                    $migration['version'],
-                    $migration['description'],
-                    $migration['class'],
+                    "- %s (%s) [%s]",
+                    $migration["version"],
+                    $migration["description"],
+                    $migration["class"],
                 ),
             );
         }

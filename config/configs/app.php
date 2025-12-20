@@ -11,4 +11,6 @@ return [
     "env" => $env->getString("APP_ENV", "dev"),
     "timezone" => $env->getString("APP_TIMEZONE", "UTC"),
     "locale" => $env->getString("APP_LOCALE", "en"),
+    "scheme" => $env->getString("APP_SCHEME", "http"),
+    "url" => $env->getString("APP_URL", "http://localhost:8080"),
 ];

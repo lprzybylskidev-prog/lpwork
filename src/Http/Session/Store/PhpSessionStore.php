@@ -1,0 +1,142 @@
+<?php
+declare(strict_types=1);
+
+namespace LPwork\Http\Session\Store;
+
+use LPwork\Http\Session\Contract\SessionStoreInterface;
+use LPwork\Http\Session\Exception\SessionStorageException;
+use LPwork\Http\Session\SessionCookieParameters;
+use LPwork\Http\Session\SessionState;
+
+/**
+ * Native PHP session storage.
+ */
+class PhpSessionStore implements SessionStoreInterface
+{
+    /**
+     * @var string
+     */
+    private string $sessionName;
+
+    /**
+     * @param string $sessionName
+     */
+    public function __construct(string $sessionName)
+    {
+        $this->sessionName = $sessionName;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function start(
+        ?string $id,
+        SessionCookieParameters $cookieParameters,
+        int $lifetime,
+    ): SessionState {
+        if (\session_status() === PHP_SESSION_ACTIVE) {
+            \session_write_close();
+        }
+
+        $this->configureSession($cookieParameters, $lifetime);
+
+        if ($id !== null && $id !== "") {
+            \session_id($id);
+        }
+
+        $started = \session_start([
+            "cookie_lifetime" => $lifetime,
+            "gc_maxlifetime" => $lifetime,
+        ]);
+
+        if ($started === false) {
+            throw new SessionStorageException("Failed to start PHP session.");
+        }
+
+        $data = $_SESSION;
+        $sessionId = \session_id();
+        \session_write_close();
+
+        return new SessionState($sessionId, $data, \time());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function persist(
+        SessionState $state,
+        SessionCookieParameters $cookieParameters,
+        int $lifetime,
+    ): void {
+        $status = \session_status();
+
+        if ($status === PHP_SESSION_ACTIVE) {
+            if (\session_id() !== $state->id()) {
+                \session_write_close();
+                \session_id($state->id());
+                $this->configureSession($cookieParameters, $lifetime);
+                \session_start([
+                    "cookie_lifetime" => $lifetime,
+                    "gc_maxlifetime" => $lifetime,
+                ]);
+            }
+        } else {
+            $this->configureSession($cookieParameters, $lifetime);
+            \session_id($state->id());
+            \session_start([
+                "cookie_lifetime" => $lifetime,
+                "gc_maxlifetime" => $lifetime,
+            ]);
+        }
+
+        $_SESSION = $state->all();
+        \session_write_close();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function destroy(string $id): void
+    {
+        if (\session_status() === PHP_SESSION_ACTIVE) {
+            \session_write_close();
+        }
+
+        \session_id($id);
+        \session_start();
+        $_SESSION = [];
+        \session_destroy();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function usesNativeCookie(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param SessionCookieParameters $cookieParameters
+     * @param int                     $lifetime
+     *
+     * @return void
+     */
+    private function configureSession(
+        SessionCookieParameters $cookieParameters,
+        int $lifetime,
+    ): void {
+        if (\session_status() !== PHP_SESSION_ACTIVE) {
+            \session_name($this->sessionName);
+        }
+
+        \session_set_cookie_params([
+            "lifetime" => $lifetime,
+            "path" => $cookieParameters->path(),
+            "domain" => $cookieParameters->domain(),
+            "secure" => $cookieParameters->secure(),
+            "httponly" => $cookieParameters->httpOnly(),
+            "samesite" => \ucfirst(\strtolower($cookieParameters->sameSite())),
+        ]);
+    }
+}

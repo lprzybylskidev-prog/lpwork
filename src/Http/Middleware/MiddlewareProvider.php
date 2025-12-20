@@ -7,6 +7,7 @@ use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
 use LPwork\Http\Middleware\ErrorHandlingMiddleware;
 use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
+use LPwork\Http\Middleware\SessionMiddleware;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Container\ContainerInterface;
 
@@ -35,6 +36,7 @@ class MiddlewareProvider implements MiddlewareProviderInterface
     {
         return [
             $this->container->get(ErrorHandlingMiddleware::class),
+            $this->container->get(SessionMiddleware::class),
             $this->container->get(RouteMatchMiddleware::class),
             $this->container->get(RouteDispatchMiddleware::class),
         ];
