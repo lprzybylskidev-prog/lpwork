@@ -5,6 +5,7 @@ namespace LPwork\Bootstrap;
 
 use DI\Container;
 use DI\ContainerBuilder;
+use Symfony\Component\Dotenv\Dotenv;
 use LPwork\Kernel\CliKernel;
 use LPwork\Kernel\HttpKernel;
 use LPwork\Provider\CliProvider;
@@ -26,6 +27,7 @@ class Bootstrap
      */
     public function run(): void
     {
+        $this->bootstrapEnvironment();
         $runtimeType = $this->detectRuntimeType();
         $container = $this->buildContainer($runtimeType);
 
@@ -106,5 +108,21 @@ class Bootstrap
         }
 
         $container->get(HttpKernel::class)->run();
+    }
+
+    /**
+     * Loads environment variables from the project root.
+     *
+     * @return void
+     */
+    private function bootstrapEnvironment(): void
+    {
+        $dotenv = new Dotenv();
+        $root = \dirname(__DIR__, 2);
+        $envFile = $root . '/.env';
+
+        if (\is_file($envFile)) {
+            $dotenv->loadEnv($envFile);
+        }
     }
 }

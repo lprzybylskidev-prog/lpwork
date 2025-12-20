@@ -34,7 +34,6 @@
         "doctrine/dbal": "^4.0",
         "doctrine/migrations": "^3.7",
         "symfony/validator": "^7.1",
-        "symfony/config": "^7.1",
         "symfony/dotenv": "^7.1",
         "league/flysystem": "^3.28",
         "symfony/password-hasher": "^7.1",
