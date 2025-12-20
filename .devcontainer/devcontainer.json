@@ -1,9 +1,10 @@
 {
-    "name": "lpwork (php)",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
-    "remoteUser": "vscode",
+  "name": "lpwork (php8.3-fpm + nginx)",
+  "dockerComposeFile": "docker-compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/var/www/html",
+  "remoteUser": "vscode",
+  "runServices": ["app", "nginx"],
 
     "mounts": [
         "source=${localEnv:HOME}/.config/prettier,target=/home/vscode/.config/prettier,type=bind,consistency=cached",
@@ -19,7 +20,12 @@
         "PATH": "/home/vscode/.nvm/versions/node/v24.12.0/bin:/home/vscode/.nvm/versions/node/v24.12.0/lib/node_modules/.bin:${containerEnv:PATH}"
     },
 
-    "postCreateCommand": "composer --version && php -v && node -v && prettier -v",
+    "forwardPorts": [8080],
+    "portsAttributes": {
+        "8080": { "label": "nginx" }
+    },
+
+    "postCreateCommand": "php -v && php -m | sort && composer --version && php -r \"echo 'PDO drivers: '; print_r(PDO::getAvailableDrivers());\" && node -v && prettier -v",
 
     "customizations": {
         "vscode": {
