@@ -1,0 +1,29 @@
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+
+parameters:
+    level: 7
+
+    paths:
+        - src
+        - configs
+
+    excludePaths:
+        analyse:
+            - app/*
+            - storage/*
+            - vendor/*
+            - public/*
+            - bin/*
+            - tests/*
+
+    phpVersion: 80300
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+
+    inferPrivatePropertyTypeFromConstructor: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true

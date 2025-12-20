@@ -1,0 +1,39 @@
+{
+    "name": "lpwork (php)",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "remoteUser": "vscode",
+
+    "mounts": [
+        "source=${localEnv:HOME}/.config/prettier,target=/home/vscode/.config/prettier,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.nvm/versions/node/v24.12.0,target=/home/vscode/.nvm/versions/node/v24.12.0,type=bind,consistency=cached",
+
+        "source=${localEnv:HOME}/.zshrc,target=/home/vscode/.zshrc,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.p10k.zsh,target=/home/vscode/.p10k.zsh,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.oh-my-zsh,target=/home/vscode/.oh-my-zsh,type=bind,consistency=cached"
+    ],
+
+    "remoteEnv": {
+        "SHELL": "/usr/bin/zsh",
+        "PATH": "/home/vscode/.nvm/versions/node/v24.12.0/bin:/home/vscode/.nvm/versions/node/v24.12.0/lib/node_modules/.bin:${containerEnv:PATH}"
+    },
+
+    "postCreateCommand": "composer --version && php -v && node -v && prettier -v",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "mehedidracula.php-namespace-resolver",
+                "neilbrayfield.php-docblocker",
+
+                "xdebug.php-debug",
+                "recca0120.vscode-phpunit",
+
+                "usernamehw.errorlens",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    }
+}
