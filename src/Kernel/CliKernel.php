@@ -52,8 +52,8 @@ class CliKernel
     public function run(): void
     {
         $application = new Application(
-            $this->configRepository->getString('app.name', 'LPwork'),
-            $this->configRepository->getString('app.version', '0.0.1'),
+            $this->configRepository->getString("app.name", "LPwork"),
+            $this->configRepository->getString("app.version", "0.0.1"),
         );
 
         foreach ($this->collectCommands() as $command) {
@@ -78,7 +78,7 @@ class CliKernel
             foreach ($provider->getCommands() as $command) {
                 $name = $command->getName();
 
-                if ($name === null || $name === '') {
+                if ($name === null || $name === "") {
                     continue;
                 }
 
