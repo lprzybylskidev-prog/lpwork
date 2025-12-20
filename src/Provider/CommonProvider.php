@@ -9,12 +9,20 @@ use LPwork\Config\PhpConfigLoader;
 use LPwork\Config\PhpConfigRepository;
 use LPwork\Environment\Env;
 use LPwork\Filesystem\FilesystemManager;
+use LPwork\Http\Routing\RouteLoader;
+use LPwork\Database\Migration\FrameworkMigrationProvider;
+use LPwork\Database\Migration\Contract\MigrationProviderInterface;
+use LPwork\Database\Migration\MigrationRunner;
+use LPwork\Database\Seeder\Contract\SeederProviderInterface;
+use LPwork\Database\Seeder\FrameworkSeederProvider;
+use LPwork\Database\Seeder\SeederRunner;
 use LPwork\Database\Contract\DatabaseConnectionInterface;
 use LPwork\Database\DatabaseConnectionManager;
 use LPwork\Redis\Contract\RedisConnectionInterface;
 use LPwork\Redis\PredisConnection;
 use LPwork\Redis\RedisConnectionManager;
 use LPwork\Provider\Contract\ProviderInterface;
+use LPwork\Version\FrameworkVersion;
 
 /**
  * Registers services shared between HTTP and CLI runtimes.
@@ -97,6 +105,41 @@ class CommonProvider implements ProviderInterface
 
                 return new FilesystemManager($disks, $default);
             }),
+            RouteLoader::class => \DI\autowire(RouteLoader::class)->constructor(
+                \dirname(__DIR__, 2) . "/config/routes/routes.php",
+                \dirname(__DIR__) . "/Http/Routes/routes.php",
+            ),
+            FrameworkMigrationProvider::class => \DI\autowire(
+                FrameworkMigrationProvider::class,
+            ),
+            MigrationProviderInterface::class => \DI\get(
+                \Config\MigrationProvider::class,
+            ),
+            MigrationRunner::class => \DI\autowire(MigrationRunner::class)
+                ->constructorParameter(
+                    "frameworkProvider",
+                    \DI\get(FrameworkMigrationProvider::class),
+                )
+                ->constructorParameter(
+                    "appProvider",
+                    \DI\get(\Config\MigrationProvider::class),
+                ),
+            FrameworkSeederProvider::class => \DI\autowire(
+                FrameworkSeederProvider::class,
+            ),
+            SeederProviderInterface::class => \DI\get(
+                \Config\SeederProvider::class,
+            ),
+            SeederRunner::class => \DI\autowire(SeederRunner::class)
+                ->constructorParameter(
+                    "frameworkProvider",
+                    \DI\get(FrameworkSeederProvider::class),
+                )
+                ->constructorParameter(
+                    "appProvider",
+                    \DI\get(\Config\SeederProvider::class),
+                ),
+            FrameworkVersion::class => \DI\autowire(FrameworkVersion::class),
         ]);
     }
 }

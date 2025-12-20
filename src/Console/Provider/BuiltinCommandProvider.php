@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace LPwork\Console\Provider;
 
-use LPwork\Console\Command\HelloWorldCommand;
+use LPwork\Console\Command\MigrateCommand;
+use LPwork\Console\Command\MigrateFreshCommand;
+use LPwork\Console\Command\RoutesListCommand;
+use LPwork\Console\Command\VersionCommand;
 use LPwork\Console\Contract\CommandProviderInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -13,10 +17,28 @@ use Symfony\Component\Console\Command\Command;
 class BuiltinCommandProvider implements CommandProviderInterface
 {
     /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getCommands(): array
     {
-        return [new HelloWorldCommand()];
+        return [
+            $this->container->get(MigrateCommand::class),
+            $this->container->get(MigrateFreshCommand::class),
+            $this->container->get(RoutesListCommand::class),
+            $this->container->get(VersionCommand::class),
+        ];
     }
 }
