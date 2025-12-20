@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LPwork\Http\Middleware;
 
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
+use LPwork\Http\Middleware\ErrorHandlingMiddleware;
 use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
 use Psr\Http\Server\MiddlewareInterface;
@@ -33,6 +34,7 @@ class MiddlewareProvider implements MiddlewareProviderInterface
     public function getMiddlewares(): array
     {
         return [
+            $this->container->get(ErrorHandlingMiddleware::class),
             $this->container->get(RouteMatchMiddleware::class),
             $this->container->get(RouteDispatchMiddleware::class),
         ];

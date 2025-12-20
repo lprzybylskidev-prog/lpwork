@@ -6,6 +6,7 @@ namespace LPwork\Provider;
 use DI\ContainerBuilder;
 use LPwork\Http\Middleware\MiddlewareProvider as BuiltinMiddlewareProvider;
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
+use LPwork\Http\Middleware\ErrorHandlingMiddleware;
 use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
 use LPwork\Http\Routing\FastRouteDispatcherFactory;
@@ -53,6 +54,9 @@ class HttpProvider implements ProviderInterface
 
                 return $factory->create($routes);
             }),
+            ErrorHandlingMiddleware::class => \DI\autowire(
+                ErrorHandlingMiddleware::class,
+            ),
             RouteMatchMiddleware::class => \DI\autowire(
                 RouteMatchMiddleware::class,
             ),

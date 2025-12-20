@@ -6,6 +6,7 @@ namespace LPwork\Bootstrap;
 use DI\Container;
 use DI\ContainerBuilder;
 use InvalidArgumentException;
+use LPwork\Exception\PhpErrorException;
 use Symfony\Component\Dotenv\Dotenv;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Kernel\CliKernel;
@@ -30,6 +31,7 @@ class Bootstrap
     public function run(): void
     {
         $this->bootstrapEnvironment();
+        $this->registerErrorHandler();
         $runtimeType = $this->detectRuntimeType();
         $container = $this->buildContainer($runtimeType);
 
@@ -128,6 +130,27 @@ class Bootstrap
         if (\is_file($envFile)) {
             $dotenv->loadEnv($envFile);
         }
+    }
+
+    /**
+     * Registers a global error handler converting PHP errors to exceptions.
+     *
+     * @return void
+     */
+    private function registerErrorHandler(): void
+    {
+        \set_error_handler(static function (
+            int $severity,
+            string $message,
+            string $file = "",
+            int $line = 0,
+        ): bool {
+            if (!(error_reporting() & $severity)) {
+                return false;
+            }
+
+            throw new PhpErrorException($message, $severity, 500, $file, $line);
+        });
     }
 
     /**

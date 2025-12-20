@@ -9,7 +9,7 @@ namespace LPwork\Http\Routing;
 class RouteCollection
 {
     /**
-     * @var array<int, Route>
+     * @var array<string, Route>
      */
     private array $routes = [];
 
@@ -179,7 +179,7 @@ class RouteCollection
      */
     public function all(): array
     {
-        return $this->routes;
+        return \array_values($this->routes);
     }
 
     /**
@@ -209,7 +209,7 @@ class RouteCollection
             $fullName,
             $combinedMiddleware,
         );
-        $this->routes[] = $route;
+        $this->routes[$this->routeKey($methods, $fullPath)] = $route;
 
         return $route;
     }
@@ -262,5 +262,19 @@ class RouteCollection
         }
 
         return \array_merge($merged, $routeMiddleware);
+    }
+
+    /**
+     * @param array<int, string> $methods
+     * @param string             $path
+     *
+     * @return string
+     */
+    private function routeKey(array $methods, string $path): string
+    {
+        $normalizedMethods = $methods;
+        \sort($normalizedMethods);
+
+        return \implode(",", $normalizedMethods) . "|" . $path;
     }
 }
