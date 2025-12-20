@@ -54,7 +54,8 @@
     "autoload": {
         "psr-4": {
             "LPwork\\": "src/",
-            "App\\": "app/"
+            "App\\": "app/",
+            "Config\\": "config/"
         }
     },
     "autoload-dev": {
