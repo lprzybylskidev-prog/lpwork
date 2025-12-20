@@ -7,42 +7,55 @@ use LPwork\Environment\Env;
 
 return [
     /**
-     * Session base settings.
+     * Session core settings.
+     * driver: session storage backend (php, redis, database, filesystem).
+     * lifetime: session lifetime in seconds.
+     * cookie.*: cookie parameters applied to the session ID cookie.
+     * drivers.*: backend-specific configuration values.
      */
-    "driver" => $env->getString("SESSION_DRIVER", "php"), // Active session driver: php, redis, database, filesystem
-    "lifetime" => $env->getInt("SESSION_LIFETIME", 7200), // Lifetime in seconds
-    /**
-     * Session cookie parameters.
-     */
+    // Active session driver.
+    "driver" => $env->getString("SESSION_DRIVER", "php"),
+    // Session lifetime in seconds (cookie Max-Age / storage TTL).
+    "lifetime" => $env->getInt("SESSION_LIFETIME", 7200),
     "cookie" => [
-        "name" => $env->getString("SESSION_COOKIE_NAME", "LPWORKSESSID"), // Cookie name
-        "path" => $env->getString("SESSION_COOKIE_PATH", "/"), // Cookie path
-        "domain" => $env->getString("SESSION_COOKIE_DOMAIN", ""), // Cookie domain
-        "secure" => $env->getBool("SESSION_COOKIE_SECURE", false), // Force secure flag; HTTPS requests always enforce secure
-        "http_only" => $env->getBool("SESSION_COOKIE_HTTP_ONLY", true), // HttpOnly flag
-        "same_site" => $env->getString("SESSION_COOKIE_SAMESITE", "lax"), // SameSite value: lax, strict or none
+        // Cookie name carrying the session ID.
+        "name" => $env->getString("SESSION_COOKIE_NAME", "LPWORKSESSID"),
+        // Path scope for the session cookie.
+        "path" => $env->getString("SESSION_COOKIE_PATH", "/"),
+        // Domain scope for the session cookie; empty uses current host.
+        "domain" => $env->getString("SESSION_COOKIE_DOMAIN", ""),
+        // Secure flag; enforced automatically for HTTPS requests.
+        "secure" => $env->getBool("SESSION_COOKIE_SECURE", false),
+        // HttpOnly flag to hide cookie from JS.
+        "http_only" => $env->getBool("SESSION_COOKIE_HTTP_ONLY", true),
+        // SameSite policy: lax, strict, or none.
+        "same_site" => $env->getString("SESSION_COOKIE_SAMESITE", "lax"),
     ],
-    /**
-     * Driver-specific configuration.
-     */
     "drivers" => [
         "php" => [
-            "name" => $env->getString("SESSION_PHP_NAME", "LPWORKSESSID"), // Native session name
+            // Native PHP session name.
+            "name" => $env->getString("SESSION_PHP_NAME", "LPWORKSESSID"),
         ],
         "redis" => [
+            // Redis connection name used by the session driver.
             "connection" => $env->getString(
                 "SESSION_REDIS_CONNECTION",
                 "default",
-            ), // Redis connection name
-            "prefix" => $env->getString("SESSION_REDIS_PREFIX", "session:"), // Redis key prefix
+            ),
+            // Key prefix for session entries in Redis.
+            "prefix" => $env->getString("SESSION_REDIS_PREFIX", "session:"),
         ],
         "database" => [
-            "connection" => $env->getString("SESSION_DB_CONNECTION", "default"), // Database connection name (must be default)
-            "table" => $env->getString("SESSION_DB_TABLE", "sessions"), // Sessions table name
+            // Database connection name (must match default DB connection).
+            "connection" => $env->getString("SESSION_DB_CONNECTION", "default"),
+            // Table name storing session rows.
+            "table" => $env->getString("SESSION_DB_TABLE", "sessions"),
         ],
         "filesystem" => [
-            "disk" => $env->getString("SESSION_FILESYSTEM_DISK", "local"), // Filesystem disk name
-            "path" => $env->getString("SESSION_FILESYSTEM_PATH", "sessions"), // Directory on disk for session files
+            // Filesystem disk name for session files.
+            "disk" => $env->getString("SESSION_FILESYSTEM_DISK", "local"),
+            // Directory path (on the disk) for session files.
+            "path" => $env->getString("SESSION_FILESYSTEM_PATH", "sessions"),
         ],
     ],
 ];
