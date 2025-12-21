@@ -1,27 +1,23 @@
 {
-    "terminal.integrated.defaultProfile.linux": "zsh",
-    "terminal.integrated.profiles.linux": {
-        "zsh": { "path": "/usr/bin/zsh" },
-        "bash": { "path": "bash" }
-    },
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": { "path": "/usr/bin/zsh" },
+    "bash": { "path": "bash" }
+  },
 
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-    "[php]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
+  "[php]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 
-    "prettier.requireConfig": false,
-    "prettier.configPath": "/home/vscode/.config/prettier/.prettierrc-container.json",
-    "prettier.prettierPath": "/home/vscode/.nvm/versions/node/v24.12.0/lib/node_modules/prettier",
+  "prettier.requireConfig": false,
+  "prettier.configPath": "/home/vscode/.config/prettier/.prettierrc-container.json",
+  "prettier.prettierPath": "/home/vscode/.nvm/versions/node/v24.12.0/lib/node_modules/prettier",
 
-    "php.validate.enable": true,
-    "php.validate.executablePath": "/usr/bin/php",
+  "php.validate.enable": true,
+  "php.validate.executablePath": "/usr/bin/php",
 
-    "intelephense.environment.phpVersion": "8.5.0",
-
-    "phpNamespaceResolver.autoImport": true,
-    "phpNamespaceResolver.autoSort": true,
-    "phpNamespaceResolver.sortAlphabetically": true
+  "intelephense.environment.phpVersion": "8.5.0"
 }
