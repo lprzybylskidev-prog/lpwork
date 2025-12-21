@@ -9,10 +9,15 @@ use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Config\PhpConfigLoader;
 use LPwork\Config\PhpConfigRepository;
 use LPwork\Config\CachedConfigRepository;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use LPwork\Cache\Exception\CacheConfigurationException;
 use LPwork\Database\DatabaseTimezoneConfigurator;
 use LPwork\Cache\CacheConfiguration;
 use LPwork\Cache\CacheFactory;
 use LPwork\Cache\CacheManager;
+use LPwork\Cache\DefaultCacheProvider;
+use LPwork\Cache\Contract\CacheProviderInterface;
 use LPwork\Environment\Env;
 use LPwork\Filesystem\FilesystemManager;
 use LPwork\Http\Routing\RouteLoader;
@@ -74,12 +79,19 @@ class CommonProvider implements ProviderInterface
 
                 return Env::fromArray($envVars);
             }),
+            CacheConfiguration::class => \DI\factory(static function (
+                Env $env,
+            ): CacheConfiguration {
+                $configDirectory = \dirname(__DIR__, 2) . "/config/configs";
+                $loader = new PhpConfigLoader($env);
+                $configs = $loader->loadDirectory($configDirectory);
+                $cacheConfig = $configs["cache"] ?? [];
+
+                return new CacheConfiguration((array) $cacheConfig);
+            }),
             ConfigRepositoryInterface::class => \DI\factory(static function (
                 Env $env,
                 CacheConfiguration $cacheConfiguration,
-                CacheFactory $cacheFactory,
-                RedisConnectionManager $redisConnections,
-                DatabaseConnectionManager $databaseConnections,
             ): ConfigRepositoryInterface {
                 $configDirectory = \dirname(__DIR__, 2) . "/config/configs";
                 $loader = new PhpConfigLoader($env);
@@ -91,14 +103,51 @@ class CommonProvider implements ProviderInterface
                     $poolName = (string) ($configCache["pool"] ?? "filesystem");
                     $key =
                         (string) ($configCache["key"] ?? "config:repository");
-                    $pool = $cacheFactory->createPool(
-                        $poolName,
-                        $cacheConfiguration,
-                        $redisConnections,
-                        $databaseConnections,
-                    );
 
-                    return new CachedConfigRepository($configs, $pool, $key);
+                    try {
+                        $poolConfig = $cacheConfiguration->pool($poolName);
+                        $driver = (string) ($poolConfig["driver"] ?? "array");
+
+                        if ($driver === "array") {
+                            $defaultTtl =
+                                (int) ($poolConfig["default_ttl"] ?? 0);
+                            $ttlValue = $defaultTtl > 0 ? $defaultTtl : null;
+                            $pool = new ArrayAdapter(
+                                storeSerialized: false,
+                                defaultLifetime: $ttlValue,
+                            );
+
+                            return new CachedConfigRepository(
+                                $configs,
+                                $pool,
+                                $key,
+                            );
+                        }
+
+                        if ($driver === "filesystem") {
+                            $defaultTtl =
+                                (int) ($poolConfig["default_ttl"] ?? 0);
+                            $ttlValue = $defaultTtl > 0 ? $defaultTtl : null;
+                            $namespace =
+                                (string) ($poolConfig["namespace"] ?? "");
+                            $path =
+                                (string) ($poolConfig["path"] ??
+                                    \dirname(__DIR__, 2) . "/storage/cache");
+                            $pool = new FilesystemAdapter(
+                                $namespace,
+                                $ttlValue,
+                                $path,
+                            );
+
+                            return new CachedConfigRepository(
+                                $configs,
+                                $pool,
+                                $key,
+                            );
+                        }
+                    } catch (CacheConfigurationException) {
+                        // fall through to non-cached repository
+                    }
                 }
 
                 return new PhpConfigRepository($configs);
@@ -170,13 +219,6 @@ class CommonProvider implements ProviderInterface
 
                 return $manager->get($default);
             }),
-            CacheConfiguration::class => \DI\factory(static function (
-                ConfigRepositoryInterface $config,
-            ): CacheConfiguration {
-                $cacheConfig = $config->get("cache", []);
-
-                return new CacheConfiguration((array) $cacheConfig);
-            }),
             CacheFactory::class => \DI\autowire(CacheFactory::class),
             CacheItemPoolInterface::class => \DI\factory(static function (
                 CacheFactory $factory,
@@ -195,6 +237,9 @@ class CommonProvider implements ProviderInterface
             ): Psr16Cache {
                 return new Psr16Cache($pool);
             }),
+            CacheProviderInterface::class => \DI\autowire(
+                DefaultCacheProvider::class,
+            ),
             CacheManager::class => \DI\autowire(CacheManager::class),
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,

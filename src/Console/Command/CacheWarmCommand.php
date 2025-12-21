@@ -15,9 +15,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Clears cache pools (and built-in route/config entries when applicable).
+ * Warms cache pools (built-in routing/config and optional application provider).
  */
-class CacheClearCommand extends Command
+class CacheWarmCommand extends Command
 {
     /**
      * @var CacheConfiguration
@@ -71,20 +71,15 @@ class CacheClearCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:cache:clear")
-            ->setAliases(["cache:clear"])
-            ->setDescription("Clear cache pools")
+        $this->setName("lpwork:cache")
+            ->setAliases(["cache:warm"])
+            ->setDescription("Warm cache pools")
             ->addArgument(
                 "pool",
                 InputArgument::OPTIONAL,
                 "Cache pool name (default if omitted, all when --all)",
             )
-            ->addOption(
-                "all",
-                null,
-                InputOption::VALUE_NONE,
-                "Clear all pools",
-            );
+            ->addOption("all", null, InputOption::VALUE_NONE, "Warm all pools");
     }
 
     /**
@@ -96,6 +91,7 @@ class CacheClearCommand extends Command
     ): int {
         $poolArg = (string) ($input->getArgument("pool") ?? "");
         $all = (bool) $input->getOption("all");
+
         $pools = $this->resolvePools($poolArg, $all);
 
         foreach ($pools as $poolName) {
@@ -106,14 +102,12 @@ class CacheClearCommand extends Command
                 $this->databaseConnections,
             );
 
-            $pool->clear();
-
             if ($this->provider !== null) {
-                $this->provider->clear($poolName, $pool);
+                $this->provider->warm($poolName, $pool);
             }
 
             $output->writeln(
-                \sprintf('<info>Cache pool "%s" cleared.</info>', $poolName),
+                \sprintf('<info>Cache pool "%s" warmed.</info>', $poolName),
             );
         }
 

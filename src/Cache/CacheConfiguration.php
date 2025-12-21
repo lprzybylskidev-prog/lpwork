@@ -80,4 +80,14 @@ final class CacheConfiguration
     {
         return $this->configCache;
     }
+
+    /**
+     * Returns all configured cache pools.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function pools(): array
+    {
+        return $this->pools;
+    }
 }
