@@ -38,11 +38,6 @@ class DatabaseSessionStore implements SessionStoreInterface
     private SessionIdGeneratorInterface $idGenerator;
 
     /**
-     * @var string|null
-     */
-    private ?string $startedId = null;
-
-    /**
      * @param DatabaseConnectionManager      $connections
      * @param string                         $connectionName
      * @param string                         $table
@@ -71,8 +66,6 @@ class DatabaseSessionStore implements SessionStoreInterface
         $this->assertDefaultConnection();
 
         $sessionId = $id ?: $this->idGenerator->generate();
-        $this->startedId = $sessionId;
-
         $record = $this->fetch($sessionId);
 
         if ($record === null) {

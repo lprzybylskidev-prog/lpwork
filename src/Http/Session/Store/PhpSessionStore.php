@@ -54,7 +54,7 @@ class PhpSessionStore implements SessionStoreInterface
         }
 
         $data = $_SESSION;
-        $sessionId = \session_id();
+        $sessionId = (string) \session_id();
         \session_write_close();
 
         return new SessionState($sessionId, $data, \time());

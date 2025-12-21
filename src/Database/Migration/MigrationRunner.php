@@ -330,7 +330,7 @@ class MigrationRunner
 
         foreach ($items as $item) {
             $executed[] = [
-                "version" => $item->getVersion()->getVersion(),
+                "version" => (string) $item->getVersion(),
                 "description" => $item->getMigration()->getDescription(),
                 "class" => \get_class($item->getMigration()),
             ];

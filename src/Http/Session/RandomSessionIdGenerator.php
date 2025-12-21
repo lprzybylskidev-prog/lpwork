@@ -12,7 +12,7 @@ use LPwork\Http\Session\Exception\SessionConfigurationException;
 class RandomSessionIdGenerator implements SessionIdGeneratorInterface
 {
     /**
-     * @var int
+     * @var positive-int
      */
     private int $length;
 
@@ -35,7 +35,9 @@ class RandomSessionIdGenerator implements SessionIdGeneratorInterface
      */
     public function generate(): string
     {
-        $bytes = \random_bytes((int) \ceil($this->length / 2));
+        $byteLength = (int) \max(1, \ceil($this->length / 2));
+        /** @var positive-int $byteLength */
+        $bytes = \random_bytes($byteLength);
 
         return \substr(\bin2hex($bytes), 0, $this->length);
     }
