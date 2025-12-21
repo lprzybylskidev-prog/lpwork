@@ -87,11 +87,43 @@ class FilesystemManager
                 );
             }
 
-            return new LocalFilesystemAdapter($root);
+            $normalizedRoot = $this->normalizeRoot($root);
+
+            return new LocalFilesystemAdapter($normalizedRoot);
         }
 
         throw new FilesystemNotFoundException(
             \sprintf('Filesystem driver "%s" is not supported yet.', $driver),
         );
+    }
+
+    /**
+     * Ensures filesystem root is absolute; relative paths are resolved from project root.
+     *
+     * @param string $root
+     *
+     * @return string
+     */
+    private function normalizeRoot(string $root): string
+    {
+        if ($this->isAbsolutePath($root)) {
+            return $root;
+        }
+
+        return \dirname(__DIR__, 2) . "/" . \ltrim($root, "/");
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return bool
+     */
+    private function isAbsolutePath(string $path): bool
+    {
+        if (\str_starts_with($path, "/")) {
+            return true;
+        }
+
+        return (bool) \preg_match("/^[A-Za-z]:\\\\/", $path);
     }
 }

@@ -65,11 +65,14 @@ class FileErrorLogWriter implements ErrorLogWriterInterface
                 $disk->createDirectory($directory);
             }
 
+            $content = $payload . PHP_EOL;
+
             if ($disk->fileExists($path)) {
-                $disk->appendToFile($path, $payload . PHP_EOL);
-            } else {
-                $disk->write($path, $payload . PHP_EOL);
+                $existing = $disk->read($path);
+                $content = $existing . $content;
             }
+
+            $disk->write($path, $content);
         } catch (\Throwable $throwable) {
             throw new ErrorLogWriteException(
                 \sprintf('Failed to write error log file "%s".', $path),

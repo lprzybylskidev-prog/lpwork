@@ -21,11 +21,8 @@ return [
     "file" => [
         // Rotation mode: single, daily, or monthly.
         "mode" => $env->getString("ERROR_LOG_FILE_MODE", "daily"),
-        // Directory where error log files are stored.
-        "directory" => $env->getString(
-            "ERROR_LOG_FILE_DIRECTORY",
-            \dirname(__DIR__, 2) . "/storage/errors",
-        ),
+        // Directory (relative to default filesystem root) where error log files are stored.
+        "directory" => $env->getString("ERROR_LOG_FILE_DIRECTORY", "errors"),
     ],
     "database" => [
         // Database connection name for logging errors (default recommended).
