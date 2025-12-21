@@ -10,6 +10,8 @@
         "usernamehw.errorlens",
         "esbenp.prettier-vscode",
         "eamodio.gitlens",
-        "cweijan.vscode-mysql-client2"
+        "cweijan.vscode-mysql-client2",
+        "cweijan.dbclient-jdbc",
+        "openai.chatgpt"
     ]
 }

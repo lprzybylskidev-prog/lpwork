@@ -12,7 +12,9 @@
 
         "source=${localEnv:HOME}/.zshrc,target=/home/vscode/.zshrc,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.p10k.zsh,target=/home/vscode/.p10k.zsh,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.oh-my-zsh,target=/home/vscode/.oh-my-zsh,type=bind,consistency=cached"
+        "source=${localEnv:HOME}/.oh-my-zsh,target=/home/vscode/.oh-my-zsh,type=bind,consistency=cached",
+
+        "source=${localEnv:HOME}/.ssh/devcontainers/lpwork,target=/home/vscode/.ssh,type=bind,consistency=cached"
     ],
 
     "remoteEnv": {
@@ -40,7 +42,9 @@
                 "usernamehw.errorlens",
                 "esbenp.prettier-vscode",
                 "eamodio.gitlens",
-                "cweijan.vscode-mysql-client2"
+                "cweijan.vscode-mysql-client2",
+                "cweijan.dbclient-jdbc",
+                "openai.chatgpt"
             ]
         }
     }
