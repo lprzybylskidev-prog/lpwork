@@ -20,6 +20,9 @@ use LPwork\Database\Seeder\FrameworkSeederProvider;
 use LPwork\Database\Seeder\SeederRunner;
 use LPwork\Database\Contract\DatabaseConnectionInterface;
 use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\DoctrineDatabaseConnection;
+use LPwork\Logging\LogConfiguration;
+use LPwork\Logging\LogFactory;
 use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
@@ -45,6 +48,7 @@ use LPwork\Provider\Contract\ProviderInterface;
 use LPwork\Time\CarbonClock;
 use LPwork\Time\TimezoneContext;
 use LPwork\Version\FrameworkVersion;
+use Psr\Log\LoggerInterface;
 use Psr\Clock\ClockInterface;
 
 /**
@@ -210,6 +214,26 @@ class CommonProvider implements ProviderInterface
                 ErrorIdProvider::class,
             ),
             ErrorLoggerInterface::class => \DI\autowire(ErrorLogger::class),
+            LogConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): LogConfiguration {
+                $loggingConfig = $config->get("logging", []);
+
+                return new LogConfiguration((array) $loggingConfig);
+            }),
+            LogFactory::class => \DI\autowire(LogFactory::class),
+            LoggerInterface::class => \DI\factory(static function (
+                LogFactory $factory,
+                LogConfiguration $configuration,
+                RedisConnectionManager $redisConnections,
+                DatabaseConnectionManager $databaseConnections,
+            ): LoggerInterface {
+                return $factory->createDefault(
+                    $configuration,
+                    $redisConnections,
+                    $databaseConnections,
+                );
+            }),
             SessionConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): SessionConfiguration {
