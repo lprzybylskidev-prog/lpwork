@@ -13,6 +13,7 @@ return [
      * file.*: settings for file backend (rotation mode and directory).
      * database.*: settings for DB backend (connection/table).
      * redis.*: settings for Redis backend (connection/prefix/TTL/list limit).
+     * response.*: propagation of error identifiers to clients.
      */
     // Active error log driver.
     "driver" => $env->getString("ERROR_LOG_DRIVER", "file"),
@@ -42,5 +43,22 @@ return [
         "ttl" => $env->getInt("ERROR_LOG_REDIS_TTL", 0),
         // Maximum list length; 0 disables trimming.
         "max_entries" => $env->getInt("ERROR_LOG_REDIS_MAX_ENTRIES", 1000),
+    ],
+    "response" => [
+        // Whether to add the error identifier to response headers.
+        "expose_header" => $env->getBool(
+            "ERROR_LOG_RESPONSE_EXPOSE_HEADER",
+            true,
+        ),
+        // Header name carrying the error identifier when exposed.
+        "header_name" => $env->getString(
+            "ERROR_LOG_RESPONSE_HEADER_NAME",
+            "X-Error-Id",
+        ),
+        // Whether to include error_id field in API JSON responses.
+        "expose_api_payload" => $env->getBool(
+            "ERROR_LOG_RESPONSE_EXPOSE_API_PAYLOAD",
+            true,
+        ),
     ],
 ];

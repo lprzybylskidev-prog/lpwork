@@ -56,8 +56,11 @@ class ErrorResponseBuilder
         $isDev = $this->isDev();
         $body = [
             "code" => $status,
-            "error_id" => $errorId,
         ];
+
+        if ($this->shouldExposeApiErrorId()) {
+            $body["error_id"] = $errorId;
+        }
 
         if ($isDev) {
             $body["message"] = $message ?? "Error";
@@ -67,9 +70,9 @@ class ErrorResponseBuilder
 
         $json = \json_encode($body, \JSON_THROW_ON_ERROR);
 
-        $response = $this->psr17Factory
-            ->createResponse($status)
-            ->withHeader("Content-Type", "application/json");
+        $response = $this->psr17Factory->createResponse($status);
+        $response = $this->applyErrorIdHeader($response, $errorId);
+        $response = $response->withHeader("Content-Type", "application/json");
 
         return $response->withBody($this->psr17Factory->createStream($json));
     }
@@ -96,8 +99,10 @@ class ErrorResponseBuilder
                 $throwable ?? new \RuntimeException("HTTP error", $status),
             );
 
-            return $this->psr17Factory
-                ->createResponse($status)
+            $response = $this->psr17Factory->createResponse($status);
+            $response = $this->applyErrorIdHeader($response, $errorId);
+
+            return $response
                 ->withHeader("Content-Type", "text/html")
                 ->withBody($this->psr17Factory->createStream($html));
         }
@@ -108,8 +113,10 @@ class ErrorResponseBuilder
             $errorId,
         );
 
-        return $this->psr17Factory
-            ->createResponse($status)
+        $response = $this->psr17Factory->createResponse($status);
+        $response = $this->applyErrorIdHeader($response, $errorId);
+
+        return $response
             ->withHeader("Content-Type", "text/html")
             ->withBody($this->psr17Factory->createStream($html));
     }
@@ -120,5 +127,55 @@ class ErrorResponseBuilder
     private function isDev(): bool
     {
         return $this->config->getString("app.env", "prod") === "dev";
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldExposeHeader(): bool
+    {
+        return (bool) $this->config->getBool(
+            "error_log.response.expose_header",
+            true,
+        );
+    }
+
+    /**
+     * @return string
+     */
+    private function headerName(): string
+    {
+        return $this->config->getString(
+            "error_log.response.header_name",
+            "X-Error-Id",
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldExposeApiErrorId(): bool
+    {
+        return (bool) $this->config->getBool(
+            "error_log.response.expose_api_payload",
+            true,
+        );
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string            $errorId
+     *
+     * @return ResponseInterface
+     */
+    private function applyErrorIdHeader(
+        ResponseInterface $response,
+        string $errorId,
+    ): ResponseInterface {
+        if (!$this->shouldExposeHeader()) {
+            return $response;
+        }
+
+        return $response->withHeader($this->headerName(), $errorId);
     }
 }

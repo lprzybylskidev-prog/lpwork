@@ -6,6 +6,7 @@ namespace LPwork\ErrorLog;
 use Carbon\CarbonImmutable;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
+use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Exception\ErrorLogWriteException;
 use Psr\Clock\ClockInterface;
 
@@ -30,17 +31,25 @@ class ErrorLogger implements ErrorLoggerInterface
     private ClockInterface $clock;
 
     /**
+     * @var ErrorIdProviderInterface
+     */
+    private ErrorIdProviderInterface $errorIdProvider;
+
+    /**
      * @param ErrorLogConfiguration    $configuration
      * @param ErrorLogWriterInterface  $writer
+     * @param ErrorIdProviderInterface $errorIdProvider
      * @param ClockInterface           $clock
      */
     public function __construct(
         ErrorLogConfiguration $configuration,
         ErrorLogWriterInterface $writer,
+        ErrorIdProviderInterface $errorIdProvider,
         ClockInterface $clock,
     ) {
         $this->configuration = $configuration;
         $this->writer = $writer;
+        $this->errorIdProvider = $errorIdProvider;
         $this->clock = $clock;
     }
 
@@ -61,6 +70,8 @@ class ErrorLogger implements ErrorLoggerInterface
                 $exception,
             );
         }
+
+        $this->errorIdProvider->setCurrentErrorId($errorId);
 
         return $errorId;
     }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Middleware;
 
+use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\Http\Error\ErrorResponseBuilder;
 use Nyholm\Psr7\Response;
@@ -27,15 +28,23 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     private ErrorLoggerInterface $errorLogger;
 
     /**
+     * @var ErrorIdProviderInterface
+     */
+    private ErrorIdProviderInterface $errorIdProvider;
+
+    /**
      * @param ErrorResponseBuilder $responseBuilder
      * @param ErrorLoggerInterface $errorLogger
+     * @param ErrorIdProviderInterface $errorIdProvider
      */
     public function __construct(
         ErrorResponseBuilder $responseBuilder,
         ErrorLoggerInterface $errorLogger,
+        ErrorIdProviderInterface $errorIdProvider,
     ) {
         $this->responseBuilder = $responseBuilder;
         $this->errorLogger = $errorLogger;
+        $this->errorIdProvider = $errorIdProvider;
     }
 
     /**
@@ -45,6 +54,8 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
+        $this->errorIdProvider->clear();
+
         try {
             $response = $handler->handle($request);
 
@@ -92,6 +103,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         ?string $errorId,
     ): ResponseInterface {
         $id = $errorId ?? \bin2hex(\random_bytes(16));
+        $this->errorIdProvider->setCurrentErrorId($id);
 
         if ($this->wantsJson($request)) {
             return $this->responseBuilder->buildApiError(

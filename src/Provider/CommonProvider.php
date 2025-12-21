@@ -20,8 +20,10 @@ use LPwork\Database\Seeder\FrameworkSeederProvider;
 use LPwork\Database\Seeder\SeederRunner;
 use LPwork\Database\Contract\DatabaseConnectionInterface;
 use LPwork\Database\DatabaseConnectionManager;
+use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
+use LPwork\ErrorLog\ErrorIdProvider;
 use LPwork\ErrorLog\ErrorLogConfiguration;
 use LPwork\ErrorLog\ErrorLogWriterFactory;
 use LPwork\ErrorLog\ErrorLogger;
@@ -204,6 +206,9 @@ class CommonProvider implements ProviderInterface
                     $filesystemManager,
                 );
             }),
+            ErrorIdProviderInterface::class => \DI\autowire(
+                ErrorIdProvider::class,
+            ),
             ErrorLoggerInterface::class => \DI\autowire(ErrorLogger::class),
             SessionConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
