@@ -8,6 +8,7 @@ use LPwork\Http\Session\Contract\SessionInterface;
 use LPwork\Http\Session\Contract\SessionStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Clock\ClockInterface;
 
 /**
  * Coordinates session lifecycle per request.
@@ -50,18 +51,26 @@ class SessionManager
     private ?SessionInterface $currentSession = null;
 
     /**
-     * @param SessionConfiguration          $configuration
-     * @param SessionStoreInterface         $store
-     * @param SessionIdGeneratorInterface   $idGenerator
+     * @var ClockInterface
+     */
+    private ClockInterface $clock;
+
+    /**
+     * @param SessionConfiguration        $configuration
+     * @param SessionStoreInterface       $store
+     * @param SessionIdGeneratorInterface $idGenerator
+     * @param ClockInterface              $clock
      */
     public function __construct(
         SessionConfiguration $configuration,
         SessionStoreInterface $store,
         SessionIdGeneratorInterface $idGenerator,
+        ClockInterface $clock,
     ) {
         $this->configuration = $configuration;
         $this->store = $store;
         $this->idGenerator = $idGenerator;
+        $this->clock = $clock;
     }
 
     /**
@@ -88,6 +97,7 @@ class SessionManager
             $state,
             $this->context,
             $this->idGenerator,
+            $this->clock,
         );
 
         return $this->currentSession;

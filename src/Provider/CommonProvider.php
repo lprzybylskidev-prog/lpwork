@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace LPwork\Provider;
 
+use Carbon\CarbonImmutable;
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Config\PhpConfigLoader;
 use LPwork\Config\PhpConfigRepository;
+use LPwork\Database\DatabaseTimezoneConfigurator;
 use LPwork\Environment\Env;
 use LPwork\Filesystem\FilesystemManager;
 use LPwork\Http\Routing\RouteLoader;
@@ -38,7 +40,10 @@ use LPwork\Http\Session\Store\RedisSessionStore;
 use LPwork\Redis\Contract\RedisConnectionInterface;
 use LPwork\Redis\RedisConnectionManager;
 use LPwork\Provider\Contract\ProviderInterface;
+use LPwork\Time\CarbonClock;
+use LPwork\Time\TimezoneContext;
 use LPwork\Version\FrameworkVersion;
+use Psr\Clock\ClockInterface;
 
 /**
  * Registers services shared between HTTP and CLI runtimes.
@@ -66,6 +71,24 @@ class CommonProvider implements ProviderInterface
 
                 return new PhpConfigRepository($configs);
             }),
+            TimezoneContext::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): TimezoneContext {
+                $timezone = $config->getString("app.timezone", "UTC");
+
+                return new TimezoneContext($timezone);
+            }),
+            \DateTimeZone::class => \DI\factory(static function (
+                TimezoneContext $timezoneContext,
+            ): \DateTimeZone {
+                return $timezoneContext->timezone();
+            }),
+            ClockInterface::class => \DI\autowire(CarbonClock::class),
+            CarbonImmutable::class => \DI\factory(static function (
+                TimezoneContext $timezoneContext,
+            ): CarbonImmutable {
+                return CarbonImmutable::now($timezoneContext->timezone());
+            }),
             RedisConnectionManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): RedisConnectionManager {
@@ -90,6 +113,7 @@ class CommonProvider implements ProviderInterface
             }),
             DatabaseConnectionManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
+                DatabaseTimezoneConfigurator $timezoneConfigurator,
             ): DatabaseConnectionManager {
                 $connections = $config->get("database.connections", []);
                 $default = $config->getString(
@@ -97,7 +121,11 @@ class CommonProvider implements ProviderInterface
                     "default",
                 );
 
-                return new DatabaseConnectionManager($connections, $default);
+                return new DatabaseConnectionManager(
+                    $connections,
+                    $default,
+                    $timezoneConfigurator,
+                );
             }),
             DatabaseConnectionInterface::class => \DI\factory(static function (
                 DatabaseConnectionManager $manager,
@@ -193,6 +221,7 @@ class CommonProvider implements ProviderInterface
                 RedisConnectionManager $redisConnections,
                 DatabaseConnectionManager $databaseConnections,
                 FilesystemManager $filesystemManager,
+                ClockInterface $clock,
             ): SessionStoreInterface {
                 $driver = $config->driver();
 
@@ -200,7 +229,7 @@ class CommonProvider implements ProviderInterface
                     $phpConfig = $config->driverConfig("php");
                     $name = (string) ($phpConfig["name"] ?? "LPWORKSESSID");
 
-                    return new PhpSessionStore($name);
+                    return new PhpSessionStore($name, $clock);
                 }
 
                 if ($driver === "redis") {
@@ -214,6 +243,7 @@ class CommonProvider implements ProviderInterface
                         $connection,
                         $prefix,
                         $idGenerator,
+                        $clock,
                     );
                 }
 
@@ -228,6 +258,7 @@ class CommonProvider implements ProviderInterface
                         $connection,
                         $table,
                         $idGenerator,
+                        $clock,
                     );
                 }
 
@@ -241,6 +272,7 @@ class CommonProvider implements ProviderInterface
                         $disk,
                         $path,
                         $idGenerator,
+                        $clock,
                     );
                 }
 

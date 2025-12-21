@@ -5,6 +5,7 @@ namespace LPwork\Database;
 
 use LPwork\Database\Contract\DatabaseConnectionInterface;
 use LPwork\Database\Exception\DatabaseConnectionNotFoundException;
+use LPwork\Time\TimezoneContext;
 
 /**
  * Manages named database connections.
@@ -27,15 +28,25 @@ class DatabaseConnectionManager
     private string $defaultConnection;
 
     /**
+     * @var DatabaseTimezoneConfigurator
+     */
+    private DatabaseTimezoneConfigurator $timezoneConfigurator;
+
+    /**
      * @param array<string, array<string, mixed>> $configurations
-     * @param string $defaultConnection
+     * @param string                               $defaultConnection
+     * @param DatabaseTimezoneConfigurator         $timezoneConfigurator
      */
     public function __construct(
         array $configurations,
         string $defaultConnection = "default",
+        ?DatabaseTimezoneConfigurator $timezoneConfigurator = null,
     ) {
         $this->configurations = $configurations;
         $this->defaultConnection = $defaultConnection;
+        $this->timezoneConfigurator =
+            $timezoneConfigurator ??
+            new DatabaseTimezoneConfigurator(new TimezoneContext("UTC"));
     }
 
     /**
@@ -62,8 +73,16 @@ class DatabaseConnectionManager
             );
         }
 
-        $config = new DatabaseConfig($this->configurations[$connectionName]);
+        $configuration = $this->configurations[$connectionName];
+        $config = new DatabaseConfig($configuration);
         $connection = new DoctrineDatabaseConnection($config);
+        $this->timezoneConfigurator->configure(
+            $connection->connection(),
+            $config->driver(),
+            isset($configuration["timezone"])
+                ? (string) $configuration["timezone"]
+                : null,
+        );
 
         $this->connections[$connectionName] = $connection;
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Session\Store;
 
+use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Connection;
 use LPwork\Database\DatabaseConnectionManager;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
@@ -11,6 +12,7 @@ use LPwork\Http\Session\Exception\SessionConfigurationException;
 use LPwork\Http\Session\Exception\SessionStorageException;
 use LPwork\Http\Session\SessionCookieParameters;
 use LPwork\Http\Session\SessionState;
+use Psr\Clock\ClockInterface;
 
 /**
  * Database-backed session storage using default connection.
@@ -38,21 +40,29 @@ class DatabaseSessionStore implements SessionStoreInterface
     private SessionIdGeneratorInterface $idGenerator;
 
     /**
-     * @param DatabaseConnectionManager      $connections
-     * @param string                         $connectionName
-     * @param string                         $table
-     * @param SessionIdGeneratorInterface    $idGenerator
+     * @var ClockInterface
+     */
+    private ClockInterface $clock;
+
+    /**
+     * @param DatabaseConnectionManager   $connections
+     * @param string                      $connectionName
+     * @param string                      $table
+     * @param SessionIdGeneratorInterface $idGenerator
+     * @param ClockInterface              $clock
      */
     public function __construct(
         DatabaseConnectionManager $connections,
         string $connectionName,
         string $table,
         SessionIdGeneratorInterface $idGenerator,
+        ClockInterface $clock,
     ) {
         $this->connections = $connections;
         $this->connectionName = $connectionName;
         $this->table = $table;
         $this->idGenerator = $idGenerator;
+        $this->clock = $clock;
     }
 
     /**
@@ -67,17 +77,19 @@ class DatabaseSessionStore implements SessionStoreInterface
 
         $sessionId = $id ?: $this->idGenerator->generate();
         $record = $this->fetch($sessionId);
+        $now = $this->now();
+        $nowTimestamp = $now->getTimestamp();
 
         if ($record === null) {
-            return new SessionState($sessionId, [], \time());
+            return new SessionState($sessionId, [], $nowTimestamp);
         }
 
         $expiresAt = (int) $record["expires_at"];
 
-        if ($expiresAt > 0 && $expiresAt < \time()) {
+        if ($expiresAt > 0 && $expiresAt < $nowTimestamp) {
             $this->destroy($sessionId);
 
-            return new SessionState($sessionId, [], \time());
+            return new SessionState($sessionId, [], $nowTimestamp);
         }
 
         $payload = \json_decode((string) $record["payload"], true);
@@ -85,12 +97,13 @@ class DatabaseSessionStore implements SessionStoreInterface
         if (!\is_array($payload)) {
             $this->destroy($sessionId);
 
-            return new SessionState($sessionId, [], \time());
+            return new SessionState($sessionId, [], $nowTimestamp);
         }
 
         $data = (array) ($payload["data"] ?? []);
+        $lastActivity = (int) ($payload["last_activity"] ?? $nowTimestamp);
 
-        return new SessionState($sessionId, $data, \time());
+        return new SessionState($sessionId, $data, $lastActivity);
     }
 
     /**
@@ -115,7 +128,7 @@ class DatabaseSessionStore implements SessionStoreInterface
         }
 
         $connection = $this->connection();
-        $expiresAt = \time() + $lifetime;
+        $expiresAt = $this->now()->addSeconds($lifetime)->getTimestamp();
 
         $connection->delete($this->table, ["id" => $state->id()]);
         $connection->insert($this->table, [
@@ -191,5 +204,13 @@ class DatabaseSessionStore implements SessionStoreInterface
                 ),
             );
         }
+    }
+
+    /**
+     * @return CarbonImmutable
+     */
+    private function now(): CarbonImmutable
+    {
+        return CarbonImmutable::instance($this->clock->now());
     }
 }

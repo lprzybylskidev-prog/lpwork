@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace LPwork\ErrorLog;
 
+use Carbon\CarbonImmutable;
+
 /**
  * Represents a structured error log entry.
  */
@@ -54,9 +56,9 @@ final class ErrorLogEntry
     private array $context;
 
     /**
-     * @var \DateTimeImmutable
+     * @var CarbonImmutable
      */
-    private \DateTimeImmutable $timestamp;
+    private CarbonImmutable $timestamp;
 
     /**
      * @param string                 $id
@@ -68,7 +70,7 @@ final class ErrorLogEntry
      * @param int                    $line
      * @param string                 $trace
      * @param array<string, mixed>   $context
-     * @param \DateTimeImmutable     $timestamp
+     * @param CarbonImmutable        $timestamp
      */
     public function __construct(
         string $id,
@@ -80,7 +82,7 @@ final class ErrorLogEntry
         int $line,
         string $trace,
         array $context,
-        \DateTimeImmutable $timestamp,
+        CarbonImmutable $timestamp,
     ) {
         $this->id = $id;
         $this->level = $level;
@@ -167,9 +169,9 @@ final class ErrorLogEntry
     }
 
     /**
-     * @return \DateTimeImmutable
+     * @return CarbonImmutable
      */
-    public function timestamp(): \DateTimeImmutable
+    public function timestamp(): CarbonImmutable
     {
         return $this->timestamp;
     }

@@ -5,6 +5,7 @@ namespace LPwork\Http\Session;
 
 use LPwork\Http\Session\Contract\SessionInterface;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
+use Psr\Clock\ClockInterface;
 
 /**
  * Immutable session facade that propagates state updates.
@@ -27,18 +28,26 @@ final class Session implements SessionInterface
     private SessionIdGeneratorInterface $idGenerator;
 
     /**
+     * @var ClockInterface
+     */
+    private ClockInterface $clock;
+
+    /**
      * @param SessionState                $state
      * @param SessionContext              $context
      * @param SessionIdGeneratorInterface $idGenerator
+     * @param ClockInterface              $clock
      */
     public function __construct(
         SessionState $state,
         SessionContext $context,
         SessionIdGeneratorInterface $idGenerator,
+        ClockInterface $clock,
     ) {
         $this->state = $state;
         $this->context = $context;
         $this->idGenerator = $idGenerator;
+        $this->clock = $clock;
     }
 
     /**
@@ -78,7 +87,11 @@ final class Session implements SessionInterface
      */
     public function with(string $key, mixed $value): SessionInterface
     {
-        $newState = $this->state->with($key, $value);
+        $newState = $this->state->with(
+            $key,
+            $value,
+            $this->clock->now()->getTimestamp(),
+        );
 
         return $this->refresh($newState);
     }
@@ -88,7 +101,10 @@ final class Session implements SessionInterface
      */
     public function without(string $key): SessionInterface
     {
-        $newState = $this->state->without($key);
+        $newState = $this->state->without(
+            $key,
+            $this->clock->now()->getTimestamp(),
+        );
 
         return $this->refresh($newState);
     }
@@ -98,7 +114,7 @@ final class Session implements SessionInterface
      */
     public function clear(): SessionInterface
     {
-        $newState = $this->state->cleared();
+        $newState = $this->state->cleared($this->clock->now()->getTimestamp());
 
         return $this->refresh($newState);
     }
@@ -109,7 +125,10 @@ final class Session implements SessionInterface
     public function regenerateId(): SessionInterface
     {
         $newId = $this->idGenerator->generate();
-        $newState = $this->state->withId($newId);
+        $newState = $this->state->withId(
+            $newId,
+            $this->clock->now()->getTimestamp(),
+        );
 
         return $this->refresh($newState);
     }
@@ -125,6 +144,11 @@ final class Session implements SessionInterface
     {
         $this->context->update($state);
 
-        return new self($state, $this->context, $this->idGenerator);
+        return new self(
+            $state,
+            $this->context,
+            $this->idGenerator,
+            $this->clock,
+        );
     }
 }

@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace LPwork\ErrorLog;
 
+use Carbon\CarbonImmutable;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
 use LPwork\ErrorLog\Exception\ErrorLogWriteException;
+use Psr\Clock\ClockInterface;
 
 /**
  * Logs throwables using configured writer.
@@ -23,15 +25,23 @@ class ErrorLogger implements ErrorLoggerInterface
     private ErrorLogWriterInterface $writer;
 
     /**
-     * @param ErrorLogConfiguration   $configuration
-     * @param ErrorLogWriterInterface $writer
+     * @var ClockInterface
+     */
+    private ClockInterface $clock;
+
+    /**
+     * @param ErrorLogConfiguration    $configuration
+     * @param ErrorLogWriterInterface  $writer
+     * @param ClockInterface           $clock
      */
     public function __construct(
         ErrorLogConfiguration $configuration,
         ErrorLogWriterInterface $writer,
+        ClockInterface $clock,
     ) {
         $this->configuration = $configuration;
         $this->writer = $writer;
+        $this->clock = $clock;
     }
 
     /**
@@ -67,7 +77,7 @@ class ErrorLogger implements ErrorLoggerInterface
         \Throwable $throwable,
         array $context,
     ): ErrorLogEntry {
-        $timestamp = new \DateTimeImmutable("now", new \DateTimeZone("UTC"));
+        $timestamp = CarbonImmutable::instance($this->clock->now());
         $code = (int) $throwable->getCode();
         $line = (int) $throwable->getLine();
         $trace = $throwable->getTraceAsString();

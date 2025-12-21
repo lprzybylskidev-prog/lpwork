@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Session\Store;
 
+use Carbon\CarbonImmutable;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
 use LPwork\Http\Session\Contract\SessionStoreInterface;
 use LPwork\Http\Session\Exception\SessionStorageException;
@@ -10,6 +11,7 @@ use LPwork\Http\Session\SessionCookieParameters;
 use LPwork\Http\Session\SessionState;
 use LPwork\Redis\RedisConnectionManager;
 use Predis\ClientInterface;
+use Psr\Clock\ClockInterface;
 
 /**
  * Redis-backed session storage.
@@ -37,21 +39,29 @@ class RedisSessionStore implements SessionStoreInterface
     private SessionIdGeneratorInterface $idGenerator;
 
     /**
-     * @param RedisConnectionManager         $connections
-     * @param string                         $connectionName
-     * @param string                         $prefix
-     * @param SessionIdGeneratorInterface    $idGenerator
+     * @var ClockInterface
+     */
+    private ClockInterface $clock;
+
+    /**
+     * @param RedisConnectionManager      $connections
+     * @param string                      $connectionName
+     * @param string                      $prefix
+     * @param SessionIdGeneratorInterface $idGenerator
+     * @param ClockInterface              $clock
      */
     public function __construct(
         RedisConnectionManager $connections,
         string $connectionName,
         string $prefix,
         SessionIdGeneratorInterface $idGenerator,
+        ClockInterface $clock,
     ) {
         $this->connections = $connections;
         $this->connectionName = $connectionName;
         $this->prefix = $prefix;
         $this->idGenerator = $idGenerator;
+        $this->clock = $clock;
     }
 
     /**
@@ -64,11 +74,13 @@ class RedisSessionStore implements SessionStoreInterface
     ): SessionState {
         $sessionId = $id ?: $this->idGenerator->generate();
         $key = $this->buildKey($sessionId);
+        $now = $this->now();
+        $nowTimestamp = $now->getTimestamp();
 
         $payload = $this->client()->get($key);
 
         if ($payload === null) {
-            return new SessionState($sessionId, [], \time());
+            return new SessionState($sessionId, [], $nowTimestamp);
         }
 
         $decoded = \json_decode($payload, true);
@@ -76,12 +88,13 @@ class RedisSessionStore implements SessionStoreInterface
         if (!\is_array($decoded)) {
             $this->client()->del([$key]);
 
-            return new SessionState($sessionId, [], \time());
+            return new SessionState($sessionId, [], $nowTimestamp);
         }
 
         $data = (array) ($decoded["data"] ?? []);
+        $lastActivity = (int) ($decoded["last_activity"] ?? $nowTimestamp);
 
-        return new SessionState($sessionId, $data, \time());
+        return new SessionState($sessionId, $data, $lastActivity);
     }
 
     /**
@@ -139,5 +152,13 @@ class RedisSessionStore implements SessionStoreInterface
     private function client(): ClientInterface
     {
         return $this->connections->get($this->connectionName)->client();
+    }
+
+    /**
+     * @return CarbonImmutable
+     */
+    private function now(): CarbonImmutable
+    {
+        return CarbonImmutable::instance($this->clock->now());
     }
 }

@@ -14,11 +14,17 @@ class DatabaseConfig
     private array $config;
 
     /**
+     * @var string
+     */
+    private string $driver;
+
+    /**
      * @param array<string, mixed> $config
      */
     public function __construct(array $config)
     {
         $this->config = $config;
+        $this->driver = (string) ($config["driver"] ?? "pdo_mysql");
     }
 
     /**
@@ -26,9 +32,8 @@ class DatabaseConfig
      */
     public function toConnectionParams(): array
     {
-        $driver = $this->config["driver"] ?? "pdo_mysql";
         $params = [
-            "driver" => $driver,
+            "driver" => $this->driver,
             "host" => $this->config["host"] ?? "127.0.0.1",
             "port" => $this->config["port"] ?? null,
             "dbname" => $this->config["database"] ?? null,
@@ -38,11 +43,21 @@ class DatabaseConfig
             "url" => $this->config["url"] ?? null,
         ];
 
-        if ($driver === "pdo_sqlite") {
+        if ($this->driver === "pdo_sqlite") {
             $params["path"] = $this->config["path"] ?? null;
             unset($params["host"], $params["port"]);
         }
 
         return $params;
+    }
+
+    /**
+     * Returns configured Doctrine driver name.
+     *
+     * @return string
+     */
+    public function driver(): string
+    {
+        return $this->driver;
     }
 }

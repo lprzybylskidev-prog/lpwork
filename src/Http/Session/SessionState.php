@@ -26,7 +26,7 @@ final class SessionState
     /**
      * @param string                $id
      * @param array<string, mixed>  $data
-     * @param int                   $lastActivity
+     * @param int                   $lastActivity Unix timestamp in seconds.
      */
     public function __construct(string $id, array $data, int $lastActivity)
     {
@@ -99,51 +99,56 @@ final class SessionState
      *
      * @param string $key
      * @param mixed  $value
+     * @param int    $lastActivity Unix timestamp in seconds.
      *
      * @return self
      */
-    public function with(string $key, mixed $value): self
+    public function with(string $key, mixed $value, int $lastActivity): self
     {
         $data = $this->data;
         $data[$key] = $value;
 
-        return new self($this->id, $data, \time());
+        return new self($this->id, $data, $lastActivity);
     }
 
     /**
      * Returns a new state without the given key.
      *
      * @param string $key
+     * @param int    $lastActivity Unix timestamp in seconds.
      *
      * @return self
      */
-    public function without(string $key): self
+    public function without(string $key, int $lastActivity): self
     {
         $data = $this->data;
         unset($data[$key]);
 
-        return new self($this->id, $data, \time());
+        return new self($this->id, $data, $lastActivity);
     }
 
     /**
      * Returns a new empty state.
      *
+     * @param int $lastActivity Unix timestamp in seconds.
+     *
      * @return self
      */
-    public function cleared(): self
+    public function cleared(int $lastActivity): self
     {
-        return new self($this->id, [], \time());
+        return new self($this->id, [], $lastActivity);
     }
 
     /**
      * Returns a new state with a regenerated identifier.
      *
      * @param string $newId
+     * @param int    $lastActivity Unix timestamp in seconds.
      *
      * @return self
      */
-    public function withId(string $newId): self
+    public function withId(string $newId, int $lastActivity): self
     {
-        return new self($newId, $this->data, \time());
+        return new self($newId, $this->data, $lastActivity);
     }
 }

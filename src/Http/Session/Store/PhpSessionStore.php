@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Session\Store;
 
+use Carbon\CarbonImmutable;
 use LPwork\Http\Session\Contract\SessionStoreInterface;
 use LPwork\Http\Session\Exception\SessionStorageException;
 use LPwork\Http\Session\SessionCookieParameters;
 use LPwork\Http\Session\SessionState;
+use Psr\Clock\ClockInterface;
 
 /**
  * Native PHP session storage.
@@ -19,11 +21,18 @@ class PhpSessionStore implements SessionStoreInterface
     private string $sessionName;
 
     /**
-     * @param string $sessionName
+     * @var ClockInterface
      */
-    public function __construct(string $sessionName)
+    private ClockInterface $clock;
+
+    /**
+     * @param string          $sessionName
+     * @param ClockInterface  $clock
+     */
+    public function __construct(string $sessionName, ClockInterface $clock)
     {
         $this->sessionName = $sessionName;
+        $this->clock = $clock;
     }
 
     /**
@@ -57,7 +66,11 @@ class PhpSessionStore implements SessionStoreInterface
         $sessionId = (string) \session_id();
         \session_write_close();
 
-        return new SessionState($sessionId, $data, \time());
+        return new SessionState(
+            $sessionId,
+            $data,
+            CarbonImmutable::instance($this->clock->now())->getTimestamp(),
+        );
     }
 
     /**
