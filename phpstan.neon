@@ -1,12 +1,9 @@
-includes:
-    - vendor/phpstan/phpstan-doctrine/extension.neon
-
 parameters:
     level: 7
 
     paths:
         - src
-        - configs
+        - config
 
     excludePaths:
         analyse:
@@ -19,11 +16,14 @@ parameters:
 
     phpVersion: 80300
 
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
-
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
     reportUnmatchedIgnoredErrors: false
-    treatPhpDocTypesAsCertain: false
+    parallel:
+        maximumNumberOfProcesses: 1
+        jobSize: 20
+        processTimeout: 600.0
 
     inferPrivatePropertyTypeFromConstructor: true
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
