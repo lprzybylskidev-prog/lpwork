@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Middleware;
 
+use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\Http\Error\ErrorResponseBuilder;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -21,11 +22,20 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     private ErrorResponseBuilder $responseBuilder;
 
     /**
-     * @param ErrorResponseBuilder $responseBuilder
+     * @var ErrorLoggerInterface
      */
-    public function __construct(ErrorResponseBuilder $responseBuilder)
-    {
+    private ErrorLoggerInterface $errorLogger;
+
+    /**
+     * @param ErrorResponseBuilder $responseBuilder
+     * @param ErrorLoggerInterface $errorLogger
+     */
+    public function __construct(
+        ErrorResponseBuilder $responseBuilder,
+        ErrorLoggerInterface $errorLogger,
+    ) {
         $this->responseBuilder = $responseBuilder;
+        $this->errorLogger = $errorLogger;
     }
 
     /**
@@ -44,16 +54,23 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
                     $response->getStatusCode(),
                     $response->getReasonPhrase() ?: null,
                     null,
+                    null,
                 );
             }
 
             return $response;
         } catch (\Throwable $throwable) {
+            $errorId = $this->errorLogger->log(
+                $throwable,
+                $this->buildHttpContext($request),
+            );
+
             return $this->renderError(
                 $request,
                 500,
                 $throwable->getMessage(),
                 $throwable,
+                $errorId,
             );
         }
     }
@@ -63,6 +80,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
      * @param int                    $status
      * @param string|null            $message
      * @param \Throwable|null        $throwable
+     * @param string|null            $errorId
      *
      * @return ResponseInterface
      */
@@ -71,14 +89,15 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         int $status,
         ?string $message,
         ?\Throwable $throwable,
+        ?string $errorId,
     ): ResponseInterface {
-        $errorId = \bin2hex(\random_bytes(16));
+        $id = $errorId ?? \bin2hex(\random_bytes(16));
 
         if ($this->wantsJson($request)) {
             return $this->responseBuilder->buildApiError(
                 $request,
                 $status,
-                $errorId,
+                $id,
                 $message,
                 $throwable,
             );
@@ -87,9 +106,24 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         return $this->responseBuilder->buildHtmlError(
             $request,
             $status,
-            $errorId,
+            $id,
             $throwable,
         );
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return array<string, mixed>
+     */
+    private function buildHttpContext(ServerRequestInterface $request): array
+    {
+        return [
+            "runtime" => "http",
+            "method" => $request->getMethod(),
+            "uri" => (string) $request->getUri(),
+            "headers" => $request->getHeaders(),
+        ];
     }
 
     /**

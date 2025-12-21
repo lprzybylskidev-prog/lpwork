@@ -6,6 +6,7 @@ namespace LPwork\Kernel;
 use Config\CommandProvider as AppCommandProvider;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Console\Provider\BuiltinCommandProvider;
+use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
@@ -30,18 +31,26 @@ class CliKernel
     private ConfigRepositoryInterface $configRepository;
 
     /**
+     * @var ErrorLoggerInterface
+     */
+    private ErrorLoggerInterface $errorLogger;
+
+    /**
      * @param ConfigRepositoryInterface $configRepository
      * @param BuiltinCommandProvider    $builtinCommandProvider
      * @param AppCommandProvider        $appCommandProvider
+     * @param ErrorLoggerInterface      $errorLogger
      */
     public function __construct(
         ConfigRepositoryInterface $configRepository,
         BuiltinCommandProvider $builtinCommandProvider,
         AppCommandProvider $appCommandProvider,
+        ErrorLoggerInterface $errorLogger,
     ) {
         $this->configRepository = $configRepository;
         $this->builtinCommandProvider = $builtinCommandProvider;
         $this->appCommandProvider = $appCommandProvider;
+        $this->errorLogger = $errorLogger;
     }
 
     /**
@@ -60,7 +69,23 @@ class CliKernel
             $application->addCommand($command);
         }
 
-        $application->run();
+        try {
+            $application->run();
+        } catch (\Throwable $throwable) {
+            $errorId = $this->errorLogger->log($throwable, [
+                "runtime" => "cli",
+            ]);
+            \fwrite(
+                \STDERR,
+                \sprintf(
+                    "Unhandled error (ID: %s): %s%s",
+                    $errorId,
+                    $throwable->getMessage(),
+                    PHP_EOL,
+                ),
+            );
+            throw $throwable;
+        }
     }
 
     /**

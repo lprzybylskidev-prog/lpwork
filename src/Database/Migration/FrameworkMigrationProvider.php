@@ -31,13 +31,25 @@ class FrameworkMigrationProvider implements MigrationProviderInterface
     {
         $paths = [\dirname(__DIR__) . "/Migrations"];
         $sessionDriver = $this->config->getString("session.driver", "php");
+        $errorLogDriver = $this->config->getString("error_log.driver", "file");
+        $errorLogConnection = $this->config->getString(
+            "error_log.database.connection",
+            "default",
+        );
 
         if ($sessionDriver === "database") {
             $paths[] = \dirname(__DIR__) . "/Migrations/Session";
         }
 
-        return [
+        $migrations = [
             "default" => $paths,
         ];
+
+        if ($errorLogDriver === "database") {
+            $migrations[$errorLogConnection][] =
+                \dirname(__DIR__) . "/Migrations/Error";
+        }
+
+        return $migrations;
     }
 }

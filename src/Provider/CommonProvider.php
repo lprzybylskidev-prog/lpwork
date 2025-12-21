@@ -18,6 +18,11 @@ use LPwork\Database\Seeder\FrameworkSeederProvider;
 use LPwork\Database\Seeder\SeederRunner;
 use LPwork\Database\Contract\DatabaseConnectionInterface;
 use LPwork\Database\DatabaseConnectionManager;
+use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
+use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
+use LPwork\ErrorLog\ErrorLogConfiguration;
+use LPwork\ErrorLog\ErrorLogWriterFactory;
+use LPwork\ErrorLog\ErrorLogger;
 use LPwork\Http\Middleware\SessionMiddleware;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
 use LPwork\Http\Session\Contract\SessionInterface;
@@ -31,7 +36,6 @@ use LPwork\Http\Session\Store\FilesystemSessionStore;
 use LPwork\Http\Session\Store\PhpSessionStore;
 use LPwork\Http\Session\Store\RedisSessionStore;
 use LPwork\Redis\Contract\RedisConnectionInterface;
-use LPwork\Redis\PredisConnection;
 use LPwork\Redis\RedisConnectionManager;
 use LPwork\Provider\Contract\ProviderInterface;
 use LPwork\Version\FrameworkVersion;
@@ -151,6 +155,28 @@ class CommonProvider implements ProviderInterface
                     "appProvider",
                     \DI\get(\Config\SeederProvider::class),
                 ),
+            ErrorLogConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): ErrorLogConfiguration {
+                $errorLogConfig = $config->get("error_log", []);
+
+                return new ErrorLogConfiguration((array) $errorLogConfig);
+            }),
+            ErrorLogWriterInterface::class => \DI\factory(static function (
+                ErrorLogConfiguration $config,
+                ErrorLogWriterFactory $factory,
+                DatabaseConnectionManager $databaseConnections,
+                RedisConnectionManager $redisConnections,
+                FilesystemManager $filesystemManager,
+            ): ErrorLogWriterInterface {
+                return $factory->create(
+                    $config,
+                    $databaseConnections,
+                    $redisConnections,
+                    $filesystemManager,
+                );
+            }),
+            ErrorLoggerInterface::class => \DI\autowire(ErrorLogger::class),
             SessionConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): SessionConfiguration {
