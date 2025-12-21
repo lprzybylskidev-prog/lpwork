@@ -27,6 +27,7 @@ RUN add-apt-repository -y ppa:ondrej/php \
     php8.3-pgsql \
     php8.3-mysql \
     php8.3-sqlite3 \
+    sqlite3 \
   && rm -rf /var/lib/apt/lists/*
 
 RUN update-alternatives --install /usr/bin/php php /usr/bin/php8.3 83 \
