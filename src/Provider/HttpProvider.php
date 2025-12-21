@@ -13,6 +13,8 @@ use LPwork\Http\Routing\FastRouteDispatcherFactory;
 use LPwork\Http\Routing\RouteLoader;
 use LPwork\Kernel\HttpKernel;
 use LPwork\Provider\Contract\ProviderInterface;
+use LPwork\Cache\CacheConfiguration;
+use LPwork\Cache\CacheFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Config\MiddlewareProvider as AppMiddlewareProvider;
@@ -49,8 +51,42 @@ class HttpProvider implements ProviderInterface
             Dispatcher::class => \DI\factory(static function (
                 RouteLoader $loader,
                 FastRouteDispatcherFactory $factory,
+                CacheConfiguration $cacheConfiguration,
+                CacheFactory $cacheFactory,
+                \LPwork\Redis\RedisConnectionManager $redisConnections,
+                \LPwork\Database\DatabaseConnectionManager $databaseConnections,
             ): Dispatcher {
                 $routes = $loader->load();
+                $routingCache = $cacheConfiguration->routingCache();
+                $enabled = (bool) ($routingCache["enabled"] ?? false);
+
+                if ($enabled) {
+                    $poolName =
+                        (string) ($routingCache["pool"] ?? "filesystem");
+                    $key =
+                        (string) ($routingCache["key"] ?? "routes:dispatcher");
+                    $pool = $cacheFactory->createPool(
+                        $poolName,
+                        $cacheConfiguration,
+                        $redisConnections,
+                        $databaseConnections,
+                    );
+                    $item = $pool->getItem($key);
+
+                    if ($item->isHit()) {
+                        $data = $item->get();
+
+                        if (\is_array($data)) {
+                            return $factory->createFromData($data);
+                        }
+                    }
+
+                    $data = $factory->generateData($routes);
+                    $item->set($data);
+                    $pool->save($item);
+
+                    return $factory->createFromData($data);
+                }
 
                 return $factory->create($routes);
             }),

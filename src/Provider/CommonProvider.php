@@ -8,7 +8,11 @@ use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Config\PhpConfigLoader;
 use LPwork\Config\PhpConfigRepository;
+use LPwork\Config\CachedConfigRepository;
 use LPwork\Database\DatabaseTimezoneConfigurator;
+use LPwork\Cache\CacheConfiguration;
+use LPwork\Cache\CacheFactory;
+use LPwork\Cache\CacheManager;
 use LPwork\Environment\Env;
 use LPwork\Filesystem\FilesystemManager;
 use LPwork\Http\Routing\RouteLoader;
@@ -50,6 +54,8 @@ use LPwork\Time\TimezoneContext;
 use LPwork\Version\FrameworkVersion;
 use Psr\Log\LoggerInterface;
 use Psr\Clock\ClockInterface;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Psr16Cache;
 
 /**
  * Registers services shared between HTTP and CLI runtimes.
@@ -70,10 +76,30 @@ class CommonProvider implements ProviderInterface
             }),
             ConfigRepositoryInterface::class => \DI\factory(static function (
                 Env $env,
+                CacheConfiguration $cacheConfiguration,
+                CacheFactory $cacheFactory,
+                RedisConnectionManager $redisConnections,
+                DatabaseConnectionManager $databaseConnections,
             ): ConfigRepositoryInterface {
                 $configDirectory = \dirname(__DIR__, 2) . "/config/configs";
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
+                $configCache = $cacheConfiguration->configCache();
+                $enabled = (bool) ($configCache["enabled"] ?? false);
+
+                if ($enabled) {
+                    $poolName = (string) ($configCache["pool"] ?? "filesystem");
+                    $key =
+                        (string) ($configCache["key"] ?? "config:repository");
+                    $pool = $cacheFactory->createPool(
+                        $poolName,
+                        $cacheConfiguration,
+                        $redisConnections,
+                        $databaseConnections,
+                    );
+
+                    return new CachedConfigRepository($configs, $pool, $key);
+                }
 
                 return new PhpConfigRepository($configs);
             }),
@@ -144,6 +170,32 @@ class CommonProvider implements ProviderInterface
 
                 return $manager->get($default);
             }),
+            CacheConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): CacheConfiguration {
+                $cacheConfig = $config->get("cache", []);
+
+                return new CacheConfiguration((array) $cacheConfig);
+            }),
+            CacheFactory::class => \DI\autowire(CacheFactory::class),
+            CacheItemPoolInterface::class => \DI\factory(static function (
+                CacheFactory $factory,
+                CacheConfiguration $configuration,
+                RedisConnectionManager $redisConnections,
+                DatabaseConnectionManager $databaseConnections,
+            ): CacheItemPoolInterface {
+                return $factory->createDefaultPool(
+                    $configuration,
+                    $redisConnections,
+                    $databaseConnections,
+                );
+            }),
+            Psr16Cache::class => \DI\factory(static function (
+                CacheItemPoolInterface $pool,
+            ): Psr16Cache {
+                return new Psr16Cache($pool);
+            }),
+            CacheManager::class => \DI\autowire(CacheManager::class),
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): FilesystemManager {

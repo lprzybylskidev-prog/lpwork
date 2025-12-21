@@ -8,6 +8,11 @@ use LPwork\Console\Command\DatabaseConnectionsCommand;
 use LPwork\Console\Command\MigrateFreshCommand;
 use LPwork\Console\Command\RoutesListCommand;
 use LPwork\Console\Command\VersionCommand;
+use LPwork\Console\Command\CacheClearCommand;
+use LPwork\Console\Command\ConfigCacheCommand;
+use LPwork\Console\Command\ConfigClearCommand;
+use LPwork\Console\Command\RouteCacheCommand;
+use LPwork\Console\Command\RouteClearCommand;
 use LPwork\Console\Contract\CommandProviderInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -41,6 +46,11 @@ class BuiltinCommandProvider implements CommandProviderInterface
             $this->container->get(MigrateFreshCommand::class),
             $this->container->get(RoutesListCommand::class),
             $this->container->get(VersionCommand::class),
+            $this->container->get(CacheClearCommand::class),
+            $this->container->get(ConfigCacheCommand::class),
+            $this->container->get(ConfigClearCommand::class),
+            $this->container->get(RouteCacheCommand::class),
+            $this->container->get(RouteClearCommand::class),
         ];
     }
 }
