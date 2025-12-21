@@ -84,6 +84,7 @@ class SessionManager
     {
         $cookieParameters = $this->buildCookieParameters($request);
         $sessionId = $this->resolveSessionId($request, $cookieParameters);
+        $this->store->cleanupExpired($this->configuration->lifetime());
         $state = $this->store->start(
             $sessionId,
             $cookieParameters,

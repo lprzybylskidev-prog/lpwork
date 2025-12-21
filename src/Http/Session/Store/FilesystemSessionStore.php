@@ -158,6 +158,42 @@ class FilesystemSessionStore implements SessionStoreInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function cleanupExpired(int $lifetime): void
+    {
+        $filesystem = $this->filesystem();
+        $directory = $this->path;
+        $nowTimestamp = $this->now()->getTimestamp();
+
+        if ($directory !== "" && !$filesystem->directoryExists($directory)) {
+            return;
+        }
+
+        foreach ($filesystem->listContents($directory, false) as $item) {
+            if (!$item->isFile()) {
+                continue;
+            }
+
+            $location = $item->path();
+            $contents = $filesystem->read($location);
+            $decoded = \json_decode($contents, true);
+
+            if (!\is_array($decoded)) {
+                $filesystem->delete($location);
+
+                continue;
+            }
+
+            $expiresAt = (int) ($decoded["expires_at"] ?? 0);
+
+            if ($expiresAt > 0 && $expiresAt < $nowTimestamp) {
+                $filesystem->delete($location);
+            }
+        }
+    }
+
+    /**
      * @param string $id
      *
      * @return string

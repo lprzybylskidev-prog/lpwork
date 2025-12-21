@@ -51,6 +51,15 @@ interface SessionStoreInterface
     public function destroy(string $id): void;
 
     /**
+     * Cleans up expired session entries in backend storage.
+     *
+     * @param int $lifetime
+     *
+     * @return void
+     */
+    public function cleanupExpired(int $lifetime): void;
+
+    /**
      * Indicates if storage handles cookie emission by itself (e.g. native PHP).
      *
      * @return bool

@@ -137,6 +137,14 @@ class RedisSessionStore implements SessionStoreInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function cleanupExpired(int $lifetime): void
+    {
+        // Redis uses TTL on keys; explicit cleanup is not required here.
+    }
+
+    /**
      * @param string $id
      *
      * @return string

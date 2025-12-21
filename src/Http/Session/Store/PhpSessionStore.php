@@ -130,6 +130,14 @@ class PhpSessionStore implements SessionStoreInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function cleanupExpired(int $lifetime): void
+    {
+        // Native PHP session handler performs its own garbage collection.
+    }
+
+    /**
      * @param SessionCookieParameters $cookieParameters
      * @param int                     $lifetime
      *

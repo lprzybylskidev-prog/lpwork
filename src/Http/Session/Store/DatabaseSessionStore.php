@@ -156,6 +156,23 @@ class DatabaseSessionStore implements SessionStoreInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function cleanupExpired(int $lifetime): void
+    {
+        $this->assertDefaultConnection();
+        $connection = $this->connection();
+        $now = $this->now()->getTimestamp();
+
+        $connection
+            ->createQueryBuilder()
+            ->delete($this->table)
+            ->where("expires_at < :now")
+            ->setParameter("now", $now)
+            ->executeStatement();
+    }
+
+    /**
      * @param string $id
      *
      * @return array<string, mixed>|null
