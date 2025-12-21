@@ -7,6 +7,9 @@
 /storage/*
 !/storage/.gitkeep
 !/storage/db.sqlite3.example
+!/storage/errors/
+/storage/errors/*
+!/storage/errors/.gitkeep
 
 /app/*
 !/app/.gitkeep
