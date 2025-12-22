@@ -6,6 +6,7 @@ namespace LPwork\Http\Middleware;
 use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\Http\Error\ErrorResponseBuilder;
+use LPwork\Http\Error\ErrorContextFactory;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,18 +34,26 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     private ErrorIdProviderInterface $errorIdProvider;
 
     /**
+     * @var ErrorContextFactory
+     */
+    private ErrorContextFactory $errorContextFactory;
+
+    /**
      * @param ErrorResponseBuilder $responseBuilder
      * @param ErrorLoggerInterface $errorLogger
      * @param ErrorIdProviderInterface $errorIdProvider
+     * @param ErrorContextFactory  $errorContextFactory
      */
     public function __construct(
         ErrorResponseBuilder $responseBuilder,
         ErrorLoggerInterface $errorLogger,
         ErrorIdProviderInterface $errorIdProvider,
+        ErrorContextFactory $errorContextFactory,
     ) {
         $this->responseBuilder = $responseBuilder;
         $this->errorLogger = $errorLogger;
         $this->errorIdProvider = $errorIdProvider;
+        $this->errorContextFactory = $errorContextFactory;
     }
 
     /**
@@ -71,7 +80,14 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
 
             return $response;
         } catch (\Throwable $throwable) {
-            $errorId = $this->errorLogger->log($throwable, $this->buildHttpContext($request));
+            $context = $this->errorContextFactory->fromRequest(
+                $request,
+                \bin2hex(\random_bytes(16)),
+                500,
+                $throwable,
+            );
+            $errorId = $context->id();
+            $this->errorLogger->log($throwable, ['error_context' => $context->toArray()]);
 
             return $this->renderError(
                 $request,
@@ -79,6 +95,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
                 $throwable->getMessage(),
                 $throwable,
                 $errorId,
+                $context,
             );
         }
     }
@@ -89,6 +106,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
      * @param string|null            $message
      * @param \Throwable|null        $throwable
      * @param string|null            $errorId
+     * @param \LPwork\Http\Error\ErrorContext|null $context
      *
      * @return ResponseInterface
      */
@@ -98,9 +116,12 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         ?string $message,
         ?\Throwable $throwable,
         ?string $errorId,
+        ?\LPwork\Http\Error\ErrorContext $context = null,
     ): ResponseInterface {
         $id = $errorId ?? \bin2hex(\random_bytes(16));
         $this->errorIdProvider->setCurrentErrorId($id);
+        $context =
+            $context ?? $this->errorContextFactory->fromRequest($request, $id, $status, $throwable);
 
         if ($this->wantsJson($request)) {
             return $this->responseBuilder->buildApiError(
@@ -109,25 +130,11 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
                 $id,
                 $message,
                 $throwable,
+                $context,
             );
         }
 
-        return $this->responseBuilder->buildHtmlError($request, $status, $id, $throwable);
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return array<string, mixed>
-     */
-    private function buildHttpContext(ServerRequestInterface $request): array
-    {
-        return [
-            'runtime' => 'http',
-            'method' => $request->getMethod(),
-            'uri' => (string) $request->getUri(),
-            'headers' => $request->getHeaders(),
-        ];
+        return $this->responseBuilder->buildHtmlError($request, $status, $id, $throwable, $context);
     }
 
     /**

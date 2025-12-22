@@ -25,5 +25,6 @@ interface DevErrorPageRendererInterface
         int $status,
         string $errorId,
         \Throwable $throwable,
+        ?\LPwork\Http\Error\ErrorContext $context = null,
     ): string;
 }

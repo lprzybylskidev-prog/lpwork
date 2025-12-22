@@ -85,7 +85,12 @@ class ErrorLogger implements ErrorLoggerInterface
         array $context,
     ): ErrorLogEntry {
         $timestamp = CarbonImmutable::instance($this->clock->now());
-        $code = (int) $throwable->getCode();
+        $contextStatus = $context['error_context']['status'] ?? null;
+        $code = \is_int($contextStatus) ? $contextStatus : (int) $throwable->getCode();
+
+        if ($code === 0) {
+            $code = 500;
+        }
         $line = (int) $throwable->getLine();
         $trace = $throwable->getTraceAsString();
         $file = $throwable->getFile();

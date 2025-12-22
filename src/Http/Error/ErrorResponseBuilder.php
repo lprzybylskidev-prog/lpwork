@@ -5,6 +5,7 @@ namespace LPwork\Http\Error;
 
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Http\Error\Contract\DevErrorPageRendererInterface;
+use LPwork\Http\Error\ErrorContext;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -50,6 +51,7 @@ class ErrorResponseBuilder
      * @param string                    $errorId
      * @param string|null               $message
      * @param \Throwable|null           $throwable
+     * @param ErrorContext|null         $context
      *
      * @return ResponseInterface
      */
@@ -59,6 +61,7 @@ class ErrorResponseBuilder
         string $errorId,
         ?string $message = null,
         ?\Throwable $throwable = null,
+        ?ErrorContext $context = null,
     ): ResponseInterface {
         $isDev = $this->isDev();
         $body = [
@@ -71,7 +74,11 @@ class ErrorResponseBuilder
 
         if ($isDev) {
             $body['message'] = $message ?? 'Error';
-            $body['trace'] = $throwable !== null ? $throwable->getTraceAsString() : null;
+            if ($context !== null) {
+                $body['context'] = $context->toArray();
+            } else {
+                $body['trace'] = $throwable !== null ? $throwable->getTraceAsString() : null;
+            }
         }
 
         $json = \json_encode($body, \JSON_THROW_ON_ERROR);
@@ -88,6 +95,7 @@ class ErrorResponseBuilder
      * @param int                    $status
      * @param string                 $errorId
      * @param \Throwable|null        $throwable
+     * @param ErrorContext|null      $context
      *
      * @return ResponseInterface
      */
@@ -96,6 +104,7 @@ class ErrorResponseBuilder
         int $status,
         string $errorId,
         ?\Throwable $throwable = null,
+        ?ErrorContext $context = null,
     ): ResponseInterface {
         if ($this->isDev()) {
             $html = $this->devErrorPageRenderer->render(
@@ -103,6 +112,7 @@ class ErrorResponseBuilder
                 $status,
                 $errorId,
                 $throwable ?? new \RuntimeException('HTTP error', $status),
+                $context,
             );
 
             $response = $this->psr17Factory->createResponse($status);

@@ -5,6 +5,7 @@ namespace LPwork\Http\Error;
 
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Http\Error\Contract\DevErrorPageRendererInterface;
+use LPwork\Http\Error\ErrorContext;
 use LPwork\Http\Middleware\SessionMiddleware;
 use LPwork\Http\Session\Contract\SessionInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +24,11 @@ final class DevErrorPageRenderer implements DevErrorPageRendererInterface
     private ConfigRepositoryInterface $config;
 
     /**
+     * @var string|null
+     */
+    private ?string $envDetailsTemplate = null;
+
+    /**
      * @param ConfigRepositoryInterface $config
      */
     public function __construct(ConfigRepositoryInterface $config)
@@ -38,23 +44,35 @@ final class DevErrorPageRenderer implements DevErrorPageRendererInterface
         int $status,
         string $errorId,
         \Throwable $throwable,
+        ?ErrorContext $context = null,
     ): string {
         try {
-            $tables = $this->buildTables($request, $errorId);
+            $tables =
+                $context !== null
+                    ? $this->buildTablesFromContext($context)
+                    : $this->buildTables($request, $errorId);
+            $envTemplatePath = $this->envDetailsTemplate();
 
-            $handler = new class ($tables) extends PrettyPageHandler {
+            $handler = new class ($tables, $envTemplatePath) extends PrettyPageHandler {
                 /**
                  * @var array<string, array<string, mixed>>
                  */
                 private array $tables;
 
                 /**
-                 * @param array<string, array<string, mixed>> $tables
+                 * @var string
                  */
-                public function __construct(array $tables)
+                private string $envDetailsTemplate;
+
+                /**
+                 * @param array<string, array<string, mixed>> $tables
+                 * @param string                              $envDetailsTemplate
+                 */
+                public function __construct(array $tables, string $envDetailsTemplate)
                 {
                     parent::__construct();
                     $this->tables = $tables;
+                    $this->envDetailsTemplate = $envDetailsTemplate;
                 }
 
                 /**
@@ -112,7 +130,7 @@ final class DevErrorPageRenderer implements DevErrorPageRendererInterface
                         'panel_left' => $this->getResource('views/panel_left.html.php'),
                         'panel_left_outer' => $this->getResource('views/panel_left_outer.html.php'),
                         'frame_code' => $this->getResource('views/frame_code.html.php'),
-                        'env_details' => __DIR__ . '/templates/env_details.html.php',
+                        'env_details' => $this->envDetailsTemplate,
                         'title' => $this->getPageTitle(),
                         'name' => explode('\\', $inspector->getExceptionName()),
                         'message' => $inspector->getExceptionMessage(),
@@ -201,6 +219,24 @@ final class DevErrorPageRenderer implements DevErrorPageRendererInterface
     }
 
     /**
+     * @param ErrorContext $context
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function buildTablesFromContext(ErrorContext $context): array
+    {
+        $request = $context->request();
+        $request['error_id'] = $context->id();
+
+        return [
+            'APP' => $context->app(),
+            'REQUEST' => $request,
+            'SESSION' => $context->session(),
+            'ENV' => $context->env(),
+        ];
+    }
+
+    /**
      * @param SessionInterface|null $session
      *
      * @return array<string, mixed>
@@ -231,5 +267,59 @@ final class DevErrorPageRenderer implements DevErrorPageRendererInterface
         }
 
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    private function envDetailsTemplate(): string
+    {
+        if ($this->envDetailsTemplate !== null) {
+            return $this->envDetailsTemplate;
+        }
+
+        $template = <<<'PHP'
+        <?php
+        /** @var array<string, array<string, mixed>> $tables */
+        /** @var \Whoops\Util\TemplateHelper $tpl */
+        ?>
+        <div class="details">
+          <h2 class="details-heading">Environment &amp; details:</h2>
+
+          <div class="data-table-container" id="data-tables">
+            <?php foreach ($tables as $label => $data): ?>
+              <div class="data-table" id="sg-<?php echo $tpl->escape($tpl->slug($label)) ?>">
+                <?php if (!empty($data)): ?>
+                    <label><?php echo $tpl->escape($label) ?></label>
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <td class="data-table-k">Key</td>
+                          <td class="data-table-v">Value</td>
+                        </tr>
+                      </thead>
+                    <?php foreach ($data as $k => $value): ?>
+                      <tr>
+                        <td><?php echo $tpl->escape($k) ?></td>
+                        <td><?php echo $tpl->dump($value) ?></td>
+                      </tr>
+                    <?php endforeach ?>
+                    </table>
+                <?php else: ?>
+                    <label class="empty"><?php echo $tpl->escape($label) ?></label>
+                    <span class="empty">empty</span>
+                <?php endif ?>
+              </div>
+            <?php endforeach ?>
+          </div>
+        </div>
+        PHP;
+
+        $path = \sys_get_temp_dir() . '/lpwork_env_details.php';
+        \file_put_contents($path, $template);
+
+        $this->envDetailsTemplate = $path;
+
+        return $this->envDetailsTemplate;
     }
 }
