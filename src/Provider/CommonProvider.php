@@ -18,6 +18,9 @@ use LPwork\Cache\CacheFactory;
 use LPwork\Cache\CacheManager;
 use LPwork\Cache\DefaultCacheProvider;
 use LPwork\Cache\Contract\CacheProviderInterface;
+use LPwork\Translation\TranslationConfiguration;
+use LPwork\Translation\TranslatorFactory;
+use LPwork\Translation\TranslationProvider;
 use LPwork\Environment\Env;
 use LPwork\Filesystem\FilesystemManager;
 use LPwork\Http\Routing\RouteLoader;
@@ -61,6 +64,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Faker\Factory as FakerFactory;
+use Faker\Generator as FakerGenerator;
 
 /**
  * Registers services shared between HTTP and CLI runtimes.
@@ -88,6 +94,30 @@ class CommonProvider implements ProviderInterface
                 $cacheConfig = $configs["cache"] ?? [];
 
                 return new CacheConfiguration((array) $cacheConfig);
+            }),
+            TranslationConfiguration::class => \DI\factory(static function (
+                Env $env,
+                CacheConfiguration $cacheConfiguration,
+            ): TranslationConfiguration {
+                $translationCache = $cacheConfiguration->translations();
+                $translationConfig = [
+                    "locale" => $env->getString("APP_LOCALE", "en"),
+                    "fallback_locale" => $env->getString(
+                        "APP_FALLBACK_LOCALE",
+                        "en",
+                    ),
+                    "path" => \dirname(__DIR__, 2) . "/config/lang",
+                    "cache_enabled" =>
+                        (bool) ($translationCache["enabled"] ?? true),
+                    "cache_pool" => (string) (
+                        $translationCache["pool"] ?? "filesystem"
+                    ),
+                    "cache_prefix" => (string) (
+                        $translationCache["prefix"] ?? "translations:"
+                    ),
+                ];
+
+                return new TranslationConfiguration($translationConfig);
             }),
             ConfigRepositoryInterface::class => \DI\factory(static function (
                 Env $env,
@@ -241,6 +271,22 @@ class CommonProvider implements ProviderInterface
                 DefaultCacheProvider::class,
             ),
             CacheManager::class => \DI\autowire(CacheManager::class),
+            TranslatorFactory::class => \DI\autowire(TranslatorFactory::class),
+            TranslationProvider::class => \DI\autowire(
+                TranslationProvider::class,
+            ),
+            TranslatorInterface::class => \DI\factory(static function (
+                TranslationProvider $provider,
+            ): TranslatorInterface {
+                return $provider->createTranslator();
+            }),
+            FakerGenerator::class => \DI\factory(static function (
+                Env $env,
+            ): FakerGenerator {
+                $locale = $env->getString("APP_LOCALE", "en");
+
+                return FakerFactory::create($locale);
+            }),
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): FilesystemManager {

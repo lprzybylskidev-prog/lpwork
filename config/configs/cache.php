@@ -80,4 +80,15 @@ return [
         // Cache key for configuration repository payload.
         "key" => $env->getString("CONFIG_CACHE_KEY", "config:repository"),
     ],
+    "translations" => [
+        // Enable translation catalogue cache (true/false).
+        "enabled" => $env->getBool("TRANSLATION_CACHE_ENABLED", true),
+        // Cache pool name used for translation catalogues (optional).
+        "pool" => $env->getString("TRANSLATION_CACHE_POOL", "filesystem"),
+        // Cache key prefix for translation catalogue.
+        "prefix" => $env->getString(
+            "TRANSLATION_CACHE_PREFIX",
+            "translations:",
+        ),
+    ],
 ];

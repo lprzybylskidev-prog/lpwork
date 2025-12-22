@@ -31,6 +31,11 @@ final class CacheConfiguration
     private array $configCache;
 
     /**
+     * @var array<string, mixed>
+     */
+    private array $translations;
+
+    /**
      * @param array<string, mixed> $config
      */
     public function __construct(array $config)
@@ -39,6 +44,7 @@ final class CacheConfiguration
         $this->pools = (array) ($config["pools"] ?? []);
         $this->routing = (array) ($config["routing"] ?? []);
         $this->configCache = (array) ($config["config_cache"] ?? []);
+        $this->translations = (array) ($config["translations"] ?? []);
     }
 
     /**
@@ -79,6 +85,14 @@ final class CacheConfiguration
     public function configCache(): array
     {
         return $this->configCache;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function translations(): array
+    {
+        return $this->translations;
     }
 
     /**
