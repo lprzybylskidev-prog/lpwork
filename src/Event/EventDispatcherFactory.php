@@ -39,7 +39,7 @@ final class EventDispatcherFactory
         $dispatcher = new EventDispatcher();
 
         foreach ($provider->getListeners() as $event => $listeners) {
-            if (!\is_string($event) || $event === "") {
+            if (!\is_string($event)) {
                 continue;
             }
 
@@ -49,7 +49,7 @@ final class EventDispatcherFactory
         }
 
         foreach ($provider->getSubscribers() as $subscriberClass) {
-            if (!\is_string($subscriberClass) || $subscriberClass === "") {
+            if (!\is_string($subscriberClass)) {
                 continue;
             }
 

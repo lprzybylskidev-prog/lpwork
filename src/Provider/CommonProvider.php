@@ -86,6 +86,11 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Contracts\HttpClient\HttpClientInterface as SymfonyHttpClientInterface;
 
+if (!\interface_exists(\Psr\Http\Client\ClientInterface::class)) {
+    /** @psalm-suppress UnresolvableInclude */
+    require_once \dirname(__DIR__, 2) . "/stubs/psr-http-client.php";
+}
+
 /**
  * Registers services shared between HTTP and CLI runtimes.
  */
@@ -344,12 +349,12 @@ class CommonProvider implements ProviderInterface
             }),
             ClientInterface::class => \DI\factory(static function (
                 SymfonyHttpClientInterface $httpClient,
-                RequestFactoryInterface $requestFactory,
                 StreamFactoryInterface $streamFactory,
+                ResponseFactoryInterface $responseFactory,
             ): ClientInterface {
                 return new Psr18Client(
                     $httpClient,
-                    $requestFactory,
+                    $responseFactory,
                     $streamFactory,
                 );
             }),

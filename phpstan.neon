@@ -13,6 +13,8 @@ parameters:
             - public/*
             - bin/*
             - tests/*
+    bootstrapFiles:
+        - stubs/psr-http-client.php
 
     phpVersion: 80300
 
