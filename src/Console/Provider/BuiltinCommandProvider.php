@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace LPwork\Console\Provider;
 
 use LPwork\Console\Command\MigrateCommand;
-use LPwork\Console\Command\DatabaseConnectionsCommand;
 use LPwork\Console\Command\MigrateFreshCommand;
-use LPwork\Console\Command\RoutesListCommand;
 use LPwork\Console\Command\VersionCommand;
 use LPwork\Console\Command\CacheWarmCommand;
 use LPwork\Console\Command\CacheClearCommand;
@@ -40,9 +38,7 @@ class BuiltinCommandProvider implements CommandProviderInterface
     {
         return [
             $this->container->get(MigrateCommand::class),
-            $this->container->get(DatabaseConnectionsCommand::class),
             $this->container->get(MigrateFreshCommand::class),
-            $this->container->get(RoutesListCommand::class),
             $this->container->get(VersionCommand::class),
             $this->container->get(CacheWarmCommand::class),
             $this->container->get(CacheClearCommand::class),
