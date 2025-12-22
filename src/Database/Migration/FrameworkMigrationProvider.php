@@ -33,6 +33,8 @@ class FrameworkMigrationProvider implements MigrationProviderInterface
         $sessionDriver = $this->config->getString('session.driver', 'php');
         $errorLogDriver = $this->config->getString('error_log.driver', 'file');
         $errorLogConnection = $this->config->getString('error_log.database.connection', 'default');
+        $queueConfig = (array) $this->config->get('queue', []);
+        $queueDefinitions = (array) ($queueConfig['queues'] ?? []);
 
         if ($sessionDriver === 'database') {
             $paths[] = \dirname(__DIR__) . '/Migrations/Session';
@@ -44,6 +46,18 @@ class FrameworkMigrationProvider implements MigrationProviderInterface
 
         if ($errorLogDriver === 'database') {
             $migrations[$errorLogConnection][] = \dirname(__DIR__) . '/Migrations/Error';
+        }
+
+        foreach ($queueDefinitions as $queueDefinition) {
+            $queueDefinitionArray = (array) $queueDefinition;
+            $driver = (string) ($queueDefinitionArray['driver'] ?? 'redis');
+
+            if ($driver !== 'database') {
+                continue;
+            }
+
+            $connectionName = (string) ($queueDefinitionArray['connection'] ?? 'default');
+            $migrations[$connectionName][] = \dirname(__DIR__, 2) . '/Queue/Migrations/Queue';
         }
 
         return $migrations;

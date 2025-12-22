@@ -27,6 +27,12 @@ use LPwork\Http\Response\JsonResponseFactory;
 use LPwork\Http\Error\Contract\DevErrorPageRendererInterface;
 use LPwork\Http\Error\DevErrorPageRenderer;
 use LPwork\Http\Error\ErrorContextFactory;
+use LPwork\Queue\QueueConfiguration;
+use LPwork\Queue\QueueManager;
+use LPwork\Queue\Serializer\JsonJobSerializer;
+use LPwork\Queue\Contract\JobSerializerInterface;
+use LPwork\Queue\QueueDispatcher;
+use LPwork\Queue\QueueHandlerProviderInterface;
 use LPwork\Security\SecurityConfiguration;
 use LPwork\Security\Csrf\CsrfTokenProvider;
 use LPwork\Mail\MailConfiguration;
@@ -198,6 +204,15 @@ class CommonProvider implements ProviderInterface
 
                 return new PhpConfigRepository($configs);
             }),
+            QueueConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $configRepository,
+            ): QueueConfiguration {
+                /** @var array<string, mixed> $queueConfig */
+                $queueConfig = $configRepository->get('queue', []);
+
+                return new QueueConfiguration($queueConfig);
+            }),
+            JobSerializerInterface::class => \DI\autowire(JsonJobSerializer::class),
             HttpConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): HttpConfiguration {
@@ -290,6 +305,9 @@ class CommonProvider implements ProviderInterface
             }),
             CacheProviderInterface::class => \DI\autowire(DefaultCacheProvider::class),
             CacheManager::class => \DI\autowire(CacheManager::class),
+            QueueManager::class => \DI\autowire(QueueManager::class),
+            QueueDispatcher::class => \DI\autowire(QueueDispatcher::class),
+            QueueHandlerProviderInterface::class => \DI\get(\Config\QueueProvider::class),
             TranslatorFactory::class => \DI\autowire(TranslatorFactory::class),
             TranslationProvider::class => \DI\autowire(TranslationProvider::class),
             TranslatorInterface::class => \DI\factory(static function (

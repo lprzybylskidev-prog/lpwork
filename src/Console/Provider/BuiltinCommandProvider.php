@@ -9,6 +9,8 @@ use LPwork\Console\Command\VersionCommand;
 use LPwork\Console\Command\CacheWarmCommand;
 use LPwork\Console\Command\CacheClearCommand;
 use LPwork\Console\Command\DatabaseSeedCommand;
+use LPwork\Console\Command\QueueWorkCommand;
+use LPwork\Console\Command\QueueFlushCommand;
 use LPwork\Console\Contract\CommandProviderInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -43,6 +45,8 @@ class BuiltinCommandProvider implements CommandProviderInterface
             $this->container->get(CacheWarmCommand::class),
             $this->container->get(CacheClearCommand::class),
             $this->container->get(DatabaseSeedCommand::class),
+            $this->container->get(QueueWorkCommand::class),
+            $this->container->get(QueueFlushCommand::class),
         ];
     }
 }
