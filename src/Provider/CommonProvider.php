@@ -24,6 +24,9 @@ use LPwork\Event\EventBus;
 use LPwork\Event\EventDispatcherFactory;
 use LPwork\Http\HttpConfiguration;
 use LPwork\Http\Response\JsonResponseFactory;
+use LPwork\Mail\MailConfiguration;
+use LPwork\Mail\MailerFactory;
+use LPwork\Mail\MailManager;
 use LPwork\Translation\TranslationConfiguration;
 use LPwork\Translation\TranslatorFactory;
 use LPwork\Translation\TranslationProvider;
@@ -87,6 +90,7 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Contracts\HttpClient\HttpClientInterface as SymfonyHttpClientInterface;
+use Symfony\Component\Mailer\MailerInterface;
 
 if (!\interface_exists(\Psr\Http\Client\ClientInterface::class)) {
     /** @psalm-suppress UnresolvableInclude */
@@ -189,6 +193,13 @@ class CommonProvider implements ProviderInterface
                 $httpConfig = $config->get('http', []);
 
                 return new HttpConfiguration((array) $httpConfig);
+            }),
+            MailConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): MailConfiguration {
+                $mailConfig = $config->get('mail', []);
+
+                return new MailConfiguration((array) $mailConfig);
             }),
             TimezoneContext::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
@@ -327,6 +338,13 @@ class CommonProvider implements ProviderInterface
             EventDispatcherInterface::class => \DI\get(EventDispatcher::class),
             ListenerProviderInterface::class => \DI\get(EventDispatcher::class),
             EventBusInterface::class => \DI\autowire(EventBus::class),
+            MailerFactory::class => \DI\autowire(MailerFactory::class),
+            MailManager::class => \DI\autowire(MailManager::class),
+            MailerInterface::class => \DI\factory(static function (
+                MailManager $manager,
+            ): MailerInterface {
+                return $manager->default();
+            }),
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): FilesystemManager {
