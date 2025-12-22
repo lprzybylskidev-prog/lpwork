@@ -67,6 +67,13 @@ use LPwork\Version\FrameworkVersion;
 use Psr\Log\LoggerInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
+use Psr\Http\Message\UriFactoryInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Symfony\Component\Cache\Psr16Cache;
@@ -74,6 +81,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\Psr18Client;
+use Symfony\Contracts\HttpClient\HttpClientInterface as SymfonyHttpClientInterface;
 
 /**
  * Registers services shared between HTTP and CLI runtimes.
@@ -293,6 +304,54 @@ class CommonProvider implements ProviderInterface
                 $locale = $env->getString("APP_LOCALE", "en");
 
                 return FakerFactory::create($locale);
+            }),
+            Psr17Factory::class => \DI\factory(static fn(): Psr17Factory => new Psr17Factory()),
+            RequestFactoryInterface::class => \DI\get(Psr17Factory::class),
+            ResponseFactoryInterface::class => \DI\get(Psr17Factory::class),
+            StreamFactoryInterface::class => \DI\get(Psr17Factory::class),
+            UriFactoryInterface::class => \DI\get(Psr17Factory::class),
+            UploadedFileFactoryInterface::class => \DI\get(Psr17Factory::class),
+            ServerRequestFactoryInterface::class => \DI\get(
+                Psr17Factory::class,
+            ),
+            SymfonyHttpClientInterface::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): SymfonyHttpClientInterface {
+                /** @var array<string, mixed> $httpClient */
+                $httpClient = (array) $config->get("app.http_client", []);
+                $baseUri = \trim((string) ($httpClient["base_uri"] ?? ""));
+                $timeout = (float) ($httpClient["timeout"] ?? 30.0);
+                $maxRedirects = (int) ($httpClient["max_redirects"] ?? 10);
+                $verify = (bool) ($httpClient["verify"] ?? true);
+                $headers = (array) ($httpClient["headers"] ?? []);
+
+                $options = [
+                    "timeout" => $timeout,
+                    "max_redirects" => $maxRedirects,
+                    "verify_peer" => $verify,
+                    "verify_host" => $verify,
+                ];
+
+                if ($baseUri !== "") {
+                    $options["base_uri"] = $baseUri;
+                }
+
+                if ($headers !== []) {
+                    $options["headers"] = $headers;
+                }
+
+                return HttpClient::create($options);
+            }),
+            ClientInterface::class => \DI\factory(static function (
+                SymfonyHttpClientInterface $httpClient,
+                RequestFactoryInterface $requestFactory,
+                StreamFactoryInterface $streamFactory,
+            ): ClientInterface {
+                return new Psr18Client(
+                    $httpClient,
+                    $requestFactory,
+                    $streamFactory,
+                );
             }),
             EventDispatcherFactory::class => \DI\autowire(
                 EventDispatcherFactory::class,

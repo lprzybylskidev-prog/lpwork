@@ -21,6 +21,7 @@ return [
      * locale: default language/locale identifier.
      * scheme: base scheme for URL generation (http/https).
      * url: full base URL including host and port.
+     * http_client: default PSR-18 client options used by the framework/app.
      */
     // Application name used across logging and diagnostics.
     "name" => $env->getString("APP_NAME", "LPwork"),
@@ -36,4 +37,20 @@ return [
     "scheme" => $env->getString("APP_SCHEME", "http"),
     // Base URL including host and port.
     "url" => $env->getString("APP_URL", "http://localhost:8080"),
+    // Default HTTP client options (PSR-18 via Symfony HttpClient).
+    "http_client" => [
+        // Base URI for outgoing requests; empty to disable.
+        "base_uri" => $env->getString(
+            "HTTP_CLIENT_BASE_URI",
+            $env->getString("APP_URL", "http://localhost:8080"),
+        ),
+        // Timeout in seconds for HTTP requests.
+        "timeout" => $env->getFloat("HTTP_CLIENT_TIMEOUT", 30.0),
+        // Maximum number of redirects to follow.
+        "max_redirects" => $env->getInt("HTTP_CLIENT_MAX_REDIRECTS", 10),
+        // TLS verification toggle (peer/host).
+        "verify" => $env->getBool("HTTP_CLIENT_VERIFY", true),
+        // Default headers appended to each request.
+        "headers" => [],
+    ],
 ];
