@@ -24,6 +24,8 @@ use LPwork\Event\EventBus;
 use LPwork\Event\EventDispatcherFactory;
 use LPwork\Http\HttpConfiguration;
 use LPwork\Http\Response\JsonResponseFactory;
+use LPwork\Http\Error\Contract\DevErrorPageRendererInterface;
+use LPwork\Http\Error\DevErrorPageRenderer;
 use LPwork\Security\SecurityConfiguration;
 use LPwork\Security\Csrf\CsrfTokenProvider;
 use LPwork\Mail\MailConfiguration;
@@ -360,6 +362,7 @@ class CommonProvider implements ProviderInterface
             ): MailerInterface {
                 return $manager->default();
             }),
+            DevErrorPageRendererInterface::class => \DI\autowire(DevErrorPageRenderer::class),
             CsrfTokenManagerInterface::class => \DI\factory(static function (
                 SecurityConfiguration $config,
                 SessionManager $sessionManager,

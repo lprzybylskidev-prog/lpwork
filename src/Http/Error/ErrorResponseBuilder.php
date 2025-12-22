@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace LPwork\Http\Error;
 
 use LPwork\Config\Contract\ConfigRepositoryInterface;
+use LPwork\Http\Error\Contract\DevErrorPageRendererInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run;
 
 /**
  * Builds error responses for API and HTML contexts.
@@ -26,13 +25,23 @@ class ErrorResponseBuilder
     private Psr17Factory $psr17Factory;
 
     /**
+     * @var DevErrorPageRendererInterface
+     */
+    private DevErrorPageRendererInterface $devErrorPageRenderer;
+
+    /**
      * @param ConfigRepositoryInterface $config
      * @param Psr17Factory              $psr17Factory
+     * @param DevErrorPageRendererInterface $devErrorPageRenderer
      */
-    public function __construct(ConfigRepositoryInterface $config, Psr17Factory $psr17Factory)
-    {
+    public function __construct(
+        ConfigRepositoryInterface $config,
+        Psr17Factory $psr17Factory,
+        DevErrorPageRendererInterface $devErrorPageRenderer,
+    ) {
         $this->config = $config;
         $this->psr17Factory = $psr17Factory;
+        $this->devErrorPageRenderer = $devErrorPageRenderer;
     }
 
     /**
@@ -89,10 +98,10 @@ class ErrorResponseBuilder
         ?\Throwable $throwable = null,
     ): ResponseInterface {
         if ($this->isDev()) {
-            $whoops = new Run();
-            $whoops->pushHandler(new PrettyPageHandler());
-
-            $html = $whoops->handleException(
+            $html = $this->devErrorPageRenderer->render(
+                $request,
+                $status,
+                $errorId,
                 $throwable ?? new \RuntimeException('HTTP error', $status),
             );
 
