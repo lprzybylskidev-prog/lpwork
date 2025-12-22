@@ -10,6 +10,7 @@ use LPwork\Console\Command\RoutesListCommand;
 use LPwork\Console\Command\VersionCommand;
 use LPwork\Console\Command\CacheWarmCommand;
 use LPwork\Console\Command\CacheClearCommand;
+use LPwork\Console\Command\DatabaseSeedCommand;
 use LPwork\Console\Contract\CommandProviderInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -45,6 +46,7 @@ class BuiltinCommandProvider implements CommandProviderInterface
             $this->container->get(VersionCommand::class),
             $this->container->get(CacheWarmCommand::class),
             $this->container->get(CacheClearCommand::class),
+            $this->container->get(DatabaseSeedCommand::class),
         ];
     }
 }

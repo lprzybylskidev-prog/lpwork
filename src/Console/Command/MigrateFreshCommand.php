@@ -102,8 +102,24 @@ class MigrateFreshCommand extends Command
                 $this->renderExecutedMigrations($output, $name, $executed);
 
                 if ($input->getOption("seed")) {
-                    $this->seederRunner->seed($name);
-                    $output->writeln("<info>Seeders executed.</info>");
+                    $count = $this->seederRunner->seed($name);
+
+                    if ($count === 0) {
+                        $output->writeln(
+                            \sprintf(
+                                '<comment>No seeders registered for "%s".</comment>',
+                                $name,
+                            ),
+                        );
+                    } else {
+                        $output->writeln(
+                            \sprintf(
+                                '<info>Seeders executed for "%s" (count: %d).</info>',
+                                $name,
+                                $count,
+                            ),
+                        );
+                    }
                 }
             }
 
@@ -114,8 +130,24 @@ class MigrateFreshCommand extends Command
         $this->renderExecutedMigrations($output, $connection, $executed);
 
         if ($input->getOption("seed")) {
-            $this->seederRunner->seed($connection);
-            $output->writeln("<info>Seeders executed.</info>");
+            $count = $this->seederRunner->seed($connection);
+
+            if ($count === 0) {
+                $output->writeln(
+                    \sprintf(
+                        '<comment>No seeders registered for "%s".</comment>',
+                        $connection,
+                    ),
+                );
+            } else {
+                $output->writeln(
+                    \sprintf(
+                        '<info>Seeders executed for "%s" (count: %d).</info>',
+                        $connection,
+                        $count,
+                    ),
+                );
+            }
         }
 
         return Command::SUCCESS;

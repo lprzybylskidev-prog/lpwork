@@ -46,11 +46,15 @@ class SeederRunner
      *
      * @param string $connectionName
      *
-     * @return void
+     * @return int Number of executed seeders.
      */
-    public function seed(string $connectionName): void
+    public function seed(string $connectionName): int
     {
         $seeders = $this->collectSeeders($connectionName);
+
+        if ($seeders === []) {
+            return 0;
+        }
 
         /** @var \Doctrine\DBAL\Connection $connection */
         $connection = $this->connectionManager
@@ -60,6 +64,8 @@ class SeederRunner
         foreach ($seeders as $seeder) {
             $seeder->run();
         }
+
+        return \count($seeders);
     }
 
     /**
