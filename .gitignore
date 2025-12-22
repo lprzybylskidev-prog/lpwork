@@ -10,6 +10,15 @@
 !/storage/errors/
 /storage/errors/*
 !/storage/errors/.gitkeep
+!/storage/cache/
+/storage/cache/*
+!/storage/cache/.gitkeep
+!/storage/logs/
+/storage/logs/*
+!/storage/logs/.gitkeep
+!/storage/sessions/
+/storage/sessions/*
+!/storage/sessions/.gitkeep
 
 /app/*
 !/app/.gitkeep
