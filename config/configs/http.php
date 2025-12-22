@@ -9,7 +9,6 @@ return [
     /**
      * HTTP runtime settings.
      * body_parsing: options for request body parsing middleware.
-     * cors: Cross-Origin Resource Sharing policy.
      */
     'body_parsing' => [
         // Enable body parsing middleware (true/false).
@@ -32,25 +31,5 @@ return [
             // Decode JSON objects as associative arrays (true) or stdClass (false).
             'assoc' => $env->getBool('HTTP_BODY_JSON_ASSOC', false),
         ],
-    ],
-    'cors' => [
-        // Enable CORS middleware (true/false).
-        'enabled' => $env->getBool('HTTP_CORS_ENABLED', false),
-        // Allowed origins (use "*" to allow all).
-        'allow_origin' => [$env->getString('HTTP_CORS_ALLOW_ORIGIN', '*')],
-        // Allowed HTTP methods.
-        'allow_methods' => [
-            $env->getString('HTTP_CORS_ALLOW_METHODS', 'GET,POST,PUT,PATCH,DELETE,OPTIONS'),
-        ],
-        // Allowed headers sent by the client.
-        'allow_headers' => [
-            $env->getString('HTTP_CORS_ALLOW_HEADERS', 'Content-Type,Authorization'),
-        ],
-        // Headers exposed to the client.
-        'expose_headers' => [$env->getString('HTTP_CORS_EXPOSE_HEADERS', '')],
-        // Whether to allow credentials.
-        'allow_credentials' => $env->getBool('HTTP_CORS_ALLOW_CREDENTIALS', false),
-        // Max age for preflight responses (seconds).
-        'max_age' => $env->getInt('HTTP_CORS_MAX_AGE', 600),
     ],
 ];

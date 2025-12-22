@@ -24,6 +24,8 @@ use LPwork\Event\EventBus;
 use LPwork\Event\EventDispatcherFactory;
 use LPwork\Http\HttpConfiguration;
 use LPwork\Http\Response\JsonResponseFactory;
+use LPwork\Security\SecurityConfiguration;
+use LPwork\Security\Csrf\CsrfTokenProvider;
 use LPwork\Mail\MailConfiguration;
 use LPwork\Mail\MailerFactory;
 use LPwork\Mail\MailManager;
@@ -91,6 +93,12 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Psr18Client;
 use Symfony\Contracts\HttpClient\HttpClientInterface as SymfonyHttpClientInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 if (!\interface_exists(\Psr\Http\Client\ClientInterface::class)) {
     /** @psalm-suppress UnresolvableInclude */
@@ -200,6 +208,13 @@ class CommonProvider implements ProviderInterface
                 $mailConfig = $config->get('mail', []);
 
                 return new MailConfiguration((array) $mailConfig);
+            }),
+            SecurityConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): SecurityConfiguration {
+                $securityConfig = $config->get('security', []);
+
+                return new SecurityConfiguration((array) $securityConfig);
             }),
             TimezoneContext::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
@@ -344,6 +359,28 @@ class CommonProvider implements ProviderInterface
                 MailManager $manager,
             ): MailerInterface {
                 return $manager->default();
+            }),
+            CsrfTokenManagerInterface::class => \DI\factory(static function (
+                SecurityConfiguration $config,
+                SessionManager $sessionManager,
+            ): CsrfTokenManagerInterface {
+                $session = $sessionManager->current();
+                $storage = new \LPwork\Security\Csrf\CsrfTokenSessionStorage($session);
+
+                return new CsrfTokenManager(null, $storage);
+            }),
+            CsrfTokenProvider::class => \DI\autowire(CsrfTokenProvider::class),
+            PasswordHasherFactoryInterface::class => \DI\factory(
+                static function (): PasswordHasherFactoryInterface {
+                    return new PasswordHasherFactory([
+                        'default' => ['algorithm' => 'auto'],
+                    ]);
+                },
+            ),
+            UserPasswordHasherInterface::class => \DI\factory(static function (
+                PasswordHasherFactoryInterface $factory,
+            ): UserPasswordHasherInterface {
+                return new UserPasswordHasher($factory);
             }),
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,

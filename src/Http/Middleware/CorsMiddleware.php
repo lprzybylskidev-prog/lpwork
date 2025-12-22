@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Middleware;
 
-use LPwork\Http\HttpConfiguration;
 use LPwork\Http\Response\JsonResponseFactory;
+use LPwork\Security\SecurityConfiguration;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -16,9 +16,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 class CorsMiddleware implements MiddlewareInterface
 {
     /**
-     * @var HttpConfiguration
+     * @var SecurityConfiguration
      */
-    private HttpConfiguration $config;
+    private SecurityConfiguration $config;
 
     /**
      * @var JsonResponseFactory
@@ -26,11 +26,13 @@ class CorsMiddleware implements MiddlewareInterface
     private JsonResponseFactory $jsonResponseFactory;
 
     /**
-     * @param HttpConfiguration   $config
-     * @param JsonResponseFactory $jsonResponseFactory
+     * @param SecurityConfiguration $config
+     * @param JsonResponseFactory   $jsonResponseFactory
      */
-    public function __construct(HttpConfiguration $config, JsonResponseFactory $jsonResponseFactory)
-    {
+    public function __construct(
+        SecurityConfiguration $config,
+        JsonResponseFactory $jsonResponseFactory,
+    ) {
         $this->config = $config;
         $this->jsonResponseFactory = $jsonResponseFactory;
     }

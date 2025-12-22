@@ -8,9 +8,11 @@ use LPwork\Http\Middleware\MiddlewareProvider as BuiltinMiddlewareProvider;
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
 use LPwork\Http\Middleware\BodyParsingMiddleware;
 use LPwork\Http\Middleware\CorsMiddleware;
+use LPwork\Http\Middleware\CsrfMiddleware;
 use LPwork\Http\Middleware\ErrorHandlingMiddleware;
 use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
+use LPwork\Http\Middleware\SecurityHeadersMiddleware;
 use LPwork\Http\Routing\FastRouteDispatcherFactory;
 use LPwork\Http\Routing\RouteLoader;
 use LPwork\Http\Url\Contract\UrlGeneratorInterface;
@@ -86,7 +88,9 @@ class HttpProvider implements ProviderInterface
             }),
             ErrorHandlingMiddleware::class => \DI\autowire(ErrorHandlingMiddleware::class),
             CorsMiddleware::class => \DI\autowire(CorsMiddleware::class),
+            SecurityHeadersMiddleware::class => \DI\autowire(SecurityHeadersMiddleware::class),
             BodyParsingMiddleware::class => \DI\autowire(BodyParsingMiddleware::class),
+            CsrfMiddleware::class => \DI\autowire(CsrfMiddleware::class),
             RouteMatchMiddleware::class => \DI\autowire(RouteMatchMiddleware::class),
             RouteDispatchMiddleware::class => \DI\autowire(RouteDispatchMiddleware::class),
             Psr17Factory::class => \DI\create(Psr17Factory::class),
