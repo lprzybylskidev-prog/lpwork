@@ -22,6 +22,8 @@ use LPwork\Event\Contract\EventBusInterface;
 use LPwork\Event\Contract\EventProviderInterface;
 use LPwork\Event\EventBus;
 use LPwork\Event\EventDispatcherFactory;
+use LPwork\Http\HttpConfiguration;
+use LPwork\Http\Response\JsonResponseFactory;
 use LPwork\Translation\TranslationConfiguration;
 use LPwork\Translation\TranslatorFactory;
 use LPwork\Translation\TranslationProvider;
@@ -181,6 +183,13 @@ class CommonProvider implements ProviderInterface
 
                 return new PhpConfigRepository($configs);
             }),
+            HttpConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): HttpConfiguration {
+                $httpConfig = $config->get('http', []);
+
+                return new HttpConfiguration((array) $httpConfig);
+            }),
             TimezoneContext::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): TimezoneContext {
@@ -271,6 +280,7 @@ class CommonProvider implements ProviderInterface
             UriFactoryInterface::class => \DI\get(Psr17Factory::class),
             UploadedFileFactoryInterface::class => \DI\get(Psr17Factory::class),
             ServerRequestFactoryInterface::class => \DI\get(Psr17Factory::class),
+            JsonResponseFactory::class => \DI\autowire(JsonResponseFactory::class),
             SymfonyHttpClientInterface::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): SymfonyHttpClientInterface {

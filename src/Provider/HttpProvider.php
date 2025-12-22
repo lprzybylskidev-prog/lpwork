@@ -6,11 +6,15 @@ namespace LPwork\Provider;
 use DI\ContainerBuilder;
 use LPwork\Http\Middleware\MiddlewareProvider as BuiltinMiddlewareProvider;
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
+use LPwork\Http\Middleware\BodyParsingMiddleware;
+use LPwork\Http\Middleware\CorsMiddleware;
 use LPwork\Http\Middleware\ErrorHandlingMiddleware;
 use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
 use LPwork\Http\Routing\FastRouteDispatcherFactory;
 use LPwork\Http\Routing\RouteLoader;
+use LPwork\Http\Url\Contract\UrlGeneratorInterface;
+use LPwork\Http\Url\UrlGenerator;
 use LPwork\Kernel\HttpKernel;
 use LPwork\Provider\Contract\ProviderInterface;
 use LPwork\Cache\CacheConfiguration;
@@ -81,6 +85,8 @@ class HttpProvider implements ProviderInterface
                 return $factory->create($routes);
             }),
             ErrorHandlingMiddleware::class => \DI\autowire(ErrorHandlingMiddleware::class),
+            CorsMiddleware::class => \DI\autowire(CorsMiddleware::class),
+            BodyParsingMiddleware::class => \DI\autowire(BodyParsingMiddleware::class),
             RouteMatchMiddleware::class => \DI\autowire(RouteMatchMiddleware::class),
             RouteDispatchMiddleware::class => \DI\autowire(RouteDispatchMiddleware::class),
             Psr17Factory::class => \DI\create(Psr17Factory::class),
@@ -94,6 +100,8 @@ class HttpProvider implements ProviderInterface
                     $psr17Factory,
                 );
             }),
+            UrlGenerator::class => \DI\autowire(UrlGenerator::class),
+            UrlGeneratorInterface::class => \DI\get(UrlGenerator::class),
         ]);
     }
 }

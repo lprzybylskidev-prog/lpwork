@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace LPwork\Http\Middleware;
 
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
+use LPwork\Http\Middleware\BodyParsingMiddleware;
+use LPwork\Http\Middleware\CorsMiddleware;
 use LPwork\Http\Middleware\ErrorHandlingMiddleware;
 use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
@@ -36,7 +38,9 @@ class MiddlewareProvider implements MiddlewareProviderInterface
     {
         return [
             $this->container->get(ErrorHandlingMiddleware::class),
+            $this->container->get(CorsMiddleware::class),
             $this->container->get(SessionMiddleware::class),
+            $this->container->get(BodyParsingMiddleware::class),
             $this->container->get(RouteMatchMiddleware::class),
             $this->container->get(RouteDispatchMiddleware::class),
         ];
