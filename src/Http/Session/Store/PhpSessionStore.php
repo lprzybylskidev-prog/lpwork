@@ -49,17 +49,17 @@ class PhpSessionStore implements SessionStoreInterface
 
         $this->configureSession($cookieParameters, $lifetime);
 
-        if ($id !== null && $id !== "") {
+        if ($id !== null && $id !== '') {
             \session_id($id);
         }
 
         $started = \session_start([
-            "cookie_lifetime" => $lifetime,
-            "gc_maxlifetime" => $lifetime,
+            'cookie_lifetime' => $lifetime,
+            'gc_maxlifetime' => $lifetime,
         ]);
 
         if ($started === false) {
-            throw new SessionStorageException("Failed to start PHP session.");
+            throw new SessionStorageException('Failed to start PHP session.');
         }
 
         $data = $_SESSION;
@@ -89,16 +89,16 @@ class PhpSessionStore implements SessionStoreInterface
                 \session_id($state->id());
                 $this->configureSession($cookieParameters, $lifetime);
                 \session_start([
-                    "cookie_lifetime" => $lifetime,
-                    "gc_maxlifetime" => $lifetime,
+                    'cookie_lifetime' => $lifetime,
+                    'gc_maxlifetime' => $lifetime,
                 ]);
             }
         } else {
             $this->configureSession($cookieParameters, $lifetime);
             \session_id($state->id());
             \session_start([
-                "cookie_lifetime" => $lifetime,
-                "gc_maxlifetime" => $lifetime,
+                'cookie_lifetime' => $lifetime,
+                'gc_maxlifetime' => $lifetime,
             ]);
         }
 
@@ -152,12 +152,12 @@ class PhpSessionStore implements SessionStoreInterface
         }
 
         \session_set_cookie_params([
-            "lifetime" => $lifetime,
-            "path" => $cookieParameters->path(),
-            "domain" => $cookieParameters->domain(),
-            "secure" => $cookieParameters->secure(),
-            "httponly" => $cookieParameters->httpOnly(),
-            "samesite" => \ucfirst(\strtolower($cookieParameters->sameSite())),
+            'lifetime' => $lifetime,
+            'path' => $cookieParameters->path(),
+            'domain' => $cookieParameters->domain(),
+            'secure' => $cookieParameters->secure(),
+            'httponly' => $cookieParameters->httpOnly(),
+            'samesite' => \ucfirst(\strtolower($cookieParameters->sameSite())),
         ]);
     }
 }

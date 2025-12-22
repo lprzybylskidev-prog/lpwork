@@ -35,10 +35,10 @@ final class SessionConfiguration
      */
     public function __construct(array $config)
     {
-        $this->driver = (string) ($config["driver"] ?? "php");
-        $this->lifetime = (int) ($config["lifetime"] ?? 7200);
-        $this->cookie = (array) ($config["cookie"] ?? []);
-        $this->drivers = (array) ($config["drivers"] ?? []);
+        $this->driver = (string) ($config['driver'] ?? 'php');
+        $this->lifetime = (int) ($config['lifetime'] ?? 7200);
+        $this->cookie = (array) ($config['cookie'] ?? []);
+        $this->drivers = (array) ($config['drivers'] ?? []);
     }
 
     /**

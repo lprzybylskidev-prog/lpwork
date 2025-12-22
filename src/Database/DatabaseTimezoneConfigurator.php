@@ -47,39 +47,26 @@ final class DatabaseTimezoneConfigurator
         }
 
         if ($this->isMysql($driver)) {
-            $this->applyTimezone(
-                $connection,
-                "SET time_zone = ?",
-                $timezoneContext->name(),
-            );
+            $this->applyTimezone($connection, 'SET time_zone = ?', $timezoneContext->name());
 
             return;
         }
 
         if ($this->isPostgres($driver)) {
-            $this->applyTimezone(
-                $connection,
-                "SET TIME ZONE ?",
-                $timezoneContext->name(),
-            );
+            $this->applyTimezone($connection, 'SET TIME ZONE ?', $timezoneContext->name());
 
             return;
         }
 
         if ($this->isSqlServer($driver)) {
-            $offset = CarbonImmutable::now(
-                $timezoneContext->timezone(),
-            )->format("P");
-            $this->applyTimezone($connection, "SET TIME ZONE ?", $offset);
+            $offset = CarbonImmutable::now($timezoneContext->timezone())->format('P');
+            $this->applyTimezone($connection, 'SET TIME ZONE ?', $offset);
 
             return;
         }
 
         throw new DatabaseTimezoneConfigurationException(
-            \sprintf(
-                'Driver "%s" does not support timezone configuration.',
-                $driver,
-            ),
+            \sprintf('Driver "%s" does not support timezone configuration.', $driver),
         );
     }
 
@@ -90,19 +77,13 @@ final class DatabaseTimezoneConfigurator
      *
      * @return void
      */
-    private function applyTimezone(
-        Connection $connection,
-        string $statement,
-        string $value,
-    ): void {
+    private function applyTimezone(Connection $connection, string $statement, string $value): void
+    {
         try {
             $connection->executeStatement($statement, [$value]);
         } catch (\Throwable $exception) {
             throw new DatabaseTimezoneConfigurationException(
-                \sprintf(
-                    'Failed to apply timezone "%s" to database connection.',
-                    $value,
-                ),
+                \sprintf('Failed to apply timezone "%s" to database connection.', $value),
                 0,
                 $exception,
             );
@@ -116,7 +97,7 @@ final class DatabaseTimezoneConfigurator
      */
     private function isMysql(string $driver): bool
     {
-        return \str_contains($driver, "mysql");
+        return \str_contains($driver, 'mysql');
     }
 
     /**
@@ -126,7 +107,7 @@ final class DatabaseTimezoneConfigurator
      */
     private function isPostgres(string $driver): bool
     {
-        return \str_contains($driver, "pgsql");
+        return \str_contains($driver, 'pgsql');
     }
 
     /**
@@ -136,7 +117,7 @@ final class DatabaseTimezoneConfigurator
      */
     private function isSqlite(string $driver): bool
     {
-        return \str_contains($driver, "sqlite");
+        return \str_contains($driver, 'sqlite');
     }
 
     /**
@@ -146,8 +127,7 @@ final class DatabaseTimezoneConfigurator
      */
     private function isSqlServer(string $driver): bool
     {
-        return \str_contains($driver, "sqlsrv") ||
-            \str_contains($driver, "mssql");
+        return \str_contains($driver, 'sqlsrv') || \str_contains($driver, 'mssql');
     }
 
     /**
@@ -157,7 +137,7 @@ final class DatabaseTimezoneConfigurator
      */
     private function resolveTimezone(?string $timezoneOverride): TimezoneContext
     {
-        if ($timezoneOverride === null || \trim($timezoneOverride) === "") {
+        if ($timezoneOverride === null || \trim($timezoneOverride) === '') {
             return $this->timezone;
         }
 

@@ -35,32 +35,26 @@ class RouteMatchMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
-        $result = $this->dispatcher->dispatch(
-            $request->getMethod(),
-            $request->getUri()->getPath(),
-        );
+        $result = $this->dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
 
         switch ($result[0]) {
             case Dispatcher::NOT_FOUND:
-                return new Response(404, [], "Not Found");
+                return new Response(404, [], 'Not Found');
             case Dispatcher::METHOD_NOT_ALLOWED:
-                return new Response(405, [], "Method Not Allowed");
+                return new Response(405, [], 'Method Not Allowed');
             case Dispatcher::FOUND:
                 $routeInfo = $result[1];
                 $params = $result[2];
 
                 $request = $request
-                    ->withAttribute("route_handler", $routeInfo["handler"])
-                    ->withAttribute("route_name", $routeInfo["name"])
-                    ->withAttribute(
-                        "route_middleware",
-                        $routeInfo["middleware"],
-                    )
-                    ->withAttribute("route_params", $params);
+                    ->withAttribute('route_handler', $routeInfo['handler'])
+                    ->withAttribute('route_name', $routeInfo['name'])
+                    ->withAttribute('route_middleware', $routeInfo['middleware'])
+                    ->withAttribute('route_params', $params);
 
                 return $handler->handle($request);
         }
 
-        return new Response(500, [], "Routing error");
+        return new Response(500, [], 'Routing error');
     }
 }

@@ -33,7 +33,7 @@ class FilesystemManager
      * @param array<string, array<string, mixed>> $disks
      * @param string                              $default
      */
-    public function __construct(array $disks, string $default = "local")
+    public function __construct(array $disks, string $default = 'local')
     {
         $this->disks = $disks;
         $this->default = $default;
@@ -76,15 +76,13 @@ class FilesystemManager
      */
     private function createAdapter(array $config): FilesystemAdapter
     {
-        $driver = $config["driver"] ?? "local";
+        $driver = $config['driver'] ?? 'local';
 
-        if ($driver === "local") {
-            $root = $config["root"] ?? null;
+        if ($driver === 'local') {
+            $root = $config['root'] ?? null;
 
-            if ($root === null || $root === "") {
-                throw new FilesystemNotFoundException(
-                    "Local filesystem root is not configured.",
-                );
+            if ($root === null || $root === '') {
+                throw new FilesystemNotFoundException('Local filesystem root is not configured.');
             }
 
             $normalizedRoot = $this->normalizeRoot($root);
@@ -110,7 +108,7 @@ class FilesystemManager
             return $root;
         }
 
-        return \dirname(__DIR__, 2) . "/" . \ltrim($root, "/");
+        return \dirname(__DIR__, 2) . '/' . \ltrim($root, '/');
     }
 
     /**
@@ -120,10 +118,10 @@ class FilesystemManager
      */
     private function isAbsolutePath(string $path): bool
     {
-        if (\str_starts_with($path, "/")) {
+        if (\str_starts_with($path, '/')) {
             return true;
         }
 
-        return (bool) \preg_match("/^[A-Za-z]:\\\\/", $path);
+        return (bool) \preg_match('/^[A-Za-z]:\\\\/', $path);
     }
 }

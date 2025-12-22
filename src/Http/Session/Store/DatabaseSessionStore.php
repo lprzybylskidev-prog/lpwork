@@ -84,7 +84,7 @@ class DatabaseSessionStore implements SessionStoreInterface
             return new SessionState($sessionId, [], $nowTimestamp);
         }
 
-        $expiresAt = (int) $record["expires_at"];
+        $expiresAt = (int) $record['expires_at'];
 
         if ($expiresAt > 0 && $expiresAt < $nowTimestamp) {
             $this->destroy($sessionId);
@@ -92,7 +92,7 @@ class DatabaseSessionStore implements SessionStoreInterface
             return new SessionState($sessionId, [], $nowTimestamp);
         }
 
-        $payload = \json_decode((string) $record["payload"], true);
+        $payload = \json_decode((string) $record['payload'], true);
 
         if (!\is_array($payload)) {
             $this->destroy($sessionId);
@@ -100,8 +100,8 @@ class DatabaseSessionStore implements SessionStoreInterface
             return new SessionState($sessionId, [], $nowTimestamp);
         }
 
-        $data = (array) ($payload["data"] ?? []);
-        $lastActivity = (int) ($payload["last_activity"] ?? $nowTimestamp);
+        $data = (array) ($payload['data'] ?? []);
+        $lastActivity = (int) ($payload['last_activity'] ?? $nowTimestamp);
 
         return new SessionState($sessionId, $data, $lastActivity);
     }
@@ -117,25 +117,23 @@ class DatabaseSessionStore implements SessionStoreInterface
         $this->assertDefaultConnection();
 
         $payload = \json_encode([
-            "data" => $state->all(),
-            "last_activity" => $state->lastActivity(),
+            'data' => $state->all(),
+            'last_activity' => $state->lastActivity(),
         ]);
 
         if ($payload === false) {
-            throw new SessionStorageException(
-                "Failed to encode session payload for database.",
-            );
+            throw new SessionStorageException('Failed to encode session payload for database.');
         }
 
         $connection = $this->connection();
         $expiresAt = $this->now()->addSeconds($lifetime)->getTimestamp();
 
-        $connection->delete($this->table, ["id" => $state->id()]);
+        $connection->delete($this->table, ['id' => $state->id()]);
         $connection->insert($this->table, [
-            "id" => $state->id(),
-            "payload" => $payload,
-            "last_activity" => $state->lastActivity(),
-            "expires_at" => $expiresAt,
+            'id' => $state->id(),
+            'payload' => $payload,
+            'last_activity' => $state->lastActivity(),
+            'expires_at' => $expiresAt,
         ]);
     }
 
@@ -144,7 +142,7 @@ class DatabaseSessionStore implements SessionStoreInterface
      */
     public function destroy(string $id): void
     {
-        $this->connection()->delete($this->table, ["id" => $id]);
+        $this->connection()->delete($this->table, ['id' => $id]);
     }
 
     /**
@@ -167,8 +165,8 @@ class DatabaseSessionStore implements SessionStoreInterface
         $connection
             ->createQueryBuilder()
             ->delete($this->table)
-            ->where("expires_at < :now")
-            ->setParameter("now", $now)
+            ->where('expires_at < :now')
+            ->setParameter('now', $now)
             ->executeStatement();
     }
 
@@ -182,10 +180,10 @@ class DatabaseSessionStore implements SessionStoreInterface
         $connection = $this->connection();
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder
-            ->select("id", "payload", "last_activity", "expires_at")
+            ->select('id', 'payload', 'last_activity', 'expires_at')
             ->from($this->table)
-            ->where("id = :id")
-            ->setParameter("id", $id);
+            ->where('id = :id')
+            ->setParameter('id', $id);
 
         /** @var array<string, mixed>|false $row */
         $row = $queryBuilder->executeQuery()->fetchAssociative();

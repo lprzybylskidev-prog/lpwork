@@ -25,9 +25,8 @@ final class LogConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultChannel =
-            (string) ($config["default_channel"] ?? "stderr");
-        $this->channels = (array) ($config["channels"] ?? []);
+        $this->defaultChannel = (string) ($config['default_channel'] ?? 'stderr');
+        $this->channels = (array) ($config['channels'] ?? []);
     }
 
     /**

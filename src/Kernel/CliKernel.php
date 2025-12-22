@@ -61,8 +61,8 @@ class CliKernel
     public function run(): void
     {
         $application = new Application(
-            $this->configRepository->getString("app.name", "LPwork"),
-            $this->configRepository->getString("app.version", "0.0.1"),
+            $this->configRepository->getString('app.name', 'LPwork'),
+            $this->configRepository->getString('app.version', '0.0.1'),
         );
 
         foreach ($this->collectCommands() as $command) {
@@ -73,12 +73,12 @@ class CliKernel
             $application->run();
         } catch (\Throwable $throwable) {
             $errorId = $this->errorLogger->log($throwable, [
-                "runtime" => "cli",
+                'runtime' => 'cli',
             ]);
             \fwrite(
                 \STDERR,
                 \sprintf(
-                    "Unhandled error (ID: %s): %s%s",
+                    'Unhandled error (ID: %s): %s%s',
                     $errorId,
                     $throwable->getMessage(),
                     PHP_EOL,
@@ -103,7 +103,7 @@ class CliKernel
             foreach ($provider->getCommands() as $command) {
                 $name = $command->getName();
 
-                if ($name === null || $name === "") {
+                if ($name === null || $name === '') {
                     continue;
                 }
 

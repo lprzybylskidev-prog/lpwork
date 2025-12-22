@@ -22,9 +22,7 @@ class DoctrineDatabaseConnection implements DatabaseConnectionInterface
      */
     public function __construct(DatabaseConfig $config)
     {
-        $this->connection = DriverManager::getConnection(
-            $config->toConnectionParams(),
-        );
+        $this->connection = DriverManager::getConnection($config->toConnectionParams());
     }
 
     /**

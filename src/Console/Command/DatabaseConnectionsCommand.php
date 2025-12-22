@@ -32,34 +32,30 @@ class DatabaseConnectionsCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:database:connections")
-            ->setAliases(["database:connections"])
-            ->setDescription("List available database connections");
+        $this->setName('lpwork:database:connections')
+            ->setAliases(['database:connections'])
+            ->setDescription('List available database connections');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
         $connections = $this->connectionManager->getConnectionNames();
         $default = $this->connectionManager->getDefaultConnectionName();
 
         if ($connections === []) {
-            $output->writeln(
-                "<comment>No database connections are configured.</comment>",
-            );
+            $output->writeln('<comment>No database connections are configured.</comment>');
 
             return Command::SUCCESS;
         }
 
-        $output->writeln("<info>Configured database connections:</info>");
+        $output->writeln('<info>Configured database connections:</info>');
 
         foreach ($connections as $name) {
-            $label = $name === $default ? " (default)" : "";
-            $output->writeln(\sprintf("- %s%s", $name, $label));
+            $label = $name === $default ? ' (default)' : '';
+            $output->writeln(\sprintf('- %s%s', $name, $label));
         }
 
         return Command::SUCCESS;

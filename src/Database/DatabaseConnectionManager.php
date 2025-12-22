@@ -39,14 +39,13 @@ class DatabaseConnectionManager
      */
     public function __construct(
         array $configurations,
-        string $defaultConnection = "default",
+        string $defaultConnection = 'default',
         ?DatabaseTimezoneConfigurator $timezoneConfigurator = null,
     ) {
         $this->configurations = $configurations;
         $this->defaultConnection = $defaultConnection;
         $this->timezoneConfigurator =
-            $timezoneConfigurator ??
-            new DatabaseTimezoneConfigurator(new TimezoneContext("UTC"));
+            $timezoneConfigurator ?? new DatabaseTimezoneConfigurator(new TimezoneContext('UTC'));
     }
 
     /**
@@ -66,10 +65,7 @@ class DatabaseConnectionManager
 
         if (!isset($this->configurations[$connectionName])) {
             throw new DatabaseConnectionNotFoundException(
-                \sprintf(
-                    'Database connection "%s" is not configured.',
-                    $connectionName,
-                ),
+                \sprintf('Database connection "%s" is not configured.', $connectionName),
             );
         }
 
@@ -79,9 +75,7 @@ class DatabaseConnectionManager
         $this->timezoneConfigurator->configure(
             $connection->connection(),
             $config->driver(),
-            isset($configuration["timezone"])
-                ? (string) $configuration["timezone"]
-                : null,
+            isset($configuration['timezone']) ? (string) $configuration['timezone'] : null,
         );
 
         $this->connections[$connectionName] = $connection;

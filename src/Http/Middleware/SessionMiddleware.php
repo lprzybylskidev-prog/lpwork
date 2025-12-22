@@ -18,7 +18,7 @@ class SessionMiddleware implements MiddlewareInterface
     /**
      * @var string
      */
-    public const ATTRIBUTE = "session";
+    public const ATTRIBUTE = 'session';
 
     /**
      * @var SessionManager
@@ -41,10 +41,7 @@ class SessionMiddleware implements MiddlewareInterface
         RequestHandlerInterface $handler,
     ): ResponseInterface {
         $session = $this->sessionManager->start($request);
-        $requestWithSession = $request->withAttribute(
-            self::ATTRIBUTE,
-            $session,
-        );
+        $requestWithSession = $request->withAttribute(self::ATTRIBUTE, $session);
 
         $response = $handler->handle($requestWithSession);
 

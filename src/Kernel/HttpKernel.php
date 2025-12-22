@@ -72,29 +72,20 @@ class HttpKernel
      *
      * @return ResponseInterface
      */
-    private function handle(
-        ServerRequestInterface $request,
-        array $middlewares,
-    ): ResponseInterface {
+    private function handle(ServerRequestInterface $request, array $middlewares): ResponseInterface
+    {
         $handler = new class implements RequestHandlerInterface {
             /**
              * @inheritDoc
              */
-            public function handle(
-                ServerRequestInterface $request,
-            ): ResponseInterface {
-                return new Response(
-                    500,
-                    [],
-                    "No middleware able to handle the request.",
-                );
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                return new Response(500, [], 'No middleware able to handle the request.');
             }
         };
 
         foreach (\array_reverse($middlewares) as $middleware) {
-            $handler = new class ($middleware, $handler) implements
-                RequestHandlerInterface
-            {
+            $handler = new class ($middleware, $handler) implements RequestHandlerInterface {
                 /**
                  * @var MiddlewareInterface
                  */
@@ -120,9 +111,8 @@ class HttpKernel
                 /**
                  * @inheritDoc
                  */
-                public function handle(
-                    ServerRequestInterface $request,
-                ): ResponseInterface {
+                public function handle(ServerRequestInterface $request): ResponseInterface
+                {
                     return $this->middleware->process($request, $this->next);
                 }
             };
@@ -168,7 +158,7 @@ class HttpKernel
 
             foreach ($response->getHeaders() as $name => $values) {
                 foreach ($values as $value) {
-                    \header($name . ": " . $value, false);
+                    \header($name . ': ' . $value, false);
                 }
             }
         }

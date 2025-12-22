@@ -71,10 +71,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
 
             return $response;
         } catch (\Throwable $throwable) {
-            $errorId = $this->errorLogger->log(
-                $throwable,
-                $this->buildHttpContext($request),
-            );
+            $errorId = $this->errorLogger->log($throwable, $this->buildHttpContext($request));
 
             return $this->renderError(
                 $request,
@@ -115,12 +112,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
             );
         }
 
-        return $this->responseBuilder->buildHtmlError(
-            $request,
-            $status,
-            $id,
-            $throwable,
-        );
+        return $this->responseBuilder->buildHtmlError($request, $status, $id, $throwable);
     }
 
     /**
@@ -131,10 +123,10 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     private function buildHttpContext(ServerRequestInterface $request): array
     {
         return [
-            "runtime" => "http",
-            "method" => $request->getMethod(),
-            "uri" => (string) $request->getUri(),
-            "headers" => $request->getHeaders(),
+            'runtime' => 'http',
+            'method' => $request->getMethod(),
+            'uri' => (string) $request->getUri(),
+            'headers' => $request->getHeaders(),
         ];
     }
 
@@ -155,8 +147,8 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
      */
     private function wantsJson(ServerRequestInterface $request): bool
     {
-        $accept = $request->getHeaderLine("Accept");
+        $accept = $request->getHeaderLine('Accept');
 
-        return \stripos($accept, "application/json") !== false;
+        return \stripos($accept, 'application/json') !== false;
     }
 }

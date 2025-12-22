@@ -40,11 +40,11 @@ final class ErrorLogConfiguration
      */
     public function __construct(array $config)
     {
-        $this->driver = (string) ($config["driver"] ?? "file");
-        $this->level = (string) ($config["level"] ?? "error");
-        $this->file = (array) ($config["file"] ?? []);
-        $this->database = (array) ($config["database"] ?? []);
-        $this->redis = (array) ($config["redis"] ?? []);
+        $this->driver = (string) ($config['driver'] ?? 'file');
+        $this->level = (string) ($config['level'] ?? 'error');
+        $this->file = (array) ($config['file'] ?? []);
+        $this->database = (array) ($config['database'] ?? []);
+        $this->redis = (array) ($config['redis'] ?? []);
     }
 
     /**
@@ -94,7 +94,7 @@ final class ErrorLogConfiguration
      */
     public function assertSupportedDriver(string $driver): void
     {
-        $supported = ["file", "database", "redis"];
+        $supported = ['file', 'database', 'redis'];
 
         if (!\in_array($driver, $supported, true)) {
             throw new ErrorLogConfigurationException(

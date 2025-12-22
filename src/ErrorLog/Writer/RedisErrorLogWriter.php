@@ -66,13 +66,11 @@ class RedisErrorLogWriter implements ErrorLogWriterInterface
     public function write(ErrorLogEntry $entry): void
     {
         $client = $this->client();
-        $key = $this->prefix . "log";
+        $key = $this->prefix . 'log';
         $payload = \json_encode($entry->toArray());
 
         if ($payload === false) {
-            throw new ErrorLogWriteException(
-                "Failed to encode error log entry.",
-            );
+            throw new ErrorLogWriteException('Failed to encode error log entry.');
         }
 
         try {
@@ -87,7 +85,7 @@ class RedisErrorLogWriter implements ErrorLogWriterInterface
             }
         } catch (\Throwable $throwable) {
             throw new ErrorLogWriteException(
-                "Failed to write error log entry to Redis.",
+                'Failed to write error log entry to Redis.',
                 0,
                 $throwable,
             );

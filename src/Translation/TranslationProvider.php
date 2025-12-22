@@ -88,9 +88,6 @@ final class TranslationProvider
             $pool = new ArrayAdapter(storeSerialized: false);
         }
 
-        return $this->translatorFactory->create(
-            $this->translationConfiguration,
-            $pool,
-        );
+        return $this->translatorFactory->create($this->translationConfiguration, $pool);
     }
 }

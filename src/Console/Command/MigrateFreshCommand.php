@@ -53,63 +53,51 @@ class MigrateFreshCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:migrate:fresh")
-            ->setAliases(["migrate:fresh"])
-            ->setDescription("Drop all tables and rerun migrations")
+        $this->setName('lpwork:migrate:fresh')
+            ->setAliases(['migrate:fresh'])
+            ->setDescription('Drop all tables and rerun migrations')
             ->addArgument(
-                "connection",
+                'connection',
                 InputArgument::OPTIONAL,
-                "Connection name",
+                'Connection name',
                 $this->runner->getDefaultConnectionName(),
             )
+            ->addOption('seed', null, InputOption::VALUE_NONE, 'Run seeders after migration')
             ->addOption(
-                "seed",
+                'all',
                 null,
                 InputOption::VALUE_NONE,
-                "Run seeders after migration",
-            )
-            ->addOption(
-                "all",
-                null,
-                InputOption::VALUE_NONE,
-                "Run fresh migration for all configured connections",
+                'Run fresh migration for all configured connections',
             );
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
-        $env = $this->config->getString("app.env", "prod");
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $env = $this->config->getString('app.env', 'prod');
 
-        if ($env !== "dev") {
-            $output->writeln(
-                "<error>migrate:fresh is allowed only in dev environment.</error>",
-            );
+        if ($env !== 'dev') {
+            $output->writeln('<error>migrate:fresh is allowed only in dev environment.</error>');
 
             return Command::FAILURE;
         }
 
-        $connection = (string) $input->getArgument("connection");
+        $connection = (string) $input->getArgument('connection');
 
-        if ($input->getOption("all")) {
+        if ($input->getOption('all')) {
             $results = $this->runner->freshAll();
 
             foreach ($results as $name => $executed) {
                 $this->renderExecutedMigrations($output, $name, $executed);
 
-                if ($input->getOption("seed")) {
+                if ($input->getOption('seed')) {
                     $count = $this->seederRunner->seed($name);
 
                     if ($count === 0) {
                         $output->writeln(
-                            \sprintf(
-                                '<comment>No seeders registered for "%s".</comment>',
-                                $name,
-                            ),
+                            \sprintf('<comment>No seeders registered for "%s".</comment>', $name),
                         );
                     } else {
                         $output->writeln(
@@ -129,15 +117,12 @@ class MigrateFreshCommand extends Command
         $executed = $this->runner->fresh($connection);
         $this->renderExecutedMigrations($output, $connection, $executed);
 
-        if ($input->getOption("seed")) {
+        if ($input->getOption('seed')) {
             $count = $this->seederRunner->seed($connection);
 
             if ($count === 0) {
                 $output->writeln(
-                    \sprintf(
-                        '<comment>No seeders registered for "%s".</comment>',
-                        $connection,
-                    ),
+                    \sprintf('<comment>No seeders registered for "%s".</comment>', $connection),
                 );
             } else {
                 $output->writeln(
@@ -179,19 +164,16 @@ class MigrateFreshCommand extends Command
         }
 
         $output->writeln(
-            \sprintf(
-                '<info>Fresh migration completed for connection "%s":</info>',
-                $connection,
-            ),
+            \sprintf('<info>Fresh migration completed for connection "%s":</info>', $connection),
         );
 
         foreach ($executed as $migration) {
             $output->writeln(
                 \sprintf(
-                    "- %s (%s) [%s]",
-                    $migration["version"],
-                    $migration["description"],
-                    $migration["class"],
+                    '- %s (%s) [%s]',
+                    $migration['version'],
+                    $migration['description'],
+                    $migration['class'],
                 ),
             );
         }

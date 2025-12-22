@@ -33,28 +33,26 @@ class RoutesListCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:routes:list")
-            ->setAliases(["routes:list"])
-            ->setDescription("List registered HTTP routes");
+        $this->setName('lpwork:routes:list')
+            ->setAliases(['routes:list'])
+            ->setDescription('List registered HTTP routes');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
         $routes = $this->routeLoader->load()->all();
 
         $table = new Table($output);
-        $table->setHeaders(["Method(s)", "Path", "Name"]);
+        $table->setHeaders(['Method(s)', 'Path', 'Name']);
 
         foreach ($routes as $route) {
             $table->addRow([
-                \implode("|", $route->methods()),
+                \implode('|', $route->methods()),
                 $route->path(),
-                $route->name() ?? "",
+                $route->name() ?? '',
             ]);
         }
 

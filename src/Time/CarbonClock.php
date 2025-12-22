@@ -36,7 +36,7 @@ final class CarbonClock implements ClockInterface
             return CarbonImmutable::now($this->timezone->timezone());
         } catch (\Throwable $exception) {
             throw new TimezoneConfigurationException(
-                "Failed to create CarbonImmutable for the configured timezone.",
+                'Failed to create CarbonImmutable for the configured timezone.',
                 0,
                 $exception,
             );

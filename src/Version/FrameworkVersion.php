@@ -16,7 +16,7 @@ class FrameworkVersion
     /**
      * @param string $version
      */
-    public function __construct(string $version = "0.0.1")
+    public function __construct(string $version = '0.0.1')
     {
         $this->version = $version;
     }

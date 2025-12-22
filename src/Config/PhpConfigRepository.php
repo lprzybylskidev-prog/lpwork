@@ -163,11 +163,11 @@ class PhpConfigRepository implements ConfigRepositoryInterface
         if (\is_string($value)) {
             $normalized = \strtolower($value);
 
-            if (\in_array($normalized, ["1", "true", "yes", "on"], true)) {
+            if (\in_array($normalized, ['1', 'true', 'yes', 'on'], true)) {
                 return true;
             }
 
-            if (\in_array($normalized, ["0", "false", "no", "off", ""], true)) {
+            if (\in_array($normalized, ['0', 'false', 'no', 'off', ''], true)) {
                 return false;
             }
         }
@@ -206,7 +206,7 @@ class PhpConfigRepository implements ConfigRepositoryInterface
      */
     private function splitKey(string $key): array
     {
-        $parts = \explode(".", $key);
+        $parts = \explode('.', $key);
         $namespace = (string) \array_shift($parts);
 
         return [$namespace, $parts === [] ? null : $parts];

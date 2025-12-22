@@ -32,22 +32,14 @@ class HttpProvider implements ProviderInterface
     {
         $containerBuilder->addDefinitions([
             HttpKernel::class => \DI\autowire(HttpKernel::class),
-            MiddlewareProviderInterface::class => \DI\get(
-                AppMiddlewareProvider::class,
-            ),
-            BuiltinMiddlewareProvider::class => \DI\autowire(
-                BuiltinMiddlewareProvider::class,
-            ),
-            AppMiddlewareProvider::class => \DI\autowire(
-                AppMiddlewareProvider::class,
-            ),
+            MiddlewareProviderInterface::class => \DI\get(AppMiddlewareProvider::class),
+            BuiltinMiddlewareProvider::class => \DI\autowire(BuiltinMiddlewareProvider::class),
+            AppMiddlewareProvider::class => \DI\autowire(AppMiddlewareProvider::class),
             RouteLoader::class => \DI\autowire(RouteLoader::class)->constructor(
-                \dirname(__DIR__, 2) . "/config/routes/routes.php",
-                \dirname(__DIR__) . "/Http/Routes/routes.php",
+                \dirname(__DIR__, 2) . '/config/routes/routes.php',
+                \dirname(__DIR__) . '/Http/Routes/routes.php',
             ),
-            FastRouteDispatcherFactory::class => \DI\autowire(
-                FastRouteDispatcherFactory::class,
-            ),
+            FastRouteDispatcherFactory::class => \DI\autowire(FastRouteDispatcherFactory::class),
             Dispatcher::class => \DI\factory(static function (
                 RouteLoader $loader,
                 FastRouteDispatcherFactory $factory,
@@ -58,13 +50,11 @@ class HttpProvider implements ProviderInterface
             ): Dispatcher {
                 $routes = $loader->load();
                 $routingCache = $cacheConfiguration->routingCache();
-                $enabled = (bool) ($routingCache["enabled"] ?? false);
+                $enabled = (bool) ($routingCache['enabled'] ?? false);
 
                 if ($enabled) {
-                    $poolName =
-                        (string) ($routingCache["pool"] ?? "filesystem");
-                    $key =
-                        (string) ($routingCache["key"] ?? "routes:dispatcher");
+                    $poolName = (string) ($routingCache['pool'] ?? 'filesystem');
+                    $key = (string) ($routingCache['key'] ?? 'routes:dispatcher');
                     $pool = $cacheFactory->createPool(
                         $poolName,
                         $cacheConfiguration,
@@ -90,15 +80,9 @@ class HttpProvider implements ProviderInterface
 
                 return $factory->create($routes);
             }),
-            ErrorHandlingMiddleware::class => \DI\autowire(
-                ErrorHandlingMiddleware::class,
-            ),
-            RouteMatchMiddleware::class => \DI\autowire(
-                RouteMatchMiddleware::class,
-            ),
-            RouteDispatchMiddleware::class => \DI\autowire(
-                RouteDispatchMiddleware::class,
-            ),
+            ErrorHandlingMiddleware::class => \DI\autowire(ErrorHandlingMiddleware::class),
+            RouteMatchMiddleware::class => \DI\autowire(RouteMatchMiddleware::class),
+            RouteDispatchMiddleware::class => \DI\autowire(RouteDispatchMiddleware::class),
             Psr17Factory::class => \DI\create(Psr17Factory::class),
             ServerRequestCreator::class => \DI\factory(static function (
                 Psr17Factory $psr17Factory,

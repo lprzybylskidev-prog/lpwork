@@ -77,23 +77,19 @@ class DefaultCacheProvider implements CacheProviderInterface
      *
      * @return void
      */
-    private function warmConfig(
-        string $poolName,
-        CacheItemPoolInterface $pool,
-    ): void {
+    private function warmConfig(string $poolName, CacheItemPoolInterface $pool): void
+    {
         $configCache = $this->configuration->configCache();
-        $enabled = (bool) ($configCache["enabled"] ?? false);
-        $targetPool = (string) ($configCache["pool"] ?? "filesystem");
+        $enabled = (bool) ($configCache['enabled'] ?? false);
+        $targetPool = (string) ($configCache['pool'] ?? 'filesystem');
 
         if (!$enabled || $targetPool !== $poolName) {
             return;
         }
 
-        $key = (string) ($configCache["key"] ?? "config:repository");
+        $key = (string) ($configCache['key'] ?? 'config:repository');
         $loader = new PhpConfigLoader($this->env);
-        $configs = $loader->loadDirectory(
-            \dirname(__DIR__, 2) . "/config/configs",
-        );
+        $configs = $loader->loadDirectory(\dirname(__DIR__, 2) . '/config/configs');
 
         $pool->deleteItem($key);
         $item = $pool->getItem($key);
@@ -107,19 +103,17 @@ class DefaultCacheProvider implements CacheProviderInterface
      *
      * @return void
      */
-    private function clearConfig(
-        string $poolName,
-        CacheItemPoolInterface $pool,
-    ): void {
+    private function clearConfig(string $poolName, CacheItemPoolInterface $pool): void
+    {
         $configCache = $this->configuration->configCache();
-        $enabled = (bool) ($configCache["enabled"] ?? false);
-        $targetPool = (string) ($configCache["pool"] ?? "filesystem");
+        $enabled = (bool) ($configCache['enabled'] ?? false);
+        $targetPool = (string) ($configCache['pool'] ?? 'filesystem');
 
         if (!$enabled || $targetPool !== $poolName) {
             return;
         }
 
-        $key = (string) ($configCache["key"] ?? "config:repository");
+        $key = (string) ($configCache['key'] ?? 'config:repository');
         $pool->deleteItem($key);
     }
 
@@ -129,19 +123,17 @@ class DefaultCacheProvider implements CacheProviderInterface
      *
      * @return void
      */
-    private function warmRoutes(
-        string $poolName,
-        CacheItemPoolInterface $pool,
-    ): void {
+    private function warmRoutes(string $poolName, CacheItemPoolInterface $pool): void
+    {
         $routing = $this->configuration->routingCache();
-        $enabled = (bool) ($routing["enabled"] ?? false);
-        $targetPool = (string) ($routing["pool"] ?? "filesystem");
+        $enabled = (bool) ($routing['enabled'] ?? false);
+        $targetPool = (string) ($routing['pool'] ?? 'filesystem');
 
         if (!$enabled || $targetPool !== $poolName) {
             return;
         }
 
-        $key = (string) ($routing["key"] ?? "routes:dispatcher");
+        $key = (string) ($routing['key'] ?? 'routes:dispatcher');
         $routes = $this->routeLoader->load();
         $data = $this->dispatcherFactory->generateData($routes);
 
@@ -157,19 +149,17 @@ class DefaultCacheProvider implements CacheProviderInterface
      *
      * @return void
      */
-    private function clearRoutes(
-        string $poolName,
-        CacheItemPoolInterface $pool,
-    ): void {
+    private function clearRoutes(string $poolName, CacheItemPoolInterface $pool): void
+    {
         $routing = $this->configuration->routingCache();
-        $enabled = (bool) ($routing["enabled"] ?? false);
-        $targetPool = (string) ($routing["pool"] ?? "filesystem");
+        $enabled = (bool) ($routing['enabled'] ?? false);
+        $targetPool = (string) ($routing['pool'] ?? 'filesystem');
 
         if (!$enabled || $targetPool !== $poolName) {
             return;
         }
 
-        $key = (string) ($routing["key"] ?? "routes:dispatcher");
+        $key = (string) ($routing['key'] ?? 'routes:dispatcher');
         $pool->deleteItem($key);
     }
 }

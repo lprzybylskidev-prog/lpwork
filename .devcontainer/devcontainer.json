@@ -27,7 +27,7 @@
         "8080": { "label": "nginx" }
     },
 
-    "postCreateCommand": "php -v && php -m | sort && composer --version && php -r \"echo 'PDO drivers: '; print_r(PDO::getAvailableDrivers());\" && node -v && prettier -v",
+    "postCreateCommand": "php -v && php -m | sort && composer --version && php -r \"echo 'PDO drivers: '; print_r(PDO::getAvailableDrivers());\" && node -v && npm install -g @prettier/plugin-php && prettier -v",
 
     "customizations": {
         "vscode": {

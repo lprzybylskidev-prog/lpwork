@@ -88,10 +88,7 @@ final class EventDispatcherFactory
 
             if (!\is_callable($resolved)) {
                 throw new EventConfigurationException(
-                    \sprintf(
-                        'Listener "%s" is not callable after resolution.',
-                        $listener,
-                    ),
+                    \sprintf('Listener "%s" is not callable after resolution.', $listener),
                 );
             }
 
@@ -111,7 +108,11 @@ final class EventDispatcherFactory
 
             if (!\is_callable($callable)) {
                 throw new EventConfigurationException(
-                    \sprintf('Array listener is not callable: [%s, %s]', (string) $target, (string) $method),
+                    \sprintf(
+                        'Array listener is not callable: [%s, %s]',
+                        (string) $target,
+                        (string) $method,
+                    ),
                 );
             }
 

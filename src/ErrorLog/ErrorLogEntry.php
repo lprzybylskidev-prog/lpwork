@@ -182,16 +182,16 @@ final class ErrorLogEntry
     public function toArray(): array
     {
         return [
-            "id" => $this->id,
-            "level" => $this->level,
-            "message" => $this->message,
-            "code" => $this->code,
-            "exception_class" => $this->exceptionClass,
-            "file" => $this->file,
-            "line" => $this->line,
-            "trace" => $this->trace,
-            "context" => $this->context,
-            "timestamp" => $this->timestamp->format(\DATE_ATOM),
+            'id' => $this->id,
+            'level' => $this->level,
+            'message' => $this->message,
+            'code' => $this->code,
+            'exception_class' => $this->exceptionClass,
+            'file' => $this->file,
+            'line' => $this->line,
+            'trace' => $this->trace,
+            'context' => $this->context,
+            'timestamp' => $this->timestamp->format(\DATE_ATOM),
         ];
     }
 }

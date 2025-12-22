@@ -16,7 +16,7 @@ final class V20250102000000CreateErrorsTable extends AbstractMigration
      */
     public function getDescription(): string
     {
-        return "Create errors table for error log";
+        return 'Create errors table for error log';
     }
 
     /**
@@ -24,24 +24,24 @@ final class V20250102000000CreateErrorsTable extends AbstractMigration
      */
     public function up(Schema $schema): void
     {
-        if ($schema->hasTable("errors")) {
+        if ($schema->hasTable('errors')) {
             return;
         }
 
-        $table = $schema->createTable("errors");
-        $table->addColumn("id", "string", ["length" => 64]);
-        $table->addColumn("level", "string", ["length" => 32]);
-        $table->addColumn("code", "integer", ["notnull" => false]);
-        $table->addColumn("message", "text");
-        $table->addColumn("exception_class", "string", ["length" => 255]);
-        $table->addColumn("file", "string", ["length" => 255]);
-        $table->addColumn("line", "integer");
-        $table->addColumn("trace", "text");
-        $table->addColumn("context", "text", ["notnull" => false]);
-        $table->addColumn("created_at", "datetime");
-        $table->setPrimaryKey(["id"]);
-        $table->addIndex(["created_at"]);
-        $table->addIndex(["level"]);
+        $table = $schema->createTable('errors');
+        $table->addColumn('id', 'string', ['length' => 64]);
+        $table->addColumn('level', 'string', ['length' => 32]);
+        $table->addColumn('code', 'integer', ['notnull' => false]);
+        $table->addColumn('message', 'text');
+        $table->addColumn('exception_class', 'string', ['length' => 255]);
+        $table->addColumn('file', 'string', ['length' => 255]);
+        $table->addColumn('line', 'integer');
+        $table->addColumn('trace', 'text');
+        $table->addColumn('context', 'text', ['notnull' => false]);
+        $table->addColumn('created_at', 'datetime');
+        $table->setPrimaryKey(['id']);
+        $table->addIndex(['created_at']);
+        $table->addIndex(['level']);
     }
 
     /**
@@ -49,8 +49,8 @@ final class V20250102000000CreateErrorsTable extends AbstractMigration
      */
     public function down(Schema $schema): void
     {
-        if ($schema->hasTable("errors")) {
-            $schema->dropTable("errors");
+        if ($schema->hasTable('errors')) {
+            $schema->dropTable('errors');
         }
     }
 }

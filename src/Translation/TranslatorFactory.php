@@ -26,11 +26,11 @@ class TranslatorFactory
     ): TranslatorInterface {
         $translator = new Translator($config->locale());
         $translator->setFallbackLocales([$config->fallbackLocale()]);
-        $translator->addLoader("array", new ArrayLoader());
+        $translator->addLoader('array', new ArrayLoader());
 
-        $path = \rtrim($config->path(), "/");
+        $path = \rtrim($config->path(), '/');
 
-        if ($path === "" || !\is_dir($path)) {
+        if ($path === '' || !\is_dir($path)) {
             throw new TranslationLoaderException(
                 \sprintf('Translation path "%s" is not readable.', $path),
             );
@@ -39,13 +39,13 @@ class TranslatorFactory
         $locales = [$config->locale()];
         $fallback = $config->fallbackLocale();
 
-        if ($fallback !== "" && $fallback !== $config->locale()) {
+        if ($fallback !== '' && $fallback !== $config->locale()) {
             $locales[] = $fallback;
         }
 
         foreach ($locales as $locale) {
             $messages = $this->loadMessages($pool, $config, $path, $locale);
-            $translator->addResource("array", $messages, $locale);
+            $translator->addResource('array', $messages, $locale);
         }
 
         return $translator;
@@ -92,7 +92,7 @@ class TranslatorFactory
      */
     private function loadLocaleFiles(string $basePath, string $locale): array
     {
-        $directory = $basePath . "/" . $locale;
+        $directory = $basePath . '/' . $locale;
 
         if (!\is_dir($directory)) {
             return [];
@@ -101,7 +101,7 @@ class TranslatorFactory
         $messages = [];
 
         /** @var array<int, string> $files */
-        $files = \glob($directory . "/*.json") ?: [];
+        $files = \glob($directory . '/*.json') ?: [];
 
         foreach ($files as $file) {
             $content = @\file_get_contents($file);

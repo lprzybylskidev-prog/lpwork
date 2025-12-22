@@ -35,18 +35,16 @@ class RouteDispatchMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
-        $routeHandler = $request->getAttribute("route_handler");
+        $routeHandler = $request->getAttribute('route_handler');
 
         if ($routeHandler === null) {
-            return new Response(500, [], "Route handler not resolved");
+            return new Response(500, [], 'Route handler not resolved');
         }
 
         /** @var array<int, string> $routeMiddleware */
-        $routeMiddleware = $request->getAttribute("route_middleware", []);
+        $routeMiddleware = $request->getAttribute('route_middleware', []);
 
-        $finalHandler = new class ($routeHandler) implements
-            RequestHandlerInterface
-        {
+        $finalHandler = new class ($routeHandler) implements RequestHandlerInterface {
             /**
              * @var callable
              */
@@ -63,25 +61,21 @@ class RouteDispatchMiddleware implements MiddlewareInterface
             /**
              * @inheritDoc
              */
-            public function handle(
-                ServerRequestInterface $request,
-            ): ResponseInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
                 /** @var callable $handler */
                 $handler = $this->routeHandler;
                 $response = $handler($request);
 
                 if (!$response instanceof ResponseInterface) {
-                    return new Response(500, [], "Invalid route response");
+                    return new Response(500, [], 'Invalid route response');
                 }
 
                 return $response;
             }
         };
 
-        $composedHandler = $this->wrapRouteMiddlewares(
-            $routeMiddleware,
-            $finalHandler,
-        );
+        $composedHandler = $this->wrapRouteMiddlewares($routeMiddleware, $finalHandler);
 
         return $composedHandler->handle($request);
     }
@@ -101,9 +95,7 @@ class RouteDispatchMiddleware implements MiddlewareInterface
         foreach (\array_reverse($middlewareClassNames) as $middlewareClass) {
             $middleware = $this->instantiateMiddleware($middlewareClass);
 
-            $handler = new class ($middleware, $handler) implements
-                RequestHandlerInterface
-            {
+            $handler = new class ($middleware, $handler) implements RequestHandlerInterface {
                 /**
                  * @var \Psr\Http\Server\MiddlewareInterface
                  */
@@ -129,9 +121,8 @@ class RouteDispatchMiddleware implements MiddlewareInterface
                 /**
                  * @inheritDoc
                  */
-                public function handle(
-                    ServerRequestInterface $request,
-                ): ResponseInterface {
+                public function handle(ServerRequestInterface $request): ResponseInterface
+                {
                     return $this->middleware->process($request, $this->next);
                 }
             };
@@ -157,7 +148,7 @@ class RouteDispatchMiddleware implements MiddlewareInterface
                     ServerRequestInterface $request,
                     RequestHandlerInterface $handler,
                 ): ResponseInterface {
-                    return new Response(500, [], "Route middleware not found");
+                    return new Response(500, [], 'Route middleware not found');
                 }
             };
         }
@@ -173,7 +164,7 @@ class RouteDispatchMiddleware implements MiddlewareInterface
                     ServerRequestInterface $request,
                     RequestHandlerInterface $handler,
                 ): ResponseInterface {
-                    return new Response(500, [], "Invalid route middleware");
+                    return new Response(500, [], 'Invalid route middleware');
                 }
             };
         }

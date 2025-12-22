@@ -91,8 +91,8 @@ class RedisSessionStore implements SessionStoreInterface
             return new SessionState($sessionId, [], $nowTimestamp);
         }
 
-        $data = (array) ($decoded["data"] ?? []);
-        $lastActivity = (int) ($decoded["last_activity"] ?? $nowTimestamp);
+        $data = (array) ($decoded['data'] ?? []);
+        $lastActivity = (int) ($decoded['last_activity'] ?? $nowTimestamp);
 
         return new SessionState($sessionId, $data, $lastActivity);
     }
@@ -107,14 +107,12 @@ class RedisSessionStore implements SessionStoreInterface
     ): void {
         $key = $this->buildKey($state->id());
         $encoded = \json_encode([
-            "data" => $state->all(),
-            "last_activity" => $state->lastActivity(),
+            'data' => $state->all(),
+            'last_activity' => $state->lastActivity(),
         ]);
 
         if ($encoded === false) {
-            throw new SessionStorageException(
-                "Failed to encode session payload for Redis.",
-            );
+            throw new SessionStorageException('Failed to encode session payload for Redis.');
         }
 
         $this->client()->setex($key, $lifetime, $encoded);

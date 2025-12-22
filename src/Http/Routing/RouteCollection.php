@@ -42,7 +42,7 @@ class RouteCollection
         ?string $name = null,
         array $middleware = [],
     ): Route {
-        return $this->add(["GET"], $path, $handler, $name, $middleware);
+        return $this->add(['GET'], $path, $handler, $name, $middleware);
     }
 
     /**
@@ -59,7 +59,7 @@ class RouteCollection
         ?string $name = null,
         array $middleware = [],
     ): Route {
-        return $this->add(["POST"], $path, $handler, $name, $middleware);
+        return $this->add(['POST'], $path, $handler, $name, $middleware);
     }
 
     /**
@@ -76,7 +76,7 @@ class RouteCollection
         ?string $name = null,
         array $middleware = [],
     ): Route {
-        return $this->add(["PUT"], $path, $handler, $name, $middleware);
+        return $this->add(['PUT'], $path, $handler, $name, $middleware);
     }
 
     /**
@@ -93,7 +93,7 @@ class RouteCollection
         ?string $name = null,
         array $middleware = [],
     ): Route {
-        return $this->add(["PATCH"], $path, $handler, $name, $middleware);
+        return $this->add(['PATCH'], $path, $handler, $name, $middleware);
     }
 
     /**
@@ -110,7 +110,7 @@ class RouteCollection
         ?string $name = null,
         array $middleware = [],
     ): Route {
-        return $this->add(["DELETE"], $path, $handler, $name, $middleware);
+        return $this->add(['DELETE'], $path, $handler, $name, $middleware);
     }
 
     /**
@@ -147,7 +147,7 @@ class RouteCollection
         array $middleware = [],
     ): Route {
         return $this->add(
-            ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
             $path,
             $handler,
             $name,
@@ -163,9 +163,9 @@ class RouteCollection
      */
     public function group(array $attributes, callable $callback): void
     {
-        $this->groupPrefixStack[] = $attributes["prefix"] ?? "";
-        $this->groupNameStack[] = $attributes["name"] ?? "";
-        $this->groupMiddlewareStack[] = $attributes["middleware"] ?? [];
+        $this->groupPrefixStack[] = $attributes['prefix'] ?? '';
+        $this->groupNameStack[] = $attributes['name'] ?? '';
+        $this->groupMiddlewareStack[] = $attributes['middleware'] ?? [];
 
         $callback($this);
 
@@ -202,13 +202,7 @@ class RouteCollection
         $fullName = $this->applyGroupName($name);
         $combinedMiddleware = $this->mergeMiddleware($middleware);
 
-        $route = new Route(
-            $methods,
-            $fullPath,
-            $handler,
-            $fullName,
-            $combinedMiddleware,
-        );
+        $route = new Route($methods, $fullPath, $handler, $fullName, $combinedMiddleware);
         $this->routes[$this->routeKey($methods, $fullPath)] = $route;
 
         return $route;
@@ -221,7 +215,7 @@ class RouteCollection
      */
     private function applyGroupPrefix(string $path): string
     {
-        $prefix = "";
+        $prefix = '';
         foreach ($this->groupPrefixStack as $groupPrefix) {
             $prefix .= $groupPrefix;
         }
@@ -236,13 +230,13 @@ class RouteCollection
      */
     private function applyGroupName(?string $name): ?string
     {
-        $prefix = "";
+        $prefix = '';
         foreach ($this->groupNameStack as $groupName) {
             $prefix .= $groupName;
         }
 
         if ($name === null) {
-            return $prefix !== "" ? $prefix : null;
+            return $prefix !== '' ? $prefix : null;
         }
 
         return $prefix . $name;
@@ -275,6 +269,6 @@ class RouteCollection
         $normalizedMethods = $methods;
         \sort($normalizedMethods);
 
-        return \implode(",", $normalizedMethods) . "|" . $path;
+        return \implode(',', $normalizedMethods) . '|' . $path;
     }
 }

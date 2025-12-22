@@ -61,10 +61,7 @@ final class Env
      */
     public function getInt(string $key, ?int $default = null): int
     {
-        $value = $this->getRaw(
-            $key,
-            $default !== null ? (string) $default : null,
-        );
+        $value = $this->getRaw($key, $default !== null ? (string) $default : null);
 
         if (!\is_numeric($value)) {
             throw new EnvValueInvalidException(
@@ -85,10 +82,7 @@ final class Env
      */
     public function getFloat(string $key, ?float $default = null): float
     {
-        $value = $this->getRaw(
-            $key,
-            $default !== null ? (string) $default : null,
-        );
+        $value = $this->getRaw($key, $default !== null ? (string) $default : null);
 
         if (!\is_numeric($value)) {
             throw new EnvValueInvalidException(
@@ -109,17 +103,14 @@ final class Env
      */
     public function getBool(string $key, ?bool $default = null): bool
     {
-        $value = $this->getRaw(
-            $key,
-            $default !== null ? ($default ? "true" : "false") : null,
-        );
+        $value = $this->getRaw($key, $default !== null ? ($default ? 'true' : 'false') : null);
         $normalized = \strtolower($value);
 
-        if (\in_array($normalized, ["1", "true", "yes", "on"], true)) {
+        if (\in_array($normalized, ['1', 'true', 'yes', 'on'], true)) {
             return true;
         }
 
-        if (\in_array($normalized, ["0", "false", "no", "off", ""], true)) {
+        if (\in_array($normalized, ['0', 'false', 'no', 'off', ''], true)) {
             return false;
         }
 
@@ -156,8 +147,6 @@ final class Env
             return $default;
         }
 
-        throw new EnvValueNotFoundException(
-            \sprintf('Environment key "%s" is missing.', $key),
-        );
+        throw new EnvValueNotFoundException(\sprintf('Environment key "%s" is missing.', $key));
     }
 }

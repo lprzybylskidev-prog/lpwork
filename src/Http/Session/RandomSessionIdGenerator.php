@@ -23,7 +23,7 @@ class RandomSessionIdGenerator implements SessionIdGeneratorInterface
     {
         if ($length < 32) {
             throw new SessionConfigurationException(
-                "Session ID length must be at least 32 characters.",
+                'Session ID length must be at least 32 characters.',
             );
         }
 

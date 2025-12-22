@@ -59,7 +59,7 @@ class FilesystemSessionStore implements SessionStoreInterface
     ) {
         $this->filesystems = $filesystems;
         $this->disk = $disk;
-        $this->path = \trim($path, "/");
+        $this->path = \trim($path, '/');
         $this->idGenerator = $idGenerator;
         $this->clock = $clock;
     }
@@ -91,7 +91,7 @@ class FilesystemSessionStore implements SessionStoreInterface
             return new SessionState($sessionId, [], $nowTimestamp);
         }
 
-        $expiresAt = (int) ($decoded["expires_at"] ?? 0);
+        $expiresAt = (int) ($decoded['expires_at'] ?? 0);
 
         if ($expiresAt > 0 && $expiresAt < $nowTimestamp) {
             $filesystem->delete($location);
@@ -99,8 +99,8 @@ class FilesystemSessionStore implements SessionStoreInterface
             return new SessionState($sessionId, [], $nowTimestamp);
         }
 
-        $data = (array) ($decoded["data"] ?? []);
-        $lastActivity = (int) ($decoded["last_activity"] ?? $nowTimestamp);
+        $data = (array) ($decoded['data'] ?? []);
+        $lastActivity = (int) ($decoded['last_activity'] ?? $nowTimestamp);
 
         return new SessionState($sessionId, $data, $lastActivity);
     }
@@ -118,18 +118,16 @@ class FilesystemSessionStore implements SessionStoreInterface
         $now = $this->now();
 
         $payload = \json_encode([
-            "data" => $state->all(),
-            "last_activity" => $state->lastActivity(),
-            "expires_at" => $now->addSeconds($lifetime)->getTimestamp(),
+            'data' => $state->all(),
+            'last_activity' => $state->lastActivity(),
+            'expires_at' => $now->addSeconds($lifetime)->getTimestamp(),
         ]);
 
         if ($payload === false) {
-            throw new SessionStorageException(
-                "Failed to encode session payload for filesystem.",
-            );
+            throw new SessionStorageException('Failed to encode session payload for filesystem.');
         }
 
-        if ($this->path !== "" && !$filesystem->directoryExists($this->path)) {
+        if ($this->path !== '' && !$filesystem->directoryExists($this->path)) {
             $filesystem->createDirectory($this->path);
         }
 
@@ -166,7 +164,7 @@ class FilesystemSessionStore implements SessionStoreInterface
         $directory = $this->path;
         $nowTimestamp = $this->now()->getTimestamp();
 
-        if ($directory !== "" && !$filesystem->directoryExists($directory)) {
+        if ($directory !== '' && !$filesystem->directoryExists($directory)) {
             return;
         }
 
@@ -185,7 +183,7 @@ class FilesystemSessionStore implements SessionStoreInterface
                 continue;
             }
 
-            $expiresAt = (int) ($decoded["expires_at"] ?? 0);
+            $expiresAt = (int) ($decoded['expires_at'] ?? 0);
 
             if ($expiresAt > 0 && $expiresAt < $nowTimestamp) {
                 $filesystem->delete($location);
@@ -200,11 +198,11 @@ class FilesystemSessionStore implements SessionStoreInterface
      */
     private function location(string $id): string
     {
-        if ($this->path === "") {
-            return $id . ".json";
+        if ($this->path === '') {
+            return $id . '.json';
         }
 
-        return $this->path . "/" . $id . ".json";
+        return $this->path . '/' . $id . '.json';
     }
 
     /**

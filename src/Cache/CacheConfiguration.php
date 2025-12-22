@@ -40,11 +40,11 @@ final class CacheConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultPool = (string) ($config["default_pool"] ?? "array");
-        $this->pools = (array) ($config["pools"] ?? []);
-        $this->routing = (array) ($config["routing"] ?? []);
-        $this->configCache = (array) ($config["config_cache"] ?? []);
-        $this->translations = (array) ($config["translations"] ?? []);
+        $this->defaultPool = (string) ($config['default_pool'] ?? 'array');
+        $this->pools = (array) ($config['pools'] ?? []);
+        $this->routing = (array) ($config['routing'] ?? []);
+        $this->configCache = (array) ($config['config_cache'] ?? []);
+        $this->translations = (array) ($config['translations'] ?? []);
     }
 
     /**

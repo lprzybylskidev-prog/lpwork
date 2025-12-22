@@ -63,41 +63,30 @@ class LogFactory
         \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {
         $channelConfig = $configuration->channel($name);
-        $driver = (string) ($channelConfig["driver"] ?? "stderr");
-        $level = $this->normalizeLevel(
-            (string) ($channelConfig["level"] ?? "debug"),
-        );
-        $bubble = (bool) ($channelConfig["bubble"] ?? true);
+        $driver = (string) ($channelConfig['driver'] ?? 'stderr');
+        $level = $this->normalizeLevel((string) ($channelConfig['level'] ?? 'debug'));
+        $bubble = (bool) ($channelConfig['bubble'] ?? true);
 
-        if ($driver === "stderr") {
-            $handler = $this->createStreamHandler(
-                "php://stderr",
-                $level,
-                $bubble,
-            );
-        } elseif ($driver === "single") {
-            $path = (string) ($channelConfig["path"] ?? "");
+        if ($driver === 'stderr') {
+            $handler = $this->createStreamHandler('php://stderr', $level, $bubble);
+        } elseif ($driver === 'single') {
+            $path = (string) ($channelConfig['path'] ?? '');
 
-            if ($path === "") {
+            if ($path === '') {
                 throw new LoggingConfigurationException(
-                    \sprintf(
-                        'Logging channel "%s" requires "path" for single driver.',
-                        $name,
-                    ),
+                    \sprintf('Logging channel "%s" requires "path" for single driver.', $name),
                 );
             }
 
             $handler = $this->createStreamHandler($path, $level, $bubble);
-        } elseif ($driver === "redis") {
-            $connectionName =
-                (string) ($channelConfig["connection"] ?? "default");
-            $key = (string) ($channelConfig["key"] ?? "logs");
+        } elseif ($driver === 'redis') {
+            $connectionName = (string) ($channelConfig['connection'] ?? 'default');
+            $key = (string) ($channelConfig['key'] ?? 'logs');
             $redisClient = $redisConnections->get($connectionName)->client();
             $handler = new RedisLogHandler($redisClient, $key, $level, $bubble);
-        } elseif ($driver === "database") {
-            $connectionName =
-                (string) ($channelConfig["connection"] ?? "default");
-            $table = (string) ($channelConfig["table"] ?? "logs");
+        } elseif ($driver === 'database') {
+            $connectionName = (string) ($channelConfig['connection'] ?? 'default');
+            $table = (string) ($channelConfig['table'] ?? 'logs');
             $handler = new DatabaseLogHandler(
                 $databaseConnections->get($connectionName)->connection(),
                 $table,
@@ -142,14 +131,14 @@ class LogFactory
     private function normalizeLevel(string $level): MonologLevel
     {
         return match (\strtolower($level)) {
-            "debug" => MonologLevel::Debug,
-            "info" => MonologLevel::Info,
-            "notice" => MonologLevel::Notice,
-            "warning" => MonologLevel::Warning,
-            "error" => MonologLevel::Error,
-            "critical" => MonologLevel::Critical,
-            "alert" => MonologLevel::Alert,
-            "emergency" => MonologLevel::Emergency,
+            'debug' => MonologLevel::Debug,
+            'info' => MonologLevel::Info,
+            'notice' => MonologLevel::Notice,
+            'warning' => MonologLevel::Warning,
+            'error' => MonologLevel::Error,
+            'critical' => MonologLevel::Critical,
+            'alert' => MonologLevel::Alert,
+            'emergency' => MonologLevel::Emergency,
             default => MonologLevel::Info,
         };
     }

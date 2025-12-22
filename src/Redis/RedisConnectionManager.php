@@ -30,10 +30,8 @@ class RedisConnectionManager
      * @param array<string, array<string, mixed>> $configurations
      * @param string                              $defaultConnection
      */
-    public function __construct(
-        array $configurations,
-        string $defaultConnection = "default",
-    ) {
+    public function __construct(array $configurations, string $defaultConnection = 'default')
+    {
         $this->configurations = $configurations;
         $this->defaultConnection = $defaultConnection;
     }
@@ -55,10 +53,7 @@ class RedisConnectionManager
 
         if (!isset($this->configurations[$connectionName])) {
             throw new RedisConnectionNotFoundException(
-                \sprintf(
-                    'Redis connection "%s" is not configured.',
-                    $connectionName,
-                ),
+                \sprintf('Redis connection "%s" is not configured.', $connectionName),
             );
         }
 

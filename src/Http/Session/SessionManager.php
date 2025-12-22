@@ -125,18 +125,14 @@ class SessionManager
             $this->initialId = $state->id();
         }
 
-        $this->store->persist(
-            $state,
-            $cookieParameters,
-            $this->configuration->lifetime(),
-        );
+        $this->store->persist($state, $cookieParameters, $this->configuration->lifetime());
 
         if ($this->store->usesNativeCookie()) {
             return $response;
         }
 
         return $response->withAddedHeader(
-            "Set-Cookie",
+            'Set-Cookie',
             $this->buildCookieHeader($cookieParameters, $state->id()),
         );
     }
@@ -149,7 +145,7 @@ class SessionManager
     public function current(): SessionInterface
     {
         if ($this->currentSession === null) {
-            throw new \LogicException("Session has not been started.");
+            throw new \LogicException('Session has not been started.');
         }
 
         return $this->currentSession;
@@ -162,37 +158,32 @@ class SessionManager
      *
      * @return SessionCookieParameters
      */
-    private function buildCookieParameters(
-        ServerRequestInterface $request,
-    ): SessionCookieParameters {
+    private function buildCookieParameters(ServerRequestInterface $request): SessionCookieParameters
+    {
         $cookie = $this->configuration->cookie();
         $scheme = \strtolower($request->getUri()->getScheme());
-        $forceSecure = (bool) ($cookie["secure"] ?? false);
-        $isHttps = $scheme === "https";
+        $forceSecure = (bool) ($cookie['secure'] ?? false);
+        $isHttps = $scheme === 'https';
         $secure = $forceSecure || $isHttps;
-        $sameSite = \strtolower((string) ($cookie["same_site"] ?? "lax"));
-        $normalizedSameSite = \in_array(
-            $sameSite,
-            ["lax", "strict", "none"],
-            true,
-        )
+        $sameSite = \strtolower((string) ($cookie['same_site'] ?? 'lax'));
+        $normalizedSameSite = \in_array($sameSite, ['lax', 'strict', 'none'], true)
             ? $sameSite
-            : "lax";
+            : 'lax';
 
-        $cookieName = (string) ($cookie["name"] ?? "LPWORKSESSID");
+        $cookieName = (string) ($cookie['name'] ?? 'LPWORKSESSID');
 
-        if ($this->configuration->driver() === "php") {
-            $phpConfig = $this->configuration->driverConfig("php");
-            $cookieName = (string) ($phpConfig["name"] ?? $cookieName);
+        if ($this->configuration->driver() === 'php') {
+            $phpConfig = $this->configuration->driverConfig('php');
+            $cookieName = (string) ($phpConfig['name'] ?? $cookieName);
         }
 
         return new SessionCookieParameters(
             $cookieName,
             $this->configuration->lifetime(),
-            (string) ($cookie["path"] ?? "/"),
-            (string) ($cookie["domain"] ?? ""),
+            (string) ($cookie['path'] ?? '/'),
+            (string) ($cookie['domain'] ?? ''),
             $secure,
-            (bool) ($cookie["http_only"] ?? true),
+            (bool) ($cookie['http_only'] ?? true),
             $normalizedSameSite,
         );
     }
@@ -213,7 +204,7 @@ class SessionManager
 
         $id = $cookies[$cookieParameters->name()] ?? null;
 
-        if ($id === null || $id === "") {
+        if ($id === null || $id === '') {
             return null;
         }
 
@@ -231,27 +222,24 @@ class SessionManager
         string $id,
     ): string {
         $parts = [];
-        $parts[] = \sprintf("%s=%s", $cookieParameters->name(), $id);
-        $parts[] = \sprintf("Max-Age=%d", $cookieParameters->lifetime());
-        $parts[] = \sprintf("Path=%s", $cookieParameters->path());
+        $parts[] = \sprintf('%s=%s', $cookieParameters->name(), $id);
+        $parts[] = \sprintf('Max-Age=%d', $cookieParameters->lifetime());
+        $parts[] = \sprintf('Path=%s', $cookieParameters->path());
 
-        if ($cookieParameters->domain() !== "") {
-            $parts[] = \sprintf("Domain=%s", $cookieParameters->domain());
+        if ($cookieParameters->domain() !== '') {
+            $parts[] = \sprintf('Domain=%s', $cookieParameters->domain());
         }
 
         if ($cookieParameters->secure()) {
-            $parts[] = "Secure";
+            $parts[] = 'Secure';
         }
 
         if ($cookieParameters->httpOnly()) {
-            $parts[] = "HttpOnly";
+            $parts[] = 'HttpOnly';
         }
 
-        $parts[] = \sprintf(
-            "SameSite=%s",
-            \ucfirst(\strtolower($cookieParameters->sameSite())),
-        );
+        $parts[] = \sprintf('SameSite=%s', \ucfirst(\strtolower($cookieParameters->sameSite())));
 
-        return \implode("; ", $parts);
+        return \implode('; ', $parts);
     }
 }

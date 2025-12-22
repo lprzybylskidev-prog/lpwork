@@ -29,25 +29,21 @@ class FrameworkMigrationProvider implements MigrationProviderInterface
      */
     public function getMigrationPaths(): array
     {
-        $paths = [\dirname(__DIR__) . "/Migrations"];
-        $sessionDriver = $this->config->getString("session.driver", "php");
-        $errorLogDriver = $this->config->getString("error_log.driver", "file");
-        $errorLogConnection = $this->config->getString(
-            "error_log.database.connection",
-            "default",
-        );
+        $paths = [\dirname(__DIR__) . '/Migrations'];
+        $sessionDriver = $this->config->getString('session.driver', 'php');
+        $errorLogDriver = $this->config->getString('error_log.driver', 'file');
+        $errorLogConnection = $this->config->getString('error_log.database.connection', 'default');
 
-        if ($sessionDriver === "database") {
-            $paths[] = \dirname(__DIR__) . "/Migrations/Session";
+        if ($sessionDriver === 'database') {
+            $paths[] = \dirname(__DIR__) . '/Migrations/Session';
         }
 
         $migrations = [
-            "default" => $paths,
+            'default' => $paths,
         ];
 
-        if ($errorLogDriver === "database") {
-            $migrations[$errorLogConnection][] =
-                \dirname(__DIR__) . "/Migrations/Error";
+        if ($errorLogDriver === 'database') {
+            $migrations[$errorLogConnection][] = \dirname(__DIR__) . '/Migrations/Error';
         }
 
         return $migrations;

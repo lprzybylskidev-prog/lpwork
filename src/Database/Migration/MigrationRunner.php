@@ -68,25 +68,16 @@ class MigrationRunner
 
         try {
             $versionResolver = $dependencyFactory->getVersionAliasResolver();
-            $latest = $versionResolver->resolveVersionAlias("latest");
+            $latest = $versionResolver->resolveVersionAlias('latest');
 
-            $plan = $dependencyFactory
-                ->getMigrationPlanCalculator()
-                ->getPlanUntilVersion($latest);
-            $migrationsToExecute = $this->mapPlanToExecutedMigrations(
-                $plan->getItems(),
-            );
-            $dependencyFactory
-                ->getMigrator()
-                ->migrate($plan, $this->migratorConfiguration);
+            $plan = $dependencyFactory->getMigrationPlanCalculator()->getPlanUntilVersion($latest);
+            $migrationsToExecute = $this->mapPlanToExecutedMigrations($plan->getItems());
+            $dependencyFactory->getMigrator()->migrate($plan, $this->migratorConfiguration);
 
             return $migrationsToExecute;
         } catch (\Throwable $throwable) {
             throw new MigrationErrorException(
-                \sprintf(
-                    'Migration failed for connection "%s".',
-                    $connectionName,
-                ),
+                \sprintf('Migration failed for connection "%s".', $connectionName),
                 0,
                 $throwable,
             );
@@ -114,40 +105,32 @@ class MigrationRunner
      *
      * @return DependencyFactory
      */
-    private function createDependencyFactory(
-        string $connectionName,
-    ): DependencyFactory {
+    private function createDependencyFactory(string $connectionName): DependencyFactory
+    {
         $paths = $this->collectMigrationPaths($connectionName);
 
         if ($paths === []) {
             throw new MigrationConfigurationException(
-                \sprintf(
-                    'No migration paths configured for connection "%s".',
-                    $connectionName,
-                ),
+                \sprintf('No migration paths configured for connection "%s".', $connectionName),
             );
         }
 
         $migrationsPaths = $this->mapNamespacesToPaths($paths, $connectionName);
 
         $config = new ConfigurationArray([
-            "migrations_paths" => $migrationsPaths,
-            "all_or_nothing" => true,
-            "table_storage" => [
-                "table_name" => "migrations",
+            'migrations_paths' => $migrationsPaths,
+            'all_or_nothing' => true,
+            'table_storage' => [
+                'table_name' => 'migrations',
             ],
         ]);
 
         /** @var Connection $connection */
-        $connection = $this->connectionManager
-            ->get($connectionName)
-            ->connection();
+        $connection = $this->connectionManager->get($connectionName)->connection();
 
         return DependencyFactory::fromConnection(
             $config,
-            new \Doctrine\Migrations\Configuration\Connection\ExistingConnection(
-                $connection,
-            ),
+            new \Doctrine\Migrations\Configuration\Connection\ExistingConnection($connection),
         );
     }
 
@@ -158,11 +141,8 @@ class MigrationRunner
      */
     private function collectMigrationPaths(string $connectionName): array
     {
-        $frameworkPaths =
-            $this->frameworkProvider->getMigrationPaths()[$connectionName] ??
-            [];
-        $appPaths =
-            $this->appProvider->getMigrationPaths()[$connectionName] ?? [];
+        $frameworkPaths = $this->frameworkProvider->getMigrationPaths()[$connectionName] ?? [];
+        $appPaths = $this->appProvider->getMigrationPaths()[$connectionName] ?? [];
 
         $paths = \array_merge($frameworkPaths, $appPaths);
 
@@ -180,10 +160,10 @@ class MigrationRunner
      */
     private function migrationNamespace(string $connectionName): string
     {
-        $normalized = \preg_replace("/[^A-Za-z0-9_]/", "_", $connectionName);
+        $normalized = \preg_replace('/[^A-Za-z0-9_]/', '_', $connectionName);
         $normalized = (string) $normalized;
 
-        return \sprintf("Migrations\\%sConnection", \ucfirst($normalized));
+        return \sprintf('Migrations\\%sConnection', \ucfirst($normalized));
     }
 
     /**
@@ -194,18 +174,14 @@ class MigrationRunner
      *
      * @return array<string, string>
      */
-    private function mapNamespacesToPaths(
-        array $paths,
-        string $connectionName,
-    ): array {
+    private function mapNamespacesToPaths(array $paths, string $connectionName): array
+    {
         $baseNamespace = $this->migrationNamespace($connectionName);
         $mappedPaths = [];
 
         foreach (\array_values($paths) as $index => $path) {
             $namespace =
-                $index === 0
-                    ? $baseNamespace
-                    : \sprintf("%s\\App%d", $baseNamespace, $index);
+                $index === 0 ? $baseNamespace : \sprintf('%s\\App%d', $baseNamespace, $index);
 
             $mappedPaths[$namespace] = $path;
         }
@@ -222,9 +198,7 @@ class MigrationRunner
      */
     public function fresh(string $connectionName): array
     {
-        $connection = $this->connectionManager
-            ->get($connectionName)
-            ->connection();
+        $connection = $this->connectionManager->get($connectionName)->connection();
         $schemaManager = $connection->createSchemaManager();
         $platform = $connection->getDatabasePlatform();
 
@@ -281,18 +255,16 @@ class MigrationRunner
      *
      * @return void
      */
-    private function disableForeignKeys(
-        Connection $connection,
-        object $platform,
-    ): void {
+    private function disableForeignKeys(Connection $connection, object $platform): void
+    {
         if ($platform instanceof MySQLPlatform) {
-            $connection->executeStatement("SET FOREIGN_KEY_CHECKS=0");
+            $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0');
 
             return;
         }
 
         if ($platform instanceof SQLitePlatform) {
-            $connection->executeStatement("PRAGMA foreign_keys = OFF");
+            $connection->executeStatement('PRAGMA foreign_keys = OFF');
         }
     }
 
@@ -302,18 +274,16 @@ class MigrationRunner
      *
      * @return void
      */
-    private function enableForeignKeys(
-        Connection $connection,
-        object $platform,
-    ): void {
+    private function enableForeignKeys(Connection $connection, object $platform): void
+    {
         if ($platform instanceof MySQLPlatform) {
-            $connection->executeStatement("SET FOREIGN_KEY_CHECKS=1");
+            $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1');
 
             return;
         }
 
         if ($platform instanceof SQLitePlatform) {
-            $connection->executeStatement("PRAGMA foreign_keys = ON");
+            $connection->executeStatement('PRAGMA foreign_keys = ON');
         }
     }
 
@@ -330,9 +300,9 @@ class MigrationRunner
 
         foreach ($items as $item) {
             $executed[] = [
-                "version" => (string) $item->getVersion(),
-                "description" => $item->getMigration()->getDescription(),
-                "class" => \get_class($item->getMigration()),
+                'version' => (string) $item->getVersion(),
+                'description' => $item->getMigration()->getDescription(),
+                'class' => \get_class($item->getMigration()),
             ];
         }
 

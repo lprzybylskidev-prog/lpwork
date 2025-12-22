@@ -37,10 +37,10 @@ class PhpConfigLoader
         $configs = [];
 
         /** @var array<int, string> $files */
-        $files = \glob(\rtrim($directory, "/\\") . "/*.php") ?: [];
+        $files = \glob(\rtrim($directory, '/\\') . '/*.php') ?: [];
 
         foreach ($files as $file) {
-            $configName = \basename($file, ".php");
+            $configName = \basename($file, '.php');
             $configs[$configName] = $this->loadFile($file);
         }
 

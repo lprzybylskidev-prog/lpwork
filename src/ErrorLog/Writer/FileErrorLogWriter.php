@@ -53,9 +53,7 @@ class FileErrorLogWriter implements ErrorLogWriterInterface
         $payload = \json_encode($entry->toArray());
 
         if ($payload === false) {
-            throw new ErrorLogWriteException(
-                "Failed to encode error log entry.",
-            );
+            throw new ErrorLogWriteException('Failed to encode error log entry.');
         }
 
         try {
@@ -89,21 +87,21 @@ class FileErrorLogWriter implements ErrorLogWriterInterface
      */
     private function buildPath(ErrorLogEntry $entry): string
     {
-        $baseDir = \rtrim($this->directory, "/");
+        $baseDir = \rtrim($this->directory, '/');
 
-        if ($baseDir === "") {
-            $baseDir = "storage/errors";
+        if ($baseDir === '') {
+            $baseDir = 'storage/errors';
         }
 
         $timestamp = $entry->timestamp();
-        $filename = "errors.log";
+        $filename = 'errors.log';
 
-        if ($this->mode === "daily") {
-            $filename = \sprintf("errors-%s.log", $timestamp->format("Y-m-d"));
-        } elseif ($this->mode === "monthly") {
-            $filename = \sprintf("errors-%s.log", $timestamp->format("Y-m"));
+        if ($this->mode === 'daily') {
+            $filename = \sprintf('errors-%s.log', $timestamp->format('Y-m-d'));
+        } elseif ($this->mode === 'monthly') {
+            $filename = \sprintf('errors-%s.log', $timestamp->format('Y-m'));
         }
 
-        return $baseDir . "/" . $filename;
+        return $baseDir . '/' . $filename;
     }
 }

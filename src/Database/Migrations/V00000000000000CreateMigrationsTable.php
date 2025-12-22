@@ -16,7 +16,7 @@ final class V00000000000000CreateMigrationsTable extends AbstractMigration
      */
     public function getDescription(): string
     {
-        return "Create migrations metadata table";
+        return 'Create migrations metadata table';
     }
 
     /**
@@ -24,15 +24,15 @@ final class V00000000000000CreateMigrationsTable extends AbstractMigration
      */
     public function up(Schema $schema): void
     {
-        if ($schema->hasTable("migrations")) {
+        if ($schema->hasTable('migrations')) {
             return;
         }
 
-        $table = $schema->createTable("migrations");
-        $table->addColumn("version", "string", ["length" => 191]);
-        $table->addColumn("executed_at", "datetime", ["notnull" => false]);
-        $table->addColumn("execution_time", "integer", ["notnull" => false]);
-        $table->setPrimaryKey(["version"]);
+        $table = $schema->createTable('migrations');
+        $table->addColumn('version', 'string', ['length' => 191]);
+        $table->addColumn('executed_at', 'datetime', ['notnull' => false]);
+        $table->addColumn('execution_time', 'integer', ['notnull' => false]);
+        $table->setPrimaryKey(['version']);
     }
 
     /**
@@ -40,8 +40,8 @@ final class V00000000000000CreateMigrationsTable extends AbstractMigration
      */
     public function down(Schema $schema): void
     {
-        if ($schema->hasTable("migrations")) {
-            $schema->dropTable("migrations");
+        if ($schema->hasTable('migrations')) {
+            $schema->dropTable('migrations');
         }
     }
 }

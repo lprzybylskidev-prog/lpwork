@@ -37,11 +37,8 @@ class CachedConfigRepository implements ConfigRepositoryInterface
      * @param CacheItemPoolInterface             $cache
      * @param string                             $cacheKey
      */
-    public function __construct(
-        array $configs,
-        CacheItemPoolInterface $cache,
-        string $cacheKey,
-    ) {
+    public function __construct(array $configs, CacheItemPoolInterface $cache, string $cacheKey)
+    {
         $this->configs = $configs;
         $this->cache = $cache;
         $this->cacheKey = $cacheKey;

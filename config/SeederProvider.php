@@ -20,7 +20,7 @@ class SeederProvider implements SeederProviderInterface
         $defaultSeeders = [];
 
         return [
-            "default" => $defaultSeeders,
+            'default' => $defaultSeeders,
             // "other_connection" => [...],
         ];
     }

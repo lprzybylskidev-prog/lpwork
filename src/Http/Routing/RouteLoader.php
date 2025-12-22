@@ -22,10 +22,8 @@ class RouteLoader
      * @param string      $appRoutesPath
      * @param string|null $builtinRoutesPath
      */
-    public function __construct(
-        string $appRoutesPath,
-        ?string $builtinRoutesPath = null,
-    ) {
+    public function __construct(string $appRoutesPath, ?string $builtinRoutesPath = null)
+    {
         $this->appRoutesPath = $appRoutesPath;
         $this->builtinRoutesPath = $builtinRoutesPath;
     }
@@ -37,10 +35,7 @@ class RouteLoader
     {
         $routes = new RouteCollection();
 
-        if (
-            $this->builtinRoutesPath !== null &&
-            \is_file($this->builtinRoutesPath)
-        ) {
+        if ($this->builtinRoutesPath !== null && \is_file($this->builtinRoutesPath)) {
             $this->includeFile($this->builtinRoutesPath, $routes);
         }
 
@@ -59,10 +54,7 @@ class RouteLoader
      */
     private function includeFile(string $file, RouteCollection $routes): void
     {
-        $loader = static function (
-            RouteCollection $routes,
-            string $path,
-        ): void {
+        $loader = static function (RouteCollection $routes, string $path): void {
             /** @psalm-suppress UnresolvableInclude */
             /** @phpstan-ignore-next-line */
             require $path;

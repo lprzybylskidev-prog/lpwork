@@ -21,12 +21,8 @@ class CliProvider implements ProviderInterface
     {
         $containerBuilder->addDefinitions([
             CliKernel::class => \DI\autowire(CliKernel::class),
-            BuiltinCommandProvider::class => \DI\autowire(
-                BuiltinCommandProvider::class,
-            ),
-            AppCommandProvider::class => \DI\autowire(
-                AppCommandProvider::class,
-            ),
+            BuiltinCommandProvider::class => \DI\autowire(BuiltinCommandProvider::class),
+            AppCommandProvider::class => \DI\autowire(AppCommandProvider::class),
         ]);
     }
 }

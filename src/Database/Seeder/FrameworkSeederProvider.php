@@ -16,7 +16,7 @@ class FrameworkSeederProvider implements SeederProviderInterface
     public function getSeeders(): array
     {
         return [
-            "default" => [],
+            'default' => [],
         ];
     }
 }

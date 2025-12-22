@@ -88,7 +88,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface as SymfonyHttpClientInterfa
 
 if (!\interface_exists(\Psr\Http\Client\ClientInterface::class)) {
     /** @psalm-suppress UnresolvableInclude */
-    require_once \dirname(__DIR__, 2) . "/stubs/psr-http-client.php";
+    require_once \dirname(__DIR__, 2) . '/stubs/psr-http-client.php';
 }
 
 /**
@@ -111,10 +111,10 @@ class CommonProvider implements ProviderInterface
             CacheConfiguration::class => \DI\factory(static function (
                 Env $env,
             ): CacheConfiguration {
-                $configDirectory = \dirname(__DIR__, 2) . "/config/configs";
+                $configDirectory = \dirname(__DIR__, 2) . '/config/configs';
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
-                $cacheConfig = $configs["cache"] ?? [];
+                $cacheConfig = $configs['cache'] ?? [];
 
                 return new CacheConfiguration((array) $cacheConfig);
             }),
@@ -124,20 +124,12 @@ class CommonProvider implements ProviderInterface
             ): TranslationConfiguration {
                 $translationCache = $cacheConfiguration->translations();
                 $translationConfig = [
-                    "locale" => $env->getString("APP_LOCALE", "en"),
-                    "fallback_locale" => $env->getString(
-                        "APP_FALLBACK_LOCALE",
-                        "en",
-                    ),
-                    "path" => \dirname(__DIR__, 2) . "/config/lang",
-                    "cache_enabled" =>
-                        (bool) ($translationCache["enabled"] ?? true),
-                    "cache_pool" => (string) (
-                        $translationCache["pool"] ?? "filesystem"
-                    ),
-                    "cache_prefix" => (string) (
-                        $translationCache["prefix"] ?? "translations:"
-                    ),
+                    'locale' => $env->getString('APP_LOCALE', 'en'),
+                    'fallback_locale' => $env->getString('APP_FALLBACK_LOCALE', 'en'),
+                    'path' => \dirname(__DIR__, 2) . '/config/lang',
+                    'cache_enabled' => (bool) ($translationCache['enabled'] ?? true),
+                    'cache_pool' => (string) ($translationCache['pool'] ?? 'filesystem'),
+                    'cache_prefix' => (string) ($translationCache['prefix'] ?? 'translations:'),
                 ];
 
                 return new TranslationConfiguration($translationConfig);
@@ -146,57 +138,41 @@ class CommonProvider implements ProviderInterface
                 Env $env,
                 CacheConfiguration $cacheConfiguration,
             ): ConfigRepositoryInterface {
-                $configDirectory = \dirname(__DIR__, 2) . "/config/configs";
+                $configDirectory = \dirname(__DIR__, 2) . '/config/configs';
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
                 $configCache = $cacheConfiguration->configCache();
-                $enabled = (bool) ($configCache["enabled"] ?? false);
+                $enabled = (bool) ($configCache['enabled'] ?? false);
 
                 if ($enabled) {
-                    $poolName = (string) ($configCache["pool"] ?? "filesystem");
-                    $key =
-                        (string) ($configCache["key"] ?? "config:repository");
+                    $poolName = (string) ($configCache['pool'] ?? 'filesystem');
+                    $key = (string) ($configCache['key'] ?? 'config:repository');
 
                     try {
                         $poolConfig = $cacheConfiguration->pool($poolName);
-                        $driver = (string) ($poolConfig["driver"] ?? "array");
+                        $driver = (string) ($poolConfig['driver'] ?? 'array');
 
-                        if ($driver === "array") {
-                            $defaultTtl =
-                                (int) ($poolConfig["default_ttl"] ?? 0);
+                        if ($driver === 'array') {
+                            $defaultTtl = (int) ($poolConfig['default_ttl'] ?? 0);
                             $ttlValue = $defaultTtl > 0 ? $defaultTtl : null;
                             $pool = new ArrayAdapter(
                                 storeSerialized: false,
                                 defaultLifetime: $ttlValue,
                             );
 
-                            return new CachedConfigRepository(
-                                $configs,
-                                $pool,
-                                $key,
-                            );
+                            return new CachedConfigRepository($configs, $pool, $key);
                         }
 
-                        if ($driver === "filesystem") {
-                            $defaultTtl =
-                                (int) ($poolConfig["default_ttl"] ?? 0);
+                        if ($driver === 'filesystem') {
+                            $defaultTtl = (int) ($poolConfig['default_ttl'] ?? 0);
                             $ttlValue = $defaultTtl > 0 ? $defaultTtl : null;
-                            $namespace =
-                                (string) ($poolConfig["namespace"] ?? "");
+                            $namespace = (string) ($poolConfig['namespace'] ?? '');
                             $path =
-                                (string) ($poolConfig["path"] ??
-                                    \dirname(__DIR__, 2) . "/storage/cache");
-                            $pool = new FilesystemAdapter(
-                                $namespace,
-                                $ttlValue,
-                                $path,
-                            );
+                                (string) ($poolConfig['path'] ??
+                                    \dirname(__DIR__, 2) . '/storage/cache');
+                            $pool = new FilesystemAdapter($namespace, $ttlValue, $path);
 
-                            return new CachedConfigRepository(
-                                $configs,
-                                $pool,
-                                $key,
-                            );
+                            return new CachedConfigRepository($configs, $pool, $key);
                         }
                     } catch (CacheConfigurationException) {
                         // fall through to non-cached repository
@@ -208,7 +184,7 @@ class CommonProvider implements ProviderInterface
             TimezoneContext::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): TimezoneContext {
-                $timezone = $config->getString("app.timezone", "UTC");
+                $timezone = $config->getString('app.timezone', 'UTC');
 
                 return new TimezoneContext($timezone);
             }),
@@ -226,11 +202,8 @@ class CommonProvider implements ProviderInterface
             RedisConnectionManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): RedisConnectionManager {
-                $connections = $config->get("redis.connections", []);
-                $default = $config->getString(
-                    "redis.default_connection",
-                    "default",
-                );
+                $connections = $config->get('redis.connections', []);
+                $default = $config->getString('redis.default_connection', 'default');
 
                 return new RedisConnectionManager($connections, $default);
             }),
@@ -238,10 +211,7 @@ class CommonProvider implements ProviderInterface
                 RedisConnectionManager $manager,
                 ConfigRepositoryInterface $config,
             ): RedisConnectionInterface {
-                $default = $config->getString(
-                    "redis.default_connection",
-                    "default",
-                );
+                $default = $config->getString('redis.default_connection', 'default');
 
                 return $manager->get($default);
             }),
@@ -249,26 +219,16 @@ class CommonProvider implements ProviderInterface
                 ConfigRepositoryInterface $config,
                 DatabaseTimezoneConfigurator $timezoneConfigurator,
             ): DatabaseConnectionManager {
-                $connections = $config->get("database.connections", []);
-                $default = $config->getString(
-                    "database.default_connection",
-                    "default",
-                );
+                $connections = $config->get('database.connections', []);
+                $default = $config->getString('database.default_connection', 'default');
 
-                return new DatabaseConnectionManager(
-                    $connections,
-                    $default,
-                    $timezoneConfigurator,
-                );
+                return new DatabaseConnectionManager($connections, $default, $timezoneConfigurator);
             }),
             DatabaseConnectionInterface::class => \DI\factory(static function (
                 DatabaseConnectionManager $manager,
                 ConfigRepositoryInterface $config,
             ): DatabaseConnectionInterface {
-                $default = $config->getString(
-                    "database.default_connection",
-                    "default",
-                );
+                $default = $config->getString('database.default_connection', 'default');
 
                 return $manager->get($default);
             }),
@@ -290,23 +250,17 @@ class CommonProvider implements ProviderInterface
             ): Psr16Cache {
                 return new Psr16Cache($pool);
             }),
-            CacheProviderInterface::class => \DI\autowire(
-                DefaultCacheProvider::class,
-            ),
+            CacheProviderInterface::class => \DI\autowire(DefaultCacheProvider::class),
             CacheManager::class => \DI\autowire(CacheManager::class),
             TranslatorFactory::class => \DI\autowire(TranslatorFactory::class),
-            TranslationProvider::class => \DI\autowire(
-                TranslationProvider::class,
-            ),
+            TranslationProvider::class => \DI\autowire(TranslationProvider::class),
             TranslatorInterface::class => \DI\factory(static function (
                 TranslationProvider $provider,
             ): TranslatorInterface {
                 return $provider->createTranslator();
             }),
-            FakerGenerator::class => \DI\factory(static function (
-                Env $env,
-            ): FakerGenerator {
-                $locale = $env->getString("APP_LOCALE", "en");
+            FakerGenerator::class => \DI\factory(static function (Env $env): FakerGenerator {
+                $locale = $env->getString('APP_LOCALE', 'en');
 
                 return FakerFactory::create($locale);
             }),
@@ -316,33 +270,31 @@ class CommonProvider implements ProviderInterface
             StreamFactoryInterface::class => \DI\get(Psr17Factory::class),
             UriFactoryInterface::class => \DI\get(Psr17Factory::class),
             UploadedFileFactoryInterface::class => \DI\get(Psr17Factory::class),
-            ServerRequestFactoryInterface::class => \DI\get(
-                Psr17Factory::class,
-            ),
+            ServerRequestFactoryInterface::class => \DI\get(Psr17Factory::class),
             SymfonyHttpClientInterface::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): SymfonyHttpClientInterface {
                 /** @var array<string, mixed> $httpClient */
-                $httpClient = (array) $config->get("app.http_client", []);
-                $baseUri = \trim((string) ($httpClient["base_uri"] ?? ""));
-                $timeout = (float) ($httpClient["timeout"] ?? 30.0);
-                $maxRedirects = (int) ($httpClient["max_redirects"] ?? 10);
-                $verify = (bool) ($httpClient["verify"] ?? true);
-                $headers = (array) ($httpClient["headers"] ?? []);
+                $httpClient = (array) $config->get('app.http_client', []);
+                $baseUri = \trim((string) ($httpClient['base_uri'] ?? ''));
+                $timeout = (float) ($httpClient['timeout'] ?? 30.0);
+                $maxRedirects = (int) ($httpClient['max_redirects'] ?? 10);
+                $verify = (bool) ($httpClient['verify'] ?? true);
+                $headers = (array) ($httpClient['headers'] ?? []);
 
                 $options = [
-                    "timeout" => $timeout,
-                    "max_redirects" => $maxRedirects,
-                    "verify_peer" => $verify,
-                    "verify_host" => $verify,
+                    'timeout' => $timeout,
+                    'max_redirects' => $maxRedirects,
+                    'verify_peer' => $verify,
+                    'verify_host' => $verify,
                 ];
 
-                if ($baseUri !== "") {
-                    $options["base_uri"] = $baseUri;
+                if ($baseUri !== '') {
+                    $options['base_uri'] = $baseUri;
                 }
 
                 if ($headers !== []) {
-                    $options["headers"] = $headers;
+                    $options['headers'] = $headers;
                 }
 
                 return HttpClient::create($options);
@@ -352,15 +304,9 @@ class CommonProvider implements ProviderInterface
                 StreamFactoryInterface $streamFactory,
                 ResponseFactoryInterface $responseFactory,
             ): ClientInterface {
-                return new Psr18Client(
-                    $httpClient,
-                    $responseFactory,
-                    $streamFactory,
-                );
+                return new Psr18Client($httpClient, $responseFactory, $streamFactory);
             }),
-            EventDispatcherFactory::class => \DI\autowire(
-                EventDispatcherFactory::class,
-            ),
+            EventDispatcherFactory::class => \DI\autowire(EventDispatcherFactory::class),
             EventProviderInterface::class => \DI\get(\Config\EventProvider::class),
             EventDispatcher::class => \DI\factory(static function (
                 EventDispatcherFactory $factory,
@@ -374,52 +320,32 @@ class CommonProvider implements ProviderInterface
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): FilesystemManager {
-                $disks = $config->get("filesystem.disks", []);
-                $default = $config->getString(
-                    "filesystem.default_disk",
-                    "local",
-                );
+                $disks = $config->get('filesystem.disks', []);
+                $default = $config->getString('filesystem.default_disk', 'local');
 
                 return new FilesystemManager($disks, $default);
             }),
             RouteLoader::class => \DI\autowire(RouteLoader::class)->constructor(
-                \dirname(__DIR__, 2) . "/config/routes/routes.php",
-                \dirname(__DIR__) . "/Http/Routes/routes.php",
+                \dirname(__DIR__, 2) . '/config/routes/routes.php',
+                \dirname(__DIR__) . '/Http/Routes/routes.php',
             ),
-            FrameworkMigrationProvider::class => \DI\autowire(
-                FrameworkMigrationProvider::class,
-            ),
-            MigrationProviderInterface::class => \DI\get(
-                \Config\MigrationProvider::class,
-            ),
+            FrameworkMigrationProvider::class => \DI\autowire(FrameworkMigrationProvider::class),
+            MigrationProviderInterface::class => \DI\get(\Config\MigrationProvider::class),
             MigrationRunner::class => \DI\autowire(MigrationRunner::class)
                 ->constructorParameter(
-                    "frameworkProvider",
+                    'frameworkProvider',
                     \DI\get(FrameworkMigrationProvider::class),
                 )
-                ->constructorParameter(
-                    "appProvider",
-                    \DI\get(\Config\MigrationProvider::class),
-                ),
-            FrameworkSeederProvider::class => \DI\autowire(
-                FrameworkSeederProvider::class,
-            ),
-            SeederProviderInterface::class => \DI\get(
-                \Config\SeederProvider::class,
-            ),
+                ->constructorParameter('appProvider', \DI\get(\Config\MigrationProvider::class)),
+            FrameworkSeederProvider::class => \DI\autowire(FrameworkSeederProvider::class),
+            SeederProviderInterface::class => \DI\get(\Config\SeederProvider::class),
             SeederRunner::class => \DI\autowire(SeederRunner::class)
-                ->constructorParameter(
-                    "frameworkProvider",
-                    \DI\get(FrameworkSeederProvider::class),
-                )
-                ->constructorParameter(
-                    "appProvider",
-                    \DI\get(\Config\SeederProvider::class),
-                ),
+                ->constructorParameter('frameworkProvider', \DI\get(FrameworkSeederProvider::class))
+                ->constructorParameter('appProvider', \DI\get(\Config\SeederProvider::class)),
             ErrorLogConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): ErrorLogConfiguration {
-                $errorLogConfig = $config->get("error_log", []);
+                $errorLogConfig = $config->get('error_log', []);
 
                 return new ErrorLogConfiguration((array) $errorLogConfig);
             }),
@@ -437,14 +363,12 @@ class CommonProvider implements ProviderInterface
                     $filesystemManager,
                 );
             }),
-            ErrorIdProviderInterface::class => \DI\autowire(
-                ErrorIdProvider::class,
-            ),
+            ErrorIdProviderInterface::class => \DI\autowire(ErrorIdProvider::class),
             ErrorLoggerInterface::class => \DI\autowire(ErrorLogger::class),
             LogConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): LogConfiguration {
-                $loggingConfig = $config->get("logging", []);
+                $loggingConfig = $config->get('logging', []);
 
                 return new LogConfiguration((array) $loggingConfig);
             }),
@@ -466,13 +390,11 @@ class CommonProvider implements ProviderInterface
             SessionConfiguration::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): SessionConfiguration {
-                $sessionConfig = $config->get("session", []);
+                $sessionConfig = $config->get('session', []);
 
                 return new SessionConfiguration((array) $sessionConfig);
             }),
-            SessionIdGeneratorInterface::class => \DI\autowire(
-                RandomSessionIdGenerator::class,
-            ),
+            SessionIdGeneratorInterface::class => \DI\autowire(RandomSessionIdGenerator::class),
             SessionStoreInterface::class => \DI\factory(static function (
                 SessionConfiguration $config,
                 SessionIdGeneratorInterface $idGenerator,
@@ -483,18 +405,17 @@ class CommonProvider implements ProviderInterface
             ): SessionStoreInterface {
                 $driver = $config->driver();
 
-                if ($driver === "php") {
-                    $phpConfig = $config->driverConfig("php");
-                    $name = (string) ($phpConfig["name"] ?? "LPWORKSESSID");
+                if ($driver === 'php') {
+                    $phpConfig = $config->driverConfig('php');
+                    $name = (string) ($phpConfig['name'] ?? 'LPWORKSESSID');
 
                     return new PhpSessionStore($name, $clock);
                 }
 
-                if ($driver === "redis") {
-                    $redisConfig = $config->driverConfig("redis");
-                    $connection =
-                        (string) ($redisConfig["connection"] ?? "default");
-                    $prefix = (string) ($redisConfig["prefix"] ?? "session:");
+                if ($driver === 'redis') {
+                    $redisConfig = $config->driverConfig('redis');
+                    $connection = (string) ($redisConfig['connection'] ?? 'default');
+                    $prefix = (string) ($redisConfig['prefix'] ?? 'session:');
 
                     return new RedisSessionStore(
                         $redisConnections,
@@ -505,11 +426,10 @@ class CommonProvider implements ProviderInterface
                     );
                 }
 
-                if ($driver === "database") {
-                    $dbConfig = $config->driverConfig("database");
-                    $connection =
-                        (string) ($dbConfig["connection"] ?? "default");
-                    $table = (string) ($dbConfig["table"] ?? "sessions");
+                if ($driver === 'database') {
+                    $dbConfig = $config->driverConfig('database');
+                    $connection = (string) ($dbConfig['connection'] ?? 'default');
+                    $table = (string) ($dbConfig['table'] ?? 'sessions');
 
                     return new DatabaseSessionStore(
                         $databaseConnections,
@@ -520,10 +440,10 @@ class CommonProvider implements ProviderInterface
                     );
                 }
 
-                if ($driver === "filesystem") {
-                    $fsConfig = $config->driverConfig("filesystem");
-                    $disk = (string) ($fsConfig["disk"] ?? "local");
-                    $path = (string) ($fsConfig["path"] ?? "sessions");
+                if ($driver === 'filesystem') {
+                    $fsConfig = $config->driverConfig('filesystem');
+                    $disk = (string) ($fsConfig['disk'] ?? 'local');
+                    $path = (string) ($fsConfig['path'] ?? 'sessions');
 
                     return new FilesystemSessionStore(
                         $filesystemManager,

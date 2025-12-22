@@ -22,14 +22,12 @@ class FastRouteDispatcherFactory
      */
     public function create(RouteCollection $routes): Dispatcher
     {
-        return simpleDispatcher(static function (
-            RouteCollector $collector,
-        ) use ($routes): void {
+        return simpleDispatcher(static function (RouteCollector $collector) use ($routes): void {
             foreach ($routes->all() as $route) {
                 $collector->addRoute($route->methods(), $route->path(), [
-                    "handler" => $route->handler(),
-                    "name" => $route->name(),
-                    "middleware" => $route->middleware(),
+                    'handler' => $route->handler(),
+                    'name' => $route->name(),
+                    'middleware' => $route->middleware(),
                 ]);
             }
         });
@@ -60,9 +58,9 @@ class FastRouteDispatcherFactory
 
         foreach ($routes->all() as $route) {
             $collector->addRoute($route->methods(), $route->path(), [
-                "handler" => $route->handler(),
-                "name" => $route->name(),
-                "middleware" => $route->middleware(),
+                'handler' => $route->handler(),
+                'name' => $route->name(),
+                'middleware' => $route->middleware(),
             ]);
         }
 

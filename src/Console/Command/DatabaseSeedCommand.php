@@ -53,50 +53,43 @@ class DatabaseSeedCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:database:seed")
-            ->setAliases(["database:seed", "db:seed"])
-            ->setDescription("Run database seeders")
+        $this->setName('lpwork:database:seed')
+            ->setAliases(['database:seed', 'db:seed'])
+            ->setDescription('Run database seeders')
             ->addArgument(
-                "connection",
+                'connection',
                 InputArgument::OPTIONAL,
-                "Connection name",
+                'Connection name',
                 $this->connectionManager->getDefaultConnectionName(),
             )
             ->addOption(
-                "all",
+                'all',
                 null,
                 InputOption::VALUE_NONE,
-                "Run seeders for all configured connections",
+                'Run seeders for all configured connections',
             );
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
-        $env = $this->config->getString("app.env", "prod");
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $env = $this->config->getString('app.env', 'prod');
 
-        if ($env !== "dev") {
-            $output->writeln(
-                "<error>database:seed is allowed only in dev environment.</error>",
-            );
+        if ($env !== 'dev') {
+            $output->writeln('<error>database:seed is allowed only in dev environment.</error>');
 
             return Command::FAILURE;
         }
 
-        if ($input->getOption("all")) {
+        if ($input->getOption('all')) {
             foreach ($this->connectionManager->getConnectionNames() as $name) {
                 $count = $this->seederRunner->seed($name);
 
                 if ($count === 0) {
                     $output->writeln(
-                        \sprintf(
-                            '<comment>No seeders registered for "%s".</comment>',
-                            $name,
-                        ),
+                        \sprintf('<comment>No seeders registered for "%s".</comment>', $name),
                     );
                 } else {
                     $output->writeln(
@@ -112,15 +105,12 @@ class DatabaseSeedCommand extends Command
             return Command::SUCCESS;
         }
 
-        $connection = (string) $input->getArgument("connection");
+        $connection = (string) $input->getArgument('connection');
         $count = $this->seederRunner->seed($connection);
 
         if ($count === 0) {
             $output->writeln(
-                \sprintf(
-                    '<comment>No seeders registered for "%s".</comment>',
-                    $connection,
-                ),
+                \sprintf('<comment>No seeders registered for "%s".</comment>', $connection),
             );
         } else {
             $output->writeln(

@@ -48,16 +48,13 @@ class RedisConfig
      */
     public function __construct(array $config)
     {
-        $this->scheme = (string) ($config["scheme"] ?? "tcp");
-        $this->host = (string) ($config["host"] ?? "127.0.0.1");
-        $this->port = (int) ($config["port"] ?? 6379);
-        $this->database = (int) ($config["database"] ?? 0);
-        $this->username =
-            $config["username"] !== "" ? $config["username"] ?? null : null;
-        $this->password =
-            $config["password"] !== "" ? $config["password"] ?? null : null;
-        $this->prefix =
-            $config["prefix"] !== "" ? $config["prefix"] ?? null : null;
+        $this->scheme = (string) ($config['scheme'] ?? 'tcp');
+        $this->host = (string) ($config['host'] ?? '127.0.0.1');
+        $this->port = (int) ($config['port'] ?? 6379);
+        $this->database = (int) ($config['database'] ?? 0);
+        $this->username = $config['username'] !== '' ? $config['username'] ?? null : null;
+        $this->password = $config['password'] !== '' ? $config['password'] ?? null : null;
+        $this->prefix = $config['prefix'] !== '' ? $config['prefix'] ?? null : null;
     }
 
     /**
@@ -66,12 +63,12 @@ class RedisConfig
     public function toParameters(): array
     {
         return [
-            "scheme" => $this->scheme,
-            "host" => $this->host,
-            "port" => $this->port,
-            "database" => $this->database,
-            "username" => $this->username,
-            "password" => $this->password,
+            'scheme' => $this->scheme,
+            'host' => $this->host,
+            'port' => $this->port,
+            'database' => $this->database,
+            'username' => $this->username,
+            'password' => $this->password,
         ];
     }
 
@@ -83,7 +80,7 @@ class RedisConfig
         $options = [];
 
         if ($this->prefix !== null) {
-            $options["prefix"] = $this->prefix;
+            $options['prefix'] = $this->prefix;
         }
 
         return $options;

@@ -16,7 +16,7 @@ class MigrationProvider implements MigrationProviderInterface
     public function getMigrationPaths(): array
     {
         return [
-            "default" => [\dirname(__DIR__) . "/database/migrations"],
+            'default' => [\dirname(__DIR__) . '/database/migrations'],
             // "other_connection" => [...],
         ];
     }

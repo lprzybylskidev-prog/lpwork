@@ -48,33 +48,31 @@ class DatabaseErrorLogWriter implements ErrorLogWriterInterface
      */
     public function write(ErrorLogEntry $entry): void
     {
-        $connection = $this->connections
-            ->get($this->connectionName)
-            ->connection();
+        $connection = $this->connections->get($this->connectionName)->connection();
 
         $payload = $entry->toArray();
-        $contextJson = \json_encode($payload["context"]);
+        $contextJson = \json_encode($payload['context']);
 
         if ($contextJson === false) {
-            throw new ErrorLogWriteException("Failed to encode error context.");
+            throw new ErrorLogWriteException('Failed to encode error context.');
         }
 
         try {
             $connection->insert($this->table, [
-                "id" => $entry->id(),
-                "level" => $entry->level(),
-                "code" => $entry->code(),
-                "message" => $entry->message(),
-                "exception_class" => $entry->exceptionClass(),
-                "file" => $entry->file(),
-                "line" => $entry->line(),
-                "trace" => $entry->trace(),
-                "context" => $contextJson,
-                "created_at" => $entry->timestamp()->format("Y-m-d H:i:s"),
+                'id' => $entry->id(),
+                'level' => $entry->level(),
+                'code' => $entry->code(),
+                'message' => $entry->message(),
+                'exception_class' => $entry->exceptionClass(),
+                'file' => $entry->file(),
+                'line' => $entry->line(),
+                'trace' => $entry->trace(),
+                'context' => $contextJson,
+                'created_at' => $entry->timestamp()->format('Y-m-d H:i:s'),
             ]);
         } catch (\Throwable $throwable) {
             throw new ErrorLogWriteException(
-                "Failed to insert error log entry into database.",
+                'Failed to insert error log entry into database.',
                 0,
                 $throwable,
             );

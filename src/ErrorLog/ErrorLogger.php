@@ -64,11 +64,7 @@ class ErrorLogger implements ErrorLoggerInterface
         try {
             $this->writer->write($entry);
         } catch (\Throwable $exception) {
-            throw new ErrorLogWriteException(
-                "Failed to write error log entry.",
-                0,
-                $exception,
-            );
+            throw new ErrorLogWriteException('Failed to write error log entry.', 0, $exception);
         }
 
         $this->errorIdProvider->setCurrentErrorId($errorId);
@@ -95,7 +91,7 @@ class ErrorLogger implements ErrorLoggerInterface
         $file = $throwable->getFile();
         $message = $throwable->getMessage();
         $exceptionClass = \get_class($throwable);
-        $context["level"] = $this->configuration->level();
+        $context['level'] = $this->configuration->level();
 
         return new ErrorLogEntry(
             $errorId,

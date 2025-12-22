@@ -58,12 +58,12 @@ class DatabaseLogHandler extends AbstractProcessingHandler
         $createdAt = $record->datetime->getTimestamp();
 
         $this->connection->insert($this->table, [
-            "channel" => $record->channel,
-            "level" => $record->level->value,
-            "message" => $record->message,
-            "context" => $context,
-            "extra" => $extra,
-            "created_at" => $createdAt,
+            'channel' => $record->channel,
+            'level' => $record->level->value,
+            'message' => $record->message,
+            'context' => $context,
+            'extra' => $extra,
+            'created_at' => $createdAt,
         ]);
     }
 
@@ -77,7 +77,7 @@ class DatabaseLogHandler extends AbstractProcessingHandler
         $encoded = \json_encode($payload);
 
         if ($encoded === false) {
-            return "{}";
+            return '{}';
         }
 
         return $encoded;

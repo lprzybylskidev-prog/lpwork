@@ -71,31 +71,24 @@ class CacheClearCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:cache:clear")
-            ->setAliases(["cache:clear"])
-            ->setDescription("Clear cache pools")
+        $this->setName('lpwork:cache:clear')
+            ->setAliases(['cache:clear'])
+            ->setDescription('Clear cache pools')
             ->addArgument(
-                "pool",
+                'pool',
                 InputArgument::OPTIONAL,
-                "Cache pool name (default if omitted, all when --all)",
+                'Cache pool name (default if omitted, all when --all)',
             )
-            ->addOption(
-                "all",
-                null,
-                InputOption::VALUE_NONE,
-                "Clear all pools",
-            );
+            ->addOption('all', null, InputOption::VALUE_NONE, 'Clear all pools');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
-        $poolArg = (string) ($input->getArgument("pool") ?? "");
-        $all = (bool) $input->getOption("all");
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $poolArg = (string) ($input->getArgument('pool') ?? '');
+        $all = (bool) $input->getOption('all');
         $pools = $this->resolvePools($poolArg, $all);
 
         foreach ($pools as $poolName) {
@@ -112,9 +105,7 @@ class CacheClearCommand extends Command
                 $this->provider->clear($poolName, $pool);
             }
 
-            $output->writeln(
-                \sprintf('<info>Cache pool "%s" cleared.</info>', $poolName),
-            );
+            $output->writeln(\sprintf('<info>Cache pool "%s" cleared.</info>', $poolName));
         }
 
         return Command::SUCCESS;
@@ -132,7 +123,7 @@ class CacheClearCommand extends Command
             return \array_keys($this->configuration->pools());
         }
 
-        if ($poolArg !== "") {
+        if ($poolArg !== '') {
             return [$poolArg];
         }
 

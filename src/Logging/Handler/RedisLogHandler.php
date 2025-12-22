@@ -45,12 +45,12 @@ class RedisLogHandler extends AbstractProcessingHandler
     protected function write(\Monolog\LogRecord $record): void
     {
         $payload = $this->jsonEncode([
-            "channel" => $record->channel,
-            "level" => $record->level->value,
-            "message" => $record->message,
-            "context" => $record->context,
-            "extra" => $record->extra,
-            "datetime" => $record->datetime->format(\DateTimeInterface::ATOM),
+            'channel' => $record->channel,
+            'level' => $record->level->value,
+            'message' => $record->message,
+            'context' => $record->context,
+            'extra' => $record->extra,
+            'datetime' => $record->datetime->format(\DateTimeInterface::ATOM),
         ]);
 
         $this->client->rpush($this->key, [$payload]);
@@ -66,7 +66,7 @@ class RedisLogHandler extends AbstractProcessingHandler
         $encoded = \json_encode($payload);
 
         if ($encoded === false) {
-            return "{}";
+            return '{}';
         }
 
         return $encoded;

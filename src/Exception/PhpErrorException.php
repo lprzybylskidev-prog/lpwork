@@ -24,13 +24,6 @@ class PhpErrorException extends \ErrorException
         int $line,
         ?\Throwable $previous = null,
     ) {
-        parent::__construct(
-            $message,
-            $code,
-            $severity,
-            $file,
-            $line,
-            $previous,
-        );
+        parent::__construct($message, $code, $severity, $file, $line, $previous);
     }
 }

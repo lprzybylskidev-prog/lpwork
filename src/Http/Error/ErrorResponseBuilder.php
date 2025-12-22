@@ -29,10 +29,8 @@ class ErrorResponseBuilder
      * @param ConfigRepositoryInterface $config
      * @param Psr17Factory              $psr17Factory
      */
-    public function __construct(
-        ConfigRepositoryInterface $config,
-        Psr17Factory $psr17Factory,
-    ) {
+    public function __construct(ConfigRepositoryInterface $config, Psr17Factory $psr17Factory)
+    {
         $this->config = $config;
         $this->psr17Factory = $psr17Factory;
     }
@@ -55,24 +53,23 @@ class ErrorResponseBuilder
     ): ResponseInterface {
         $isDev = $this->isDev();
         $body = [
-            "code" => $status,
+            'code' => $status,
         ];
 
         if ($this->shouldExposeApiErrorId()) {
-            $body["error_id"] = $errorId;
+            $body['error_id'] = $errorId;
         }
 
         if ($isDev) {
-            $body["message"] = $message ?? "Error";
-            $body["trace"] =
-                $throwable !== null ? $throwable->getTraceAsString() : null;
+            $body['message'] = $message ?? 'Error';
+            $body['trace'] = $throwable !== null ? $throwable->getTraceAsString() : null;
         }
 
         $json = \json_encode($body, \JSON_THROW_ON_ERROR);
 
         $response = $this->psr17Factory->createResponse($status);
         $response = $this->applyErrorIdHeader($response, $errorId);
-        $response = $response->withHeader("Content-Type", "application/json");
+        $response = $response->withHeader('Content-Type', 'application/json');
 
         return $response->withBody($this->psr17Factory->createStream($json));
     }
@@ -96,28 +93,24 @@ class ErrorResponseBuilder
             $whoops->pushHandler(new PrettyPageHandler());
 
             $html = $whoops->handleException(
-                $throwable ?? new \RuntimeException("HTTP error", $status),
+                $throwable ?? new \RuntimeException('HTTP error', $status),
             );
 
             $response = $this->psr17Factory->createResponse($status);
             $response = $this->applyErrorIdHeader($response, $errorId);
 
             return $response
-                ->withHeader("Content-Type", "text/html")
+                ->withHeader('Content-Type', 'text/html')
                 ->withBody($this->psr17Factory->createStream($html));
         }
 
-        $html = \sprintf(
-            "<h1>Error</h1><p>Code: %d</p><p>Error ID: %s</p>",
-            $status,
-            $errorId,
-        );
+        $html = \sprintf('<h1>Error</h1><p>Code: %d</p><p>Error ID: %s</p>', $status, $errorId);
 
         $response = $this->psr17Factory->createResponse($status);
         $response = $this->applyErrorIdHeader($response, $errorId);
 
         return $response
-            ->withHeader("Content-Type", "text/html")
+            ->withHeader('Content-Type', 'text/html')
             ->withBody($this->psr17Factory->createStream($html));
     }
 
@@ -126,7 +119,7 @@ class ErrorResponseBuilder
      */
     private function isDev(): bool
     {
-        return $this->config->getString("app.env", "prod") === "dev";
+        return $this->config->getString('app.env', 'prod') === 'dev';
     }
 
     /**
@@ -134,10 +127,7 @@ class ErrorResponseBuilder
      */
     private function shouldExposeHeader(): bool
     {
-        return (bool) $this->config->getBool(
-            "error_log.response.expose_header",
-            true,
-        );
+        return (bool) $this->config->getBool('error_log.response.expose_header', true);
     }
 
     /**
@@ -145,10 +135,7 @@ class ErrorResponseBuilder
      */
     private function headerName(): string
     {
-        return $this->config->getString(
-            "error_log.response.header_name",
-            "X-Error-Id",
-        );
+        return $this->config->getString('error_log.response.header_name', 'X-Error-Id');
     }
 
     /**
@@ -156,10 +143,7 @@ class ErrorResponseBuilder
      */
     private function shouldExposeApiErrorId(): bool
     {
-        return (bool) $this->config->getBool(
-            "error_log.response.expose_api_payload",
-            true,
-        );
+        return (bool) $this->config->getBool('error_log.response.expose_api_payload', true);
     }
 
     /**

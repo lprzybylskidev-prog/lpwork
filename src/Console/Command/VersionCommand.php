@@ -32,18 +32,16 @@ class VersionCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:version")
-            ->setAliases(["version"])
-            ->setDescription("Show LPwork framework version");
+        $this->setName('lpwork:version')
+            ->setAliases(['version'])
+            ->setDescription('Show LPwork framework version');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
         $output->writeln($this->version->get());
 
         return Command::SUCCESS;

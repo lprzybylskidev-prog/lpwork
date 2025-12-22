@@ -14,11 +14,11 @@ return [
      * max_execution_time: execution time limit in seconds; 0 disables the limit.
      */
     // Path to PHP error log file; empty uses php.ini.
-    "error_log" => $env->getString("PHP_ERROR_LOG", ""),
+    'error_log' => $env->getString('PHP_ERROR_LOG', ''),
     // PHP error reporting level string.
-    "error_reporting" => $env->getString("PHP_ERROR_REPORTING", "E_ALL"),
+    'error_reporting' => $env->getString('PHP_ERROR_REPORTING', 'E_ALL'),
     // Memory limit for PHP scripts.
-    "memory_limit" => $env->getString("PHP_MEMORY_LIMIT", "-1"),
+    'memory_limit' => $env->getString('PHP_MEMORY_LIMIT', '-1'),
     // Max execution time in seconds.
-    "max_execution_time" => $env->getInt("PHP_MAX_EXECUTION_TIME", 0),
+    'max_execution_time' => $env->getInt('PHP_MAX_EXECUTION_TIME', 0),
 ];

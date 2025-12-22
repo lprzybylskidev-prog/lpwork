@@ -16,7 +16,7 @@ final class V20250101000000CreateSessionsTable extends AbstractMigration
      */
     public function getDescription(): string
     {
-        return "Create sessions table for database session driver";
+        return 'Create sessions table for database session driver';
     }
 
     /**
@@ -24,17 +24,17 @@ final class V20250101000000CreateSessionsTable extends AbstractMigration
      */
     public function up(Schema $schema): void
     {
-        if ($schema->hasTable("sessions")) {
+        if ($schema->hasTable('sessions')) {
             return;
         }
 
-        $table = $schema->createTable("sessions");
-        $table->addColumn("id", "string", ["length" => 128]);
-        $table->addColumn("payload", "text");
-        $table->addColumn("last_activity", "integer");
-        $table->addColumn("expires_at", "integer", ["notnull" => false]);
-        $table->setPrimaryKey(["id"]);
-        $table->addIndex(["expires_at"]);
+        $table = $schema->createTable('sessions');
+        $table->addColumn('id', 'string', ['length' => 128]);
+        $table->addColumn('payload', 'text');
+        $table->addColumn('last_activity', 'integer');
+        $table->addColumn('expires_at', 'integer', ['notnull' => false]);
+        $table->setPrimaryKey(['id']);
+        $table->addIndex(['expires_at']);
     }
 
     /**
@@ -42,8 +42,8 @@ final class V20250101000000CreateSessionsTable extends AbstractMigration
      */
     public function down(Schema $schema): void
     {
-        if ($schema->hasTable("sessions")) {
-            $schema->dropTable("sessions");
+        if ($schema->hasTable('sessions')) {
+            $schema->dropTable('sessions');
         }
     }
 }

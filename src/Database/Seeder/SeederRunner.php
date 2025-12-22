@@ -57,9 +57,7 @@ class SeederRunner
         }
 
         /** @var \Doctrine\DBAL\Connection $connection */
-        $connection = $this->connectionManager
-            ->get($connectionName)
-            ->connection();
+        $connection = $this->connectionManager->get($connectionName)->connection();
 
         foreach ($seeders as $seeder) {
             $seeder->run();
@@ -75,8 +73,7 @@ class SeederRunner
      */
     private function collectSeeders(string $connectionName): array
     {
-        $frameworkSeeders =
-            $this->frameworkProvider->getSeeders()[$connectionName] ?? [];
+        $frameworkSeeders = $this->frameworkProvider->getSeeders()[$connectionName] ?? [];
         $appSeeders = $this->appProvider->getSeeders()[$connectionName] ?? [];
 
         return \array_values(\array_merge($frameworkSeeders, $appSeeders));

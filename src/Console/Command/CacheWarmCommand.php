@@ -71,26 +71,24 @@ class CacheWarmCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:cache")
-            ->setAliases(["cache:warm"])
-            ->setDescription("Warm cache pools")
+        $this->setName('lpwork:cache')
+            ->setAliases(['cache:warm'])
+            ->setDescription('Warm cache pools')
             ->addArgument(
-                "pool",
+                'pool',
                 InputArgument::OPTIONAL,
-                "Cache pool name (default if omitted, all when --all)",
+                'Cache pool name (default if omitted, all when --all)',
             )
-            ->addOption("all", null, InputOption::VALUE_NONE, "Warm all pools");
+            ->addOption('all', null, InputOption::VALUE_NONE, 'Warm all pools');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
-        $poolArg = (string) ($input->getArgument("pool") ?? "");
-        $all = (bool) $input->getOption("all");
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $poolArg = (string) ($input->getArgument('pool') ?? '');
+        $all = (bool) $input->getOption('all');
 
         $pools = $this->resolvePools($poolArg, $all);
 
@@ -106,9 +104,7 @@ class CacheWarmCommand extends Command
                 $this->provider->warm($poolName, $pool);
             }
 
-            $output->writeln(
-                \sprintf('<info>Cache pool "%s" warmed.</info>', $poolName),
-            );
+            $output->writeln(\sprintf('<info>Cache pool "%s" warmed.</info>', $poolName));
         }
 
         return Command::SUCCESS;
@@ -126,7 +122,7 @@ class CacheWarmCommand extends Command
             return \array_keys($this->configuration->pools());
         }
 
-        if ($poolArg !== "") {
+        if ($poolArg !== '') {
             return [$poolArg];
         }
 

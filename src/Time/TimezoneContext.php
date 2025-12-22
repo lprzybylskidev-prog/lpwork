@@ -27,8 +27,8 @@ final class TimezoneContext
     {
         $normalized = \trim($timezone);
 
-        if ($normalized === "") {
-            $normalized = "UTC";
+        if ($normalized === '') {
+            $normalized = 'UTC';
         }
 
         try {

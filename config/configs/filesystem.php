@@ -5,10 +5,7 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
-$root = $env->getString(
-    "FILESYSTEM_LOCAL_ROOT",
-    \dirname(__DIR__, 2) . "/storage",
-);
+$root = $env->getString('FILESYSTEM_LOCAL_ROOT', \dirname(__DIR__, 2) . '/storage');
 
 return [
     /**
@@ -18,13 +15,13 @@ return [
      * disks.local.root: absolute/root path for local storage.
      */
     // Default filesystem disk name.
-    "default_disk" => "local",
-    "disks" => [
-        "local" => [
+    'default_disk' => 'local',
+    'disks' => [
+        'local' => [
             // Driver type for this disk.
-            "driver" => "local",
+            'driver' => 'local',
             // Root directory for the local disk.
-            "root" => $root,
+            'root' => $root,
         ],
         // Additional disks (e.g., "logs", "cache") can be added here.
     ],

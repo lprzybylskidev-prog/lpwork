@@ -87,11 +87,7 @@ final class Session implements SessionInterface
      */
     public function with(string $key, mixed $value): SessionInterface
     {
-        $newState = $this->state->with(
-            $key,
-            $value,
-            $this->clock->now()->getTimestamp(),
-        );
+        $newState = $this->state->with($key, $value, $this->clock->now()->getTimestamp());
 
         return $this->refresh($newState);
     }
@@ -101,10 +97,7 @@ final class Session implements SessionInterface
      */
     public function without(string $key): SessionInterface
     {
-        $newState = $this->state->without(
-            $key,
-            $this->clock->now()->getTimestamp(),
-        );
+        $newState = $this->state->without($key, $this->clock->now()->getTimestamp());
 
         return $this->refresh($newState);
     }
@@ -125,10 +118,7 @@ final class Session implements SessionInterface
     public function regenerateId(): SessionInterface
     {
         $newId = $this->idGenerator->generate();
-        $newState = $this->state->withId(
-            $newId,
-            $this->clock->now()->getTimestamp(),
-        );
+        $newState = $this->state->withId($newId, $this->clock->now()->getTimestamp());
 
         return $this->refresh($newState);
     }
@@ -144,11 +134,6 @@ final class Session implements SessionInterface
     {
         $this->context->update($state);
 
-        return new self(
-            $state,
-            $this->context,
-            $this->idGenerator,
-            $this->clock,
-        );
+        return new self($state, $this->context, $this->idGenerator, $this->clock);
     }
 }

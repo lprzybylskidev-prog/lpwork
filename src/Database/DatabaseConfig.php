@@ -24,7 +24,7 @@ class DatabaseConfig
     public function __construct(array $config)
     {
         $this->config = $config;
-        $this->driver = (string) ($config["driver"] ?? "pdo_mysql");
+        $this->driver = (string) ($config['driver'] ?? 'pdo_mysql');
     }
 
     /**
@@ -33,19 +33,19 @@ class DatabaseConfig
     public function toConnectionParams(): array
     {
         $params = [
-            "driver" => $this->driver,
-            "host" => $this->config["host"] ?? "127.0.0.1",
-            "port" => $this->config["port"] ?? null,
-            "dbname" => $this->config["database"] ?? null,
-            "user" => $this->config["username"] ?? null,
-            "password" => $this->config["password"] ?? null,
-            "charset" => $this->config["charset"] ?? "utf8mb4",
-            "url" => $this->config["url"] ?? null,
+            'driver' => $this->driver,
+            'host' => $this->config['host'] ?? '127.0.0.1',
+            'port' => $this->config['port'] ?? null,
+            'dbname' => $this->config['database'] ?? null,
+            'user' => $this->config['username'] ?? null,
+            'password' => $this->config['password'] ?? null,
+            'charset' => $this->config['charset'] ?? 'utf8mb4',
+            'url' => $this->config['url'] ?? null,
         ];
 
-        if ($this->driver === "pdo_sqlite") {
-            $params["path"] = $this->config["path"] ?? null;
-            unset($params["host"], $params["port"]);
+        if ($this->driver === 'pdo_sqlite') {
+            $params['path'] = $this->config['path'] ?? null;
+            unset($params['host'], $params['port']);
         }
 
         return $params;

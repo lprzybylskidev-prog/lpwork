@@ -34,36 +34,28 @@ final class ErrorLogWriterFactory
         $driver = $config->driver();
         $config->assertSupportedDriver($driver);
 
-        if ($driver === "file") {
+        if ($driver === 'file') {
             $fileConfig = $config->file();
-            $mode = (string) ($fileConfig["mode"] ?? "daily");
-            $directory = (string) ($fileConfig["directory"] ?? "");
+            $mode = (string) ($fileConfig['mode'] ?? 'daily');
+            $directory = (string) ($fileConfig['directory'] ?? '');
 
-            return new FileErrorLogWriter(
-                $mode,
-                $directory,
-                $filesystemManager,
-            );
+            return new FileErrorLogWriter($mode, $directory, $filesystemManager);
         }
 
-        if ($driver === "database") {
+        if ($driver === 'database') {
             $dbConfig = $config->database();
-            $connection = (string) ($dbConfig["connection"] ?? "default");
-            $table = (string) ($dbConfig["table"] ?? "errors");
+            $connection = (string) ($dbConfig['connection'] ?? 'default');
+            $table = (string) ($dbConfig['table'] ?? 'errors');
 
-            return new DatabaseErrorLogWriter(
-                $databaseConnections,
-                $connection,
-                $table,
-            );
+            return new DatabaseErrorLogWriter($databaseConnections, $connection, $table);
         }
 
-        if ($driver === "redis") {
+        if ($driver === 'redis') {
             $redisConfig = $config->redis();
-            $connection = (string) ($redisConfig["connection"] ?? "default");
-            $prefix = (string) ($redisConfig["prefix"] ?? "errors:");
-            $ttl = (int) ($redisConfig["ttl"] ?? 0);
-            $maxEntries = (int) ($redisConfig["max_entries"] ?? 0);
+            $connection = (string) ($redisConfig['connection'] ?? 'default');
+            $prefix = (string) ($redisConfig['prefix'] ?? 'errors:');
+            $ttl = (int) ($redisConfig['ttl'] ?? 0);
+            $maxEntries = (int) ($redisConfig['max_entries'] ?? 0);
 
             return new RedisErrorLogWriter(
                 $redisConnections,

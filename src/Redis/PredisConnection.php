@@ -22,10 +22,7 @@ class PredisConnection implements RedisConnectionInterface
      */
     public function __construct(RedisConfig $config)
     {
-        $this->client = new Client(
-            $config->toParameters(),
-            $config->toOptions(),
-        );
+        $this->client = new Client($config->toParameters(), $config->toOptions());
     }
 
     /**

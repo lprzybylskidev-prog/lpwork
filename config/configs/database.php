@@ -5,10 +5,10 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
-$timezone = \trim($env->getString("APP_TIMEZONE", "UTC"));
+$timezone = \trim($env->getString('APP_TIMEZONE', 'UTC'));
 
-if ($timezone === "") {
-    $timezone = "UTC";
+if ($timezone === '') {
+    $timezone = 'UTC';
 }
 
 return [
@@ -22,30 +22,27 @@ return [
      * connections.*.timezone: session timezone applied on connect (APP_TIMEZONE, fallback UTC). SQLite ignores it; other drivers run SET TIME ZONE/session equivalent.
      */
     // Name of the default database connection.
-    "default_connection" => "default",
-    "connections" => [
-        "default" => [
+    'default_connection' => 'default',
+    'connections' => [
+        'default' => [
             // DBAL driver identifier.
-            "driver" => $env->getString("DB_DRIVER", "pdo_sqlite"),
+            'driver' => $env->getString('DB_DRIVER', 'pdo_sqlite'),
             // Hostname for networked drivers (ignored for SQLite).
-            "host" => $env->getString("DB_HOST", "127.0.0.1"),
+            'host' => $env->getString('DB_HOST', '127.0.0.1'),
             // Port for networked drivers (ignored for SQLite).
-            "port" => $env->getInt("DB_PORT", 3306),
+            'port' => $env->getInt('DB_PORT', 3306),
             // Database/schema name for networked drivers.
-            "database" => $env->getString("DB_DATABASE", ""),
+            'database' => $env->getString('DB_DATABASE', ''),
             // Username for networked drivers.
-            "username" => $env->getString("DB_USERNAME", ""),
+            'username' => $env->getString('DB_USERNAME', ''),
             // Password for networked drivers.
-            "password" => $env->getString("DB_PASSWORD", ""),
+            'password' => $env->getString('DB_PASSWORD', ''),
             // SQLite file path or DSN/host for other drivers.
-            "path" => $env->getString(
-                "DB_PATH",
-                \dirname(__DIR__, 2) . "/storage/db.sqlite3",
-            ),
+            'path' => $env->getString('DB_PATH', \dirname(__DIR__, 2) . '/storage/db.sqlite3'),
             // Character set for drivers that support it.
-            "charset" => $env->getString("DB_CHARSET", "utf8mb4"),
+            'charset' => $env->getString('DB_CHARSET', 'utf8mb4'),
             // Session timezone applied after connect (APP_TIMEZONE with UTC fallback, aliases allowed).
-            "timezone" => $timezone,
+            'timezone' => $timezone,
         ],
         // Additional named connections can be added here.
     ],
