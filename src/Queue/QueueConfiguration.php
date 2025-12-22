@@ -21,12 +21,18 @@ final class QueueConfiguration
     private array $queues;
 
     /**
+     * @var array<string, mixed>
+     */
+    private array $retry;
+
+    /**
      * @param array<string, mixed> $config
      */
     public function __construct(array $config)
     {
         $this->defaultQueue = (string) ($config['default_queue'] ?? 'default');
         $this->queues = (array) ($config['queues'] ?? []);
+        $this->retry = (array) ($config['retry'] ?? []);
     }
 
     /**
@@ -57,5 +63,13 @@ final class QueueConfiguration
     public function queues(): array
     {
         return $this->queues;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function retry(): array
+    {
+        return $this->retry;
     }
 }

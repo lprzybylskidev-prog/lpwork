@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Queue;
 
-use Carbon\CarbonImmutable;
-use LPwork\Queue\Contract\QueueDriverInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Dispatches jobs to configured queues.
@@ -17,11 +16,18 @@ class QueueDispatcher
     private QueueManager $queues;
 
     /**
-     * @param QueueManager $queues
+     * @var MessageBusInterface
      */
-    public function __construct(QueueManager $queues)
+    private MessageBusInterface $bus;
+
+    /**
+     * @param QueueManager $queues
+     * @param MessageBusInterface $bus
+     */
+    public function __construct(QueueManager $queues, MessageBusInterface $bus)
     {
         $this->queues = $queues;
+        $this->bus = $bus;
     }
 
     /**
@@ -46,22 +52,11 @@ class QueueDispatcher
             $payload,
             attempts: 0,
             maxAttempts: $maxAttempts,
-            availableAt: new CarbonImmutable(),
+            availableAt: null,
         );
 
-        $driver = $this->driver($queue);
-        $driver->push($job);
+        $this->bus->dispatch($job);
 
         return $jobId;
-    }
-
-    /**
-     * @param string|null $queue
-     *
-     * @return QueueDriverInterface
-     */
-    private function driver(?string $queue): QueueDriverInterface
-    {
-        return $this->queues->queue($queue);
     }
 }
