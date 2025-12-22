@@ -23,6 +23,7 @@ class LogFactory
      * @param LogConfiguration           $configuration
      * @param RedisConnectionManager     $redisConnections
      * @param DatabaseConnectionManager  $databaseConnections
+     * @param \Carbon\CarbonImmutable    $clock
      *
      * @return LoggerInterface
      */
@@ -30,6 +31,7 @@ class LogFactory
         LogConfiguration $configuration,
         RedisConnectionManager $redisConnections,
         DatabaseConnectionManager $databaseConnections,
+        \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {
         $defaultChannel = $configuration->defaultChannel();
 
@@ -38,6 +40,7 @@ class LogFactory
             $configuration,
             $redisConnections,
             $databaseConnections,
+            $clock,
         );
     }
 
@@ -48,6 +51,7 @@ class LogFactory
      * @param LogConfiguration           $configuration
      * @param RedisConnectionManager     $redisConnections
      * @param DatabaseConnectionManager  $databaseConnections
+     * @param \Carbon\CarbonImmutable    $clock
      *
      * @return LoggerInterface
      */
@@ -56,6 +60,7 @@ class LogFactory
         LogConfiguration $configuration,
         RedisConnectionManager $redisConnections,
         DatabaseConnectionManager $databaseConnections,
+        \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {
         $channelConfig = $configuration->channel($name);
         $driver = (string) ($channelConfig["driver"] ?? "stderr");
@@ -106,6 +111,7 @@ class LogFactory
         }
 
         $logger = new Logger($name);
+        $logger->setTimezone($clock->getTimezone());
         $logger->pushHandler($handler);
 
         return $logger;

@@ -324,11 +324,13 @@ class CommonProvider implements ProviderInterface
                 LogConfiguration $configuration,
                 RedisConnectionManager $redisConnections,
                 DatabaseConnectionManager $databaseConnections,
+                CarbonImmutable $now,
             ): LoggerInterface {
                 return $factory->createDefault(
                     $configuration,
                     $redisConnections,
                     $databaseConnections,
+                    $now,
                 );
             }),
             SessionConfiguration::class => \DI\factory(static function (
