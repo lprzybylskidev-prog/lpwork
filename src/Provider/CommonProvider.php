@@ -18,6 +18,10 @@ use LPwork\Cache\CacheFactory;
 use LPwork\Cache\CacheManager;
 use LPwork\Cache\DefaultCacheProvider;
 use LPwork\Cache\Contract\CacheProviderInterface;
+use LPwork\Event\Contract\EventBusInterface;
+use LPwork\Event\Contract\EventProviderInterface;
+use LPwork\Event\EventBus;
+use LPwork\Event\EventDispatcherFactory;
 use LPwork\Translation\TranslationConfiguration;
 use LPwork\Translation\TranslatorFactory;
 use LPwork\Translation\TranslationProvider;
@@ -63,10 +67,13 @@ use LPwork\Version\FrameworkVersion;
 use Psr\Log\LoggerInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Registers services shared between HTTP and CLI runtimes.
@@ -287,6 +294,19 @@ class CommonProvider implements ProviderInterface
 
                 return FakerFactory::create($locale);
             }),
+            EventDispatcherFactory::class => \DI\autowire(
+                EventDispatcherFactory::class,
+            ),
+            EventProviderInterface::class => \DI\get(\Config\EventProvider::class),
+            EventDispatcher::class => \DI\factory(static function (
+                EventDispatcherFactory $factory,
+                EventProviderInterface $provider,
+            ): EventDispatcher {
+                return $factory->create($provider);
+            }),
+            EventDispatcherInterface::class => \DI\get(EventDispatcher::class),
+            ListenerProviderInterface::class => \DI\get(EventDispatcher::class),
+            EventBusInterface::class => \DI\autowire(EventBus::class),
             FilesystemManager::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
             ): FilesystemManager {
