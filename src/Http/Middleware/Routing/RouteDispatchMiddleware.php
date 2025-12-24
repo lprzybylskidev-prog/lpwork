@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Container\ContainerInterface;
+use LPwork\Http\Request\RequestContext;
 
 /**
  * Dispatches a matched route handler, applying route-specific middlewares.
@@ -35,14 +36,21 @@ class RouteDispatchMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
-        $routeHandler = $request->getAttribute('route_handler');
+        /** @var RequestContext|null $context */
+        $context = $request->getAttribute(RequestContext::ATTRIBUTE);
+
+        if ($context === null) {
+            return new Response(500, [], 'Route handler not resolved');
+        }
+
+        $routeHandler = $context->handler();
 
         if ($routeHandler === null) {
             return new Response(500, [], 'Route handler not resolved');
         }
 
-        /** @var array<int, string> $routeMiddleware */
-        $routeMiddleware = $request->getAttribute('route_middleware', []);
+        /** @var array<int, callable|string|\Psr\Http\Server\MiddlewareInterface> $routeMiddleware */
+        $routeMiddleware = $context->middleware();
 
         $finalHandler = new class ($routeHandler) implements RequestHandlerInterface {
             /**
@@ -81,8 +89,8 @@ class RouteDispatchMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param array<int, string>      $middlewareClassNames
-     * @param RequestHandlerInterface $finalHandler
+     * @param array<int, callable|string|\Psr\Http\Server\MiddlewareInterface> $middlewareClassNames
+     * @param RequestHandlerInterface                                          $finalHandler
      *
      * @return RequestHandlerInterface
      */
@@ -92,8 +100,8 @@ class RouteDispatchMiddleware implements MiddlewareInterface
     ): RequestHandlerInterface {
         $handler = $finalHandler;
 
-        foreach (\array_reverse($middlewareClassNames) as $middlewareClass) {
-            $middleware = $this->instantiateMiddleware($middlewareClass);
+        foreach (\array_reverse($middlewareClassNames) as $middlewareDefinition) {
+            $middleware = $this->instantiateMiddleware($middlewareDefinition);
 
             $handler = new class ($middleware, $handler) implements RequestHandlerInterface {
                 /**
@@ -132,14 +140,38 @@ class RouteDispatchMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string $middlewareClass
+     * @param callable|string|\Psr\Http\Server\MiddlewareInterface $middlewareDefinition
      *
      * @return \Psr\Http\Server\MiddlewareInterface
      */
     private function instantiateMiddleware(
-        string $middlewareClass,
+        callable|string|\Psr\Http\Server\MiddlewareInterface $middlewareDefinition,
     ): \Psr\Http\Server\MiddlewareInterface {
-        if (!\class_exists($middlewareClass)) {
+        if ($middlewareDefinition instanceof \Psr\Http\Server\MiddlewareInterface) {
+            return $middlewareDefinition;
+        }
+
+        if (\is_callable($middlewareDefinition) && !\is_string($middlewareDefinition)) {
+            $resolved = $middlewareDefinition($this->container);
+
+            if ($resolved instanceof \Psr\Http\Server\MiddlewareInterface) {
+                return $resolved;
+            }
+
+            return new class implements \Psr\Http\Server\MiddlewareInterface {
+                /**
+                 * @inheritDoc
+                 */
+                public function process(
+                    ServerRequestInterface $request,
+                    RequestHandlerInterface $handler,
+                ): ResponseInterface {
+                    return new Response(500, [], 'Invalid route middleware');
+                }
+            };
+        }
+
+        if (!\is_string($middlewareDefinition) || !\class_exists($middlewareDefinition)) {
             return new class implements \Psr\Http\Server\MiddlewareInterface {
                 /**
                  * @inheritDoc
@@ -153,7 +185,7 @@ class RouteDispatchMiddleware implements MiddlewareInterface
             };
         }
 
-        $middleware = $this->container->get($middlewareClass);
+        $middleware = $this->container->get($middlewareDefinition);
 
         if (!$middleware instanceof \Psr\Http\Server\MiddlewareInterface) {
             return new class implements \Psr\Http\Server\MiddlewareInterface {

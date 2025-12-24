@@ -227,13 +227,22 @@ final class DevErrorPageRenderer implements DevErrorPageRendererInterface
     {
         $request = $context->request();
         $request['error_id'] = $context->id();
+        $route = [];
 
-        return [
+        if (isset($request['route'])) {
+            $route = (array) $request['route'];
+            unset($request['route']);
+        }
+
+        $tables = [
             'APP' => $context->app(),
+            'ROUTE' => $route !== [] ? $route : ['info' => 'no route context'],
             'REQUEST' => $request,
             'SESSION' => $context->session(),
             'ENV' => $context->env(),
         ];
+
+        return $tables;
     }
 
     /**

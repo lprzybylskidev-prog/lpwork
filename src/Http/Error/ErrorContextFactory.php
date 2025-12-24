@@ -6,6 +6,8 @@ namespace LPwork\Http\Error;
 use Carbon\CarbonImmutable;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Http\Middleware\SessionMiddleware;
+use LPwork\Http\Request\RequestContext;
+use LPwork\Http\Request\RequestContextStore;
 use LPwork\Http\Session\Contract\SessionInterface;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -76,7 +78,7 @@ class ErrorContextFactory
      */
     private function requestData(ServerRequestInterface $request): array
     {
-        return [
+        $data = [
             'method' => $request->getMethod(),
             'uri' => (string) $request->getUri(),
             'query_string' => $request->getUri()->getQuery(),
@@ -86,6 +88,41 @@ class ErrorContextFactory
             'headers' => $request->getHeaders(),
             'cookies' => $request->getCookieParams(),
         ];
+
+        /** @var RequestContext|null $context */
+        $context = $request->getAttribute(RequestContext::ATTRIBUTE);
+
+        if ($context instanceof RequestContext) {
+            $data['route'] = [
+                'name' => $context->routeName(),
+                'parameters' => $context->parameters(),
+                'middleware' => $context->middleware(),
+            ];
+        } else {
+            $contextFromStore = RequestContextStore::get();
+
+            if ($contextFromStore instanceof RequestContext) {
+                $data['route'] = [
+                    'name' => $contextFromStore->routeName(),
+                    'parameters' => $contextFromStore->parameters(),
+                    'middleware' => $contextFromStore->middleware(),
+                ];
+            }
+
+            $legacyName = $request->getAttribute('route_name');
+            $legacyParams = $request->getAttribute('route_params', []);
+            $legacyMiddleware = $request->getAttribute('route_middleware', []);
+
+            if ($legacyName !== null || $legacyParams !== [] || $legacyMiddleware !== []) {
+                $data['route'] = [
+                    'name' => \is_string($legacyName) ? $legacyName : null,
+                    'parameters' => \is_array($legacyParams) ? $legacyParams : [],
+                    'middleware' => \is_array($legacyMiddleware) ? $legacyMiddleware : [],
+                ];
+            }
+        }
+
+        return $data;
     }
 
     /**

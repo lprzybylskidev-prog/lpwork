@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use LPwork\Http\Routing\RouteCollection;
+use LPwork\Http\Request\RequestContext;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -10,7 +11,13 @@ use Psr\Http\Message\ServerRequestInterface;
 $routes->get(
     '/error/{code:\\d+}/{id}',
     static function (ServerRequestInterface $request): Response {
-        $params = $request->getAttribute('route_params', []);
+        $context = $request->getAttribute(RequestContext::ATTRIBUTE);
+        $params = [];
+
+        if ($context instanceof \LPwork\Http\Request\RequestContext) {
+            $params = $context->parameters();
+        }
+
         $code = (int) ($params['code'] ?? 500);
         $errorId = $params['id'] ?? '';
 

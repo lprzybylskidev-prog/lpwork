@@ -7,6 +7,7 @@ use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\Http\Error\ErrorResponseBuilder;
 use LPwork\Http\Error\ErrorContextFactory;
+use LPwork\Http\Request\RequestContextStore;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -64,6 +65,7 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         RequestHandlerInterface $handler,
     ): ResponseInterface {
         $this->errorIdProvider->clear();
+        RequestContextStore::clear();
 
         try {
             $response = $handler->handle($request);
@@ -87,7 +89,9 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
                 $throwable,
             );
             $errorId = $context->id();
-            $this->errorLogger->log($throwable, ['error_context' => $context->toArray()]);
+            $this->errorLogger->log($throwable, [
+                'error_context' => $context->toArray(),
+            ]);
 
             return $this->renderError(
                 $request,

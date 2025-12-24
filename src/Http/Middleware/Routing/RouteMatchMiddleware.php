@@ -9,6 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use LPwork\Http\Request\RequestContext;
+use LPwork\Http\Request\RequestContextStore;
 
 /**
  * Matches the incoming request to a route definition.
@@ -46,11 +48,15 @@ class RouteMatchMiddleware implements MiddlewareInterface
                 $routeInfo = $result[1];
                 $params = $result[2];
 
-                $request = $request
-                    ->withAttribute('route_handler', $routeInfo['handler'])
-                    ->withAttribute('route_name', $routeInfo['name'])
-                    ->withAttribute('route_middleware', $routeInfo['middleware'])
-                    ->withAttribute('route_params', $params);
+                $context = new RequestContext(
+                    $routeInfo['name'],
+                    $routeInfo['handler'],
+                    $routeInfo['middleware'],
+                    $params,
+                );
+
+                $request = $request->withAttribute(RequestContext::ATTRIBUTE, $context);
+                RequestContextStore::set($context);
 
                 return $handler->handle($request);
         }
