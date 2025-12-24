@@ -1,4 +1,5 @@
 /vendor/
+/node_modules/
 
 .env
 .env.*
@@ -20,7 +21,6 @@
 /storage/sessions/*
 !/storage/sessions/.gitkeep
 
-/app/*
 !/app/.gitkeep
 
 *.log
