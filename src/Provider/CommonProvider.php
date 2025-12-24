@@ -124,6 +124,8 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 if (!\interface_exists(\Psr\Http\Client\ClientInterface::class)) {
     /** @psalm-suppress UnresolvableInclude */
@@ -475,6 +477,52 @@ class CommonProvider implements ProviderInterface
                 ResponseFactoryInterface $responseFactory,
             ): ClientInterface {
                 return new Psr18Client($httpClient, $responseFactory, $streamFactory);
+            }),
+            ValidatorBuilder::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+                TranslatorInterface $translator,
+                CacheFactory $cacheFactory,
+                CacheConfiguration $cacheConfiguration,
+                RedisConnectionManager $redisConnections,
+                DatabaseConnectionManager $databaseConnections,
+            ): ValidatorBuilder {
+                $settings = (array) $config->get('validation', []);
+                $builder = \Symfony\Component\Validator\Validation::createValidatorBuilder();
+
+                $builder->setTranslator($translator);
+                $builder->setTranslationDomain(
+                    (string) ($settings['translation_domain'] ?? 'validators'),
+                );
+
+                $mappingPaths = $settings['constraint_mapping_paths'] ?? [];
+                if (\is_array($mappingPaths) && $mappingPaths !== []) {
+                    foreach ($mappingPaths as $path) {
+                        $builder->addXmlMapping((string) $path);
+                        $builder->addYamlMapping((string) $path);
+                    }
+                }
+
+                if ((bool) ($settings['cache_enabled'] ?? false)) {
+                    $poolName = (string) ($settings['cache_pool'] ?? 'filesystem');
+                    try {
+                        $pool = $cacheFactory->createPool(
+                            $poolName,
+                            $cacheConfiguration,
+                            $redisConnections,
+                            $databaseConnections,
+                        );
+                        $builder->setMappingCache($pool);
+                    } catch (\Throwable) {
+                        // ignore cache setup failures
+                    }
+                }
+
+                return $builder;
+            }),
+            ValidatorInterface::class => \DI\factory(static function (
+                ValidatorBuilder $builder,
+            ): ValidatorInterface {
+                return $builder->getValidator();
             }),
             EventDispatcherFactory::class => \DI\autowire(EventDispatcherFactory::class),
             EventProviderInterface::class => \DI\get(\Config\EventProvider::class),
