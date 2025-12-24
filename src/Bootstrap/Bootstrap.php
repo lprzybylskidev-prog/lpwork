@@ -14,6 +14,7 @@ use LPwork\Kernel\HttpKernel;
 use LPwork\Provider\CliProvider;
 use LPwork\Provider\CommonProvider;
 use LPwork\Provider\Contract\ProviderInterface;
+use LPwork\Provider\ProviderFactory;
 use LPwork\Provider\HttpProvider;
 use LPwork\Runtime\RuntimeType;
 use LPwork\Time\TimezoneContext;
@@ -24,6 +25,20 @@ use Config\AppProvider;
  */
 class Bootstrap
 {
+    /**
+     * Builds a lightweight container used to instantiate providers.
+     *
+     * @return Container
+     */
+    private function buildProviderContainer(): Container
+    {
+        $builder = new ContainerBuilder();
+        $builder->useAutowiring(true);
+        $builder->useAttributes(true);
+
+        return $builder->build();
+    }
+
     /**
      * Boots the framework for the detected runtime context.
      *
@@ -70,7 +85,9 @@ class Bootstrap
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAttributes(true);
 
-        foreach ($this->resolveProviders($runtimeType) as $provider) {
+        $providerFactory = new ProviderFactory($this->buildProviderContainer());
+
+        foreach ($this->resolveProviders($runtimeType, $providerFactory) as $provider) {
             $provider->register($containerBuilder);
         }
 
@@ -81,17 +98,23 @@ class Bootstrap
      * Returns providers required for the current runtime.
      *
      * @param RuntimeType $runtimeType
+     * @param ProviderFactory $providerFactory
      *
      * @return array<int, ProviderInterface>
      */
-    private function resolveProviders(RuntimeType $runtimeType): array
-    {
-        $providers = [new CommonProvider(), new AppProvider()];
+    private function resolveProviders(
+        RuntimeType $runtimeType,
+        ProviderFactory $providerFactory,
+    ): array {
+        $providers = [
+            $providerFactory->create(CommonProvider::class),
+            $providerFactory->create(AppProvider::class),
+        ];
 
         if ($runtimeType === RuntimeType::Cli) {
-            $providers[] = new CliProvider();
+            $providers[] = $providerFactory->create(CliProvider::class);
         } else {
-            $providers[] = new HttpProvider();
+            $providers[] = $providerFactory->create(HttpProvider::class);
         }
 
         return $providers;
