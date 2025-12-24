@@ -11,6 +11,7 @@ use LPwork\Console\Command\CacheClearCommand;
 use LPwork\Console\Command\DatabaseSeedCommand;
 use LPwork\Console\Command\QueueWorkCommand;
 use LPwork\Console\Command\QueueFlushCommand;
+use LPwork\Console\Command\WebSocketServeCommand;
 use LPwork\Console\Contract\CommandProviderInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -47,6 +48,7 @@ class BuiltinCommandProvider implements CommandProviderInterface
             $this->container->get(DatabaseSeedCommand::class),
             $this->container->get(QueueWorkCommand::class),
             $this->container->get(QueueFlushCommand::class),
+            $this->container->get(WebSocketServeCommand::class),
         ];
     }
 }

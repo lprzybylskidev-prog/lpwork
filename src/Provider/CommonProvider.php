@@ -39,6 +39,7 @@ use LPwork\Queue\Messenger\QueueTransport;
 use LPwork\Queue\Messenger\QueueJobHandler;
 use LPwork\Console\Command\QueueWorkCommand;
 use LPwork\Console\Command\QueueFlushCommand;
+use LPwork\Console\Command\WebSocketServeCommand;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
@@ -92,6 +93,10 @@ use LPwork\Http\Session\Store\PhpSessionStore;
 use LPwork\Http\Session\Store\RedisSessionStore;
 use LPwork\Redis\Contract\RedisConnectionInterface;
 use LPwork\Redis\RedisConnectionManager;
+use LPwork\WebSocket\WebSocketConfiguration;
+use LPwork\WebSocket\WebSocketServerFactory;
+use LPwork\WebSocket\Contract\WebSocketComponentRegistryInterface;
+use LPwork\WebSocket\Component\NullWebSocketComponent;
 use LPwork\Provider\Contract\ProviderInterface;
 use LPwork\Time\CarbonClock;
 use LPwork\Time\TimezoneContext;
@@ -422,6 +427,16 @@ class CommonProvider implements ProviderInterface
                 ->parameter('queueSendersContainer', \DI\get('queue.senders.container'))
                 ->parameter('retryStrategyLocator', \DI\get('queue.retry.strategy_locator')),
             QueueFlushCommand::class => \DI\autowire(QueueFlushCommand::class),
+            WebSocketConfiguration::class => \DI\factory(static function (
+                ConfigRepositoryInterface $config,
+            ): WebSocketConfiguration {
+                $wsConfig = (array) $config->get('websocket', []);
+
+                return new WebSocketConfiguration($wsConfig);
+            }),
+            WebSocketComponentRegistryInterface::class => \DI\get(\Config\WebSocketProvider::class),
+            WebSocketServerFactory::class => \DI\autowire(WebSocketServerFactory::class),
+            WebSocketServeCommand::class => \DI\autowire(WebSocketServeCommand::class),
             TranslatorFactory::class => \DI\autowire(TranslatorFactory::class),
             TranslationProvider::class => \DI\autowire(TranslationProvider::class),
             TranslatorInterface::class => \DI\factory(static function (
