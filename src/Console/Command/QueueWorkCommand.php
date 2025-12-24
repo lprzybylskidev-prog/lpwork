@@ -76,6 +76,7 @@ class QueueWorkCommand extends Command
     protected function configure(): void
     {
         $this->setName('lpwork:queue:work')
+            ->setAliases(['queue:work'])
             ->setDescription('Process jobs from a queue')
             ->addOption('queue', null, InputOption::VALUE_OPTIONAL, 'Queue name', null)
             ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds when idle', 1)

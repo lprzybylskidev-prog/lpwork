@@ -53,6 +53,7 @@ class WebSocketServeCommand extends Command
     protected function configure(): void
     {
         $this->setName('lpwork:websocket:serve')
+            ->setAliases(['websocket:serve'])
             ->setDescription('Start the WebSocket server')
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Bind host')
             ->addOption('port', null, InputOption::VALUE_OPTIONAL, 'Bind port')
