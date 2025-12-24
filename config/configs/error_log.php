@@ -5,16 +5,16 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Error log settings and drivers.
+ * driver: storage backend (file, redis, database).
+ * level: reserved for future severity filtering; all exceptions are logged as error.
+ * file.*: settings for file backend (rotation mode and directory).
+ * database.*: settings for DB backend (connection/table).
+ * redis.*: settings for Redis backend (connection/prefix/TTL/list limit).
+ * response.*: propagation of error identifiers to clients.
+ */
 return [
-    /**
-     * Error log settings and drivers.
-     * driver: storage backend (file, redis, database).
-     * level: reserved for future severity filtering; all exceptions are logged as error.
-     * file.*: settings for file backend (rotation mode and directory).
-     * database.*: settings for DB backend (connection/table).
-     * redis.*: settings for Redis backend (connection/prefix/TTL/list limit).
-     * response.*: propagation of error identifiers to clients.
-     */
     // Active error log driver.
     'driver' => $env->getString('ERROR_LOG_DRIVER', 'file'),
     // Logical level for filtering (reserved, currently unused).

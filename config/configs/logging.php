@@ -5,17 +5,17 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Application logging configuration (PSR-3 via Monolog).
+ * default_channel: channel used when no channel is specified.
+ * channels.*: named channels with driver-specific settings.
+ * Supported drivers:
+ * - stderr (php://stderr)
+ * - single (file path)
+ * - redis (Predis connection, list key/prefix)
+ * - database (PDO via Doctrine connection, user-provided table)
+ */
 return [
-    /**
-     * Application logging configuration (PSR-3 via Monolog).
-     * default_channel: channel used when no channel is specified.
-     * channels.*: named channels with driver-specific settings.
-     * Supported drivers:
-     * - stderr (php://stderr)
-     * - single (file path)
-     * - redis (Predis connection, list key/prefix)
-     * - database (PDO via Doctrine connection, user-provided table)
-     */
     // Name of the default logging channel.
     'default_channel' => $env->getString('LOG_DEFAULT_CHANNEL', 'stderr'),
     'channels' => [

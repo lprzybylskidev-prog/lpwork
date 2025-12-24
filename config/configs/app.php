@@ -11,18 +11,18 @@ if ($timezone === '') {
     $timezone = 'UTC';
 }
 
+/**
+ * Application identity and base URL settings.
+ * name: human-readable identifier shown in logs/metadata.
+ * version: semantic or free-form version label of the framework/app.
+ * env: runtime mode (dev/prod/test) used by various guards.
+ * timezone: default timezone applied globally (PSR-20 clock + Carbon), trimmed and falling back to UTC when empty; accepts any IANA name (aliases allowed) and fails fast on invalid.
+ * locale: default language/locale identifier.
+ * scheme: base scheme for URL generation (http/https).
+ * url: full base URL including host and port.
+ * http_client: default PSR-18 client options used by the framework/app.
+ */
 return [
-    /**
-     * Application identity and base URL settings.
-     * name: human-readable identifier shown in logs/metadata.
-     * version: semantic or free-form version label of the framework/app.
-     * env: runtime mode (dev/prod/test) used by various guards.
-     * timezone: default timezone applied globally (PSR-20 clock + Carbon), trimmed and falling back to UTC when empty; accepts any IANA name (aliases allowed) and fails fast on invalid.
-     * locale: default language/locale identifier.
-     * scheme: base scheme for URL generation (http/https).
-     * url: full base URL including host and port.
-     * http_client: default PSR-18 client options used by the framework/app.
-     */
     // Application name used across logging and diagnostics.
     'name' => $env->getString('APP_NAME', 'LPwork'),
     // Application/framework version label.

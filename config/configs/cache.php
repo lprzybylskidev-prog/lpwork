@@ -5,15 +5,15 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Cache configuration (PSR-6/16).
+ * default_pool: name of the pool used when none specified.
+ * pools.*: named cache pools with driver-specific settings.
+ * Supported drivers: array, filesystem, redis, pdo.
+ * routing: cache settings for FastRoute dispatcher (optional).
+ * config_cache: cache settings for configuration repository (optional).
+ */
 return [
-    /**
-     * Cache configuration (PSR-6/16).
-     * default_pool: name of the pool used when none specified.
-     * pools.*: named cache pools with driver-specific settings.
-     * Supported drivers: array, filesystem, redis, pdo.
-     * routing: cache settings for FastRoute dispatcher (optional).
-     * config_cache: cache settings for configuration repository (optional).
-     */
     // Name of the default cache pool.
     'default_pool' => $env->getString('CACHE_DEFAULT_POOL', 'array'),
     'pools' => [

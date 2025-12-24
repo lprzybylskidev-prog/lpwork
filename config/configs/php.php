@@ -5,14 +5,14 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * PHP runtime configuration loaded at bootstrap.
+ * error_log: target file for PHP errors; empty keeps php.ini default.
+ * error_reporting: error reporting level string, e.g. E_ALL or E_ALL & ~E_NOTICE.
+ * memory_limit: memory cap (e.g. 256M); -1 disables the limit.
+ * max_execution_time: execution time limit in seconds; 0 disables the limit.
+ */
 return [
-    /**
-     * PHP runtime configuration loaded at bootstrap.
-     * error_log: target file for PHP errors; empty keeps php.ini default.
-     * error_reporting: error reporting level string, e.g. E_ALL or E_ALL & ~E_NOTICE.
-     * memory_limit: memory cap (e.g. 256M); -1 disables the limit.
-     * max_execution_time: execution time limit in seconds; 0 disables the limit.
-     */
     // Path to PHP error log file; empty uses php.ini.
     'error_log' => $env->getString('PHP_ERROR_LOG', ''),
     // PHP error reporting level string.

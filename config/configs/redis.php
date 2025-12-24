@@ -5,18 +5,18 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Redis connections for Redis-backed components.
+ * default_connection: name used when no Redis connection is specified.
+ * connections.*.scheme: protocol (tcp/unix).
+ * connections.*.host: hostname or socket path (for unix).
+ * connections.*.port: port number for tcp connections.
+ * connections.*.database: logical database index.
+ * connections.*.username: ACL username (if enabled).
+ * connections.*.password: password/token (if required).
+ * connections.*.prefix: key prefix applied by the client.
+ */
 return [
-    /**
-     * Redis connections for Redis-backed components.
-     * default_connection: name used when no Redis connection is specified.
-     * connections.*.scheme: protocol (tcp/unix).
-     * connections.*.host: hostname or socket path (for unix).
-     * connections.*.port: port number for tcp connections.
-     * connections.*.database: logical database index.
-     * connections.*.username: ACL username (if enabled).
-     * connections.*.password: password/token (if required).
-     * connections.*.prefix: key prefix applied by the client.
-     */
     // Default Redis connection name.
     'default_connection' => 'default',
     'connections' => [

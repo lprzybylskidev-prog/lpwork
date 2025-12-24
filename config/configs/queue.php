@@ -5,13 +5,13 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Queue configuration.
+ * default_queue: name of the queue used when none specified.
+ * queues: named queues with driver-specific settings (redis/database/filesystem).
+ * retry: global retry/backoff settings for queued jobs.
+ */
 return [
-    /**
-     * Queue configuration.
-     * default_queue: name of the queue used when none specified.
-     * queues: named queues with driver-specific settings (redis/database/filesystem).
-     * retry: global retry/backoff settings for queued jobs.
-     */
     // Name of the default queue.
     'default_queue' => $env->getString('QUEUE_DEFAULT', 'default'),
     'queues' => [

@@ -5,14 +5,14 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Session core settings.
+ * driver: session storage backend (php, redis, database, filesystem).
+ * lifetime: session lifetime in seconds.
+ * cookie.*: cookie parameters applied to the session ID cookie.
+ * drivers.*: backend-specific configuration values.
+ */
 return [
-    /**
-     * Session core settings.
-     * driver: session storage backend (php, redis, database, filesystem).
-     * lifetime: session lifetime in seconds.
-     * cookie.*: cookie parameters applied to the session ID cookie.
-     * drivers.*: backend-specific configuration values.
-     */
     // Active session driver.
     'driver' => $env->getString('SESSION_DRIVER', 'php'),
     // Session lifetime in seconds (cookie Max-Age / storage TTL).

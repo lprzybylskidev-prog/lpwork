@@ -5,10 +5,10 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Security configuration: CSRF protection and security headers.
+ */
 return [
-    /**
-     * Security configuration: CSRF protection and security headers.
-     */
     'csrf' => [
         // Enable CSRF verification (true/false).
         'enabled' => $env->getBool('SECURITY_CSRF_ENABLED', true),

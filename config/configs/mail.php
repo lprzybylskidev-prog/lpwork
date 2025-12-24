@@ -5,12 +5,12 @@ use LPwork\Environment\Env;
 
 /** @var Env $env */
 
+/**
+ * Mail transports configuration (Symfony Mailer).
+ * default_connection: name of the transport used when none specified.
+ * connections: map of named transports with DSN and options.
+ */
 return [
-    /**
-     * Mail transports configuration (Symfony Mailer).
-     * default_connection: name of the transport used when none specified.
-     * connections: map of named transports with DSN and options.
-     */
     // Name of the default mail connection.
     'default_connection' => $env->getString('MAIL_DEFAULT_CONNECTION', 'smtp'),
     'connections' => [

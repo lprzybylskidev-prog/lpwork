@@ -43,7 +43,8 @@ final class HttpConfiguration
      */
     public function __construct(array $config)
     {
-        $bodyParsing = (array) ($config['body_parsing'] ?? []);
+        // Support flattened config (current) and legacy nested "body_parsing".
+        $bodyParsing = (array) ($config['body_parsing'] ?? $config);
 
         $this->bodyParsingEnabled = (bool) ($bodyParsing['enabled'] ?? true);
         $this->maxBodySize = (int) ($bodyParsing['max_body_size'] ?? 0);

@@ -7,13 +7,13 @@ use LPwork\Environment\Env;
 
 $root = $env->getString('FILESYSTEM_LOCAL_ROOT', \dirname(__DIR__, 2) . '/storage');
 
+/**
+ * Filesystem disks configuration.
+ * default_disk: disk name used when none is specified.
+ * disks.local.driver: filesystem driver identifier (only "local" supported).
+ * disks.local.root: absolute/root path for local storage.
+ */
 return [
-    /**
-     * Filesystem disks configuration.
-     * default_disk: disk name used when none is specified.
-     * disks.local.driver: filesystem driver identifier (only "local" supported).
-     * disks.local.root: absolute/root path for local storage.
-     */
     // Default filesystem disk name.
     'default_disk' => 'local',
     'disks' => [
