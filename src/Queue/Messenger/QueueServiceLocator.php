@@ -31,9 +31,7 @@ final class QueueServiceLocator implements ContainerInterface
     public function get(string $id): mixed
     {
         if (!$this->has($id)) {
-            throw new QueueNotFoundException(
-                \sprintf('Service "%s" is not defined.', $id),
-            );
+            throw new QueueNotFoundException(\sprintf('Service "%s" is not defined.', $id));
         }
 
         $service = $this->services[$id];

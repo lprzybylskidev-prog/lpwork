@@ -15,10 +15,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 /**
  * Messenger transport bridging QueueDriverInterface.
  */
-final class QueueTransport implements
-    TransportInterface,
-    ReceiverInterface,
-    SenderInterface
+final class QueueTransport implements TransportInterface, ReceiverInterface, SenderInterface
 {
     /**
      * @var QueueDriverInterface
@@ -42,7 +39,7 @@ final class QueueTransport implements
 
         if (!$message instanceof QueueJob) {
             throw new MessageDecodingFailedException(
-                "QueueTransport can only send QueueJob messages.",
+                'QueueTransport can only send QueueJob messages.',
             );
         }
 

@@ -75,47 +75,30 @@ class QueueWorkCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName("lpwork:queue:work")
-            ->setDescription("Process jobs from a queue")
+        $this->setName('lpwork:queue:work')
+            ->setDescription('Process jobs from a queue')
+            ->addOption('queue', null, InputOption::VALUE_OPTIONAL, 'Queue name', null)
+            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Sleep seconds when idle', 1)
+            ->addOption('once', null, InputOption::VALUE_NONE, 'Process only one job and exit')
             ->addOption(
-                "queue",
+                'max-jobs',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                "Queue name",
+                'Maximum jobs to process',
                 null,
             )
             ->addOption(
-                "sleep",
+                'max-time',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                "Sleep seconds when idle",
-                1,
-            )
-            ->addOption(
-                "once",
-                null,
-                InputOption::VALUE_NONE,
-                "Process only one job and exit",
-            )
-            ->addOption(
-                "max-jobs",
-                null,
-                InputOption::VALUE_OPTIONAL,
-                "Maximum jobs to process",
+                'Maximum runtime in seconds',
                 null,
             )
             ->addOption(
-                "max-time",
+                'memory',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                "Maximum runtime in seconds",
-                null,
-            )
-            ->addOption(
-                "memory",
-                null,
-                InputOption::VALUE_OPTIONAL,
-                "Maximum memory usage in MB",
+                'Maximum memory usage in MB',
                 null,
             );
     }
@@ -123,32 +106,21 @@ class QueueWorkCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output,
-    ): int {
-        $queue = $input->getOption("queue");
-        $sleep = (int) $input->getOption("sleep");
-        $once = (bool) $input->getOption("once");
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $queue = $input->getOption('queue');
+        $sleep = (int) $input->getOption('sleep');
+        $once = (bool) $input->getOption('once');
         $maxJobs =
-            $input->getOption("max-jobs") !== null
-                ? (int) $input->getOption("max-jobs")
-                : null;
+            $input->getOption('max-jobs') !== null ? (int) $input->getOption('max-jobs') : null;
         $maxTime =
-            $input->getOption("max-time") !== null
-                ? (int) $input->getOption("max-time")
-                : null;
+            $input->getOption('max-time') !== null ? (int) $input->getOption('max-time') : null;
         $memoryLimit =
-            $input->getOption("memory") !== null
-                ? (int) $input->getOption("memory")
-                : null;
-        $receiverName = $queue ?? "default";
+            $input->getOption('memory') !== null ? (int) $input->getOption('memory') : null;
+        $receiverName = $queue ?? 'default';
         if (!isset($this->receivers[$receiverName])) {
             $output->writeln(
-                \sprintf(
-                    '<error>Queue receiver "%s" is not configured.</error>',
-                    $receiverName,
-                ),
+                \sprintf('<error>Queue receiver "%s" is not configured.</error>', $receiverName),
             );
 
             return Command::FAILURE;
@@ -174,15 +146,11 @@ class QueueWorkCommand extends Command
         }
 
         if ($maxJobs !== null) {
-            $dispatcher->addSubscriber(
-                new StopWorkerOnMessageLimitListener($maxJobs),
-            );
+            $dispatcher->addSubscriber(new StopWorkerOnMessageLimitListener($maxJobs));
         }
 
         if ($maxTime !== null) {
-            $dispatcher->addSubscriber(
-                new StopWorkerOnTimeLimitListener($maxTime),
-            );
+            $dispatcher->addSubscriber(new StopWorkerOnTimeLimitListener($maxTime));
         }
 
         if ($memoryLimit !== null) {
@@ -191,7 +159,7 @@ class QueueWorkCommand extends Command
             );
         }
 
-        $worker->run(["sleep" => $sleep * 1_000_000]);
+        $worker->run(['sleep' => $sleep * 1_000_000]);
 
         return Command::SUCCESS;
     }
