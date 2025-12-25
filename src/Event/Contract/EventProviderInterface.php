@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace LPwork\Event\Contract;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 /**
  * Provides event listeners and subscribers for the dispatcher.
  */
@@ -20,7 +18,7 @@ interface EventProviderInterface
     /**
      * Returns subscriber class names.
      *
-     * @return array<int, class-string<EventSubscriberInterface>>
+     * @return array<int, class-string<\Symfony\Component\EventDispatcher\EventSubscriberInterface>>
      */
     public function getSubscribers(): array;
 }

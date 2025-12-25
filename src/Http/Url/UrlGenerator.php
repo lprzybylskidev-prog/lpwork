@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace LPwork\Http\Url;
 
 use LPwork\Config\Contract\ConfigRepositoryInterface;
-use LPwork\Http\Routing\Route;
 use LPwork\Http\Routing\RouteCollection;
 use LPwork\Http\Routing\RouteLoader;
 use LPwork\Http\Url\Contract\UrlGeneratorInterface;
@@ -20,7 +19,7 @@ class UrlGenerator implements UrlGeneratorInterface
     private string $baseUrl;
 
     /**
-     * @var array<string, Route>
+     * @var array<string, \LPwork\Http\Routing\Route>
      */
     private array $routesByName;
 
@@ -73,7 +72,7 @@ class UrlGenerator implements UrlGeneratorInterface
     /**
      * @param RouteCollection $routes
      *
-     * @return array<string, Route>
+     * @return array<string, \LPwork\Http\Routing\Route>
      */
     private function indexRoutes(RouteCollection $routes): array
     {

@@ -75,7 +75,10 @@
             "sh -c 'set -e; folders=\"$@\"; [ -z \"$folders\" ] && folders=\"src config app\"; plugin_path=\"/home/vscode/.nvm/versions/node/v24.12.0/lib/node_modules/@prettier/plugin-php/standalone.js\"; prettier --config /home/vscode/.config/prettier/.prettierrc-container.json --plugin \"$plugin_path\" --write $folders' --"
         ],
         "phpstan": [
-            "sh -c 'set -e; paths=\"$@\"; [ -z \"$paths\" ] && paths=\"src app\"; vendor/bin/phpstan analyse $paths' --"
+            "sh -c 'set -e; paths=\"$@\"; [ -z \"$paths\" ] && paths=\"src config app\"; vendor/bin/phpstan analyse $paths' --"
+        ],
+        "phpcs:unused": [
+            "sh -c 'set -e; paths=\"$@\"; [ -z \"$paths\" ] && paths=\"src config app\"; vendor/bin/phpcs --standard=SlevomatCodingStandard --sniffs=SlevomatCodingStandard.Namespaces.UnusedUses $paths' --"
         ]
     }
 }

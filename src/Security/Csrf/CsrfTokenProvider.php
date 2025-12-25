@@ -5,7 +5,6 @@ namespace LPwork\Security\Csrf;
 
 use LPwork\Http\Session\SessionManager;
 use LPwork\Security\SecurityConfiguration;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 

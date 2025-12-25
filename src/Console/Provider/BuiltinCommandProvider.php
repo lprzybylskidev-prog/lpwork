@@ -14,7 +14,6 @@ use LPwork\Console\Command\QueueFlushCommand;
 use LPwork\Console\Command\WebSocketServeCommand;
 use LPwork\Console\Contract\CommandProviderInterface;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Command\Command;
 
 /**
  * Provides framework built-in console commands.

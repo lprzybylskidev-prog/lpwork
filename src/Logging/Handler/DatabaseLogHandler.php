@@ -6,7 +6,6 @@ namespace LPwork\Logging\Handler;
 use Doctrine\DBAL\Connection;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Level as MonologLevel;
-use Monolog\LogRecord;
 
 /**
  * Persists log records into a database table using Doctrine DBAL connection.

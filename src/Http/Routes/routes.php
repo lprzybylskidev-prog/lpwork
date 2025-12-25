@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-use LPwork\Http\Routing\RouteCollection;
 use LPwork\Http\Request\RequestContext;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @var RouteCollection $routes */
+/** @var \LPwork\Http\Routing\RouteCollection $routes */
 
 $routes->get(
     '/error/{code:\\d+}/{id}',

@@ -66,8 +66,19 @@ class QueueJobHandler
         $handler = $handlers[$queue];
 
         if (\is_string($handler)) {
-            /** @var QueueHandlerInterface $resolved */
             $resolved = $this->container->get($handler);
+
+            if (!$resolved instanceof QueueHandlerInterface) {
+                $this->errorLogger->log(
+                    new \RuntimeException(
+                        \sprintf('Handler "%s" must implement QueueHandlerInterface.', $handler),
+                    ),
+                    ['queue' => $queue, 'job_id' => $job->id()],
+                );
+
+                return;
+            }
+
             $resolved->handle($job);
 
             return;

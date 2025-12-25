@@ -8,7 +8,6 @@ use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Console\Provider\BuiltinCommandProvider;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 
 /**
  * Handles the CLI runtime lifecycle.
@@ -91,7 +90,7 @@ class CliKernel
     /**
      * Collects commands from providers, allowing application commands to override built-ins.
      *
-     * @return array<int, Command>
+     * @return array<int, \Symfony\Component\Console\Command\Command>
      */
     private function collectCommands(): array
     {

@@ -12,7 +12,6 @@ use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
 use LPwork\Http\Middleware\SecurityHeadersMiddleware;
 use LPwork\Http\Middleware\SessionMiddleware;
-use Psr\Http\Server\MiddlewareInterface;
 use Psr\Container\ContainerInterface;
 
 /**

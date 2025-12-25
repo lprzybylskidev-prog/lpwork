@@ -13,7 +13,6 @@ use LPwork\Kernel\CliKernel;
 use LPwork\Kernel\HttpKernel;
 use LPwork\Provider\CliProvider;
 use LPwork\Provider\CommonProvider;
-use LPwork\Provider\Contract\ProviderInterface;
 use LPwork\Provider\ProviderFactory;
 use LPwork\Provider\HttpProvider;
 use LPwork\Runtime\RuntimeType;
@@ -102,6 +101,7 @@ class Bootstrap
 
         $providerFactory = new ProviderFactory($this->buildProviderContainer());
 
+        /** @var \LPwork\Provider\Contract\ProviderInterface $provider */
         foreach ($this->resolveProviders($runtimeType, $providerFactory) as $provider) {
             $provider->register($containerBuilder);
         }
@@ -115,7 +115,7 @@ class Bootstrap
      * @param RuntimeType $runtimeType
      * @param ProviderFactory $providerFactory
      *
-     * @return array<int, ProviderInterface>
+     * @return array<int, \LPwork\Provider\Contract\ProviderInterface>
      */
     private function resolveProviders(
         RuntimeType $runtimeType,

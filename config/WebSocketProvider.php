@@ -5,7 +5,6 @@ namespace Config;
 
 use LPwork\WebSocket\Contract\WebSocketComponentRegistryInterface;
 use LPwork\WebSocket\Component\NullWebSocketComponent;
-use Ratchet\MessageComponentInterface;
 
 /**
  * Application-level WebSocket component provider.
@@ -18,7 +17,7 @@ class WebSocketProvider implements WebSocketComponentRegistryInterface
     public function getComponents(): array
     {
         /**
-         * @var array<string, MessageComponentInterface> $components
+         * @var array<string, \Ratchet\MessageComponentInterface> $components
          * Map server name => MessageComponentInterface implementation.
          */
         $components = [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Config;
 
 use LPwork\Event\Contract\EventProviderInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Application-level event provider (PSR-14).
@@ -27,7 +26,7 @@ class EventProvider implements EventProviderInterface
      */
     public function getSubscribers(): array
     {
-        /** @var array<int, class-string<EventSubscriberInterface>> $subscribers */
+        /** @var array<int, class-string<\Symfony\Component\EventDispatcher\EventSubscriberInterface>> $subscribers */
         $subscribers = [];
 
         return $subscribers;

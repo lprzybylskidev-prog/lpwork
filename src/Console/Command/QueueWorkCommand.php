@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Transport\Receiver\ReceiverInterface;
 use Symfony\Component\Messenger\Worker;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnMessageLimitListener;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnTimeLimitListener;
@@ -29,7 +28,7 @@ class QueueWorkCommand extends Command
     private MessageBusInterface $bus;
 
     /**
-     * @var array<string, ReceiverInterface>
+     * @var array<string, \Symfony\Component\Messenger\Transport\Receiver\ReceiverInterface>
      */
     private array $receivers;
 
@@ -50,10 +49,10 @@ class QueueWorkCommand extends Command
 
     /**
      * @param MessageBusInterface              $bus
-     * @param array<string, ReceiverInterface> $receivers
-     * @param ContainerInterface               $senders
-     * @param ContainerInterface               $retryStrategies
-     * @param LoggerInterface                  $logger
+     * @param array<string, \Symfony\Component\Messenger\Transport\Receiver\ReceiverInterface> $receivers
+     * @param ContainerInterface $senders
+     * @param ContainerInterface $retryStrategies
+     * @param LoggerInterface $logger
      */
     public function __construct(
         MessageBusInterface $bus,

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Config;
 
-use LPwork\Database\Seeder\Contract\SeederInterface;
 use LPwork\Database\Seeder\Contract\SeederProviderInterface;
 
 /**
@@ -16,7 +15,7 @@ class SeederProvider implements SeederProviderInterface
      */
     public function getSeeders(): array
     {
-        /** @var array<int, SeederInterface> $defaultSeeders */
+        /** @var array<int, \LPwork\Database\Seeder\Contract\SeederInterface> $defaultSeeders */
         $defaultSeeders = [];
 
         return [

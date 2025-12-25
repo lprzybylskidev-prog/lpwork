@@ -5,7 +5,6 @@ namespace LPwork\Mail;
 
 use LPwork\Mail\Contract\MailManagerInterface;
 use LPwork\Mail\Contract\MailerFactoryInterface;
-use LPwork\Mail\Exception\MailConfigurationException;
 use Symfony\Component\Mailer\MailerInterface;
 
 /**

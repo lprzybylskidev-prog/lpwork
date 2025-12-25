@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use LPwork\Environment\Env;
-
-/** @var Env $env */
+/** @var \LPwork\Environment\Env $env */
 
 /**
  * Mail transports configuration (Symfony Mailer).

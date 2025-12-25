@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace LPwork\Http\Middleware;
 
-use LPwork\Http\Session\Contract\SessionInterface;
 use LPwork\Http\Session\Contract\SessionManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

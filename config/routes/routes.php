@@ -1,11 +1,10 @@
 <?php
 declare(strict_types=1);
 
-use LPwork\Http\Routing\RouteCollection;
 use Psr\Http\Message\ServerRequestInterface;
 use LPwork\Http\Response\ResponseFactory;
 
-/** @var RouteCollection $routes */
+/** @var \LPwork\Http\Routing\RouteCollection $routes */
 
 $routes->get(
     '/',
