@@ -12,6 +12,7 @@ use Psr\Container\ContainerInterface;
 use LPwork\Http\Request\RequestContext;
 use LPwork\Http\Routing\Contract\HandlerArgumentResolverInterface;
 use LPwork\Http\Routing\Contract\RouteHandlerResolverInterface;
+use LPwork\Http\Routing\Exception\HandlerNotResolvableException;
 
 /**
  * Dispatches a matched route handler, applying route-specific middlewares.
@@ -71,7 +72,7 @@ class RouteDispatchMiddleware implements MiddlewareInterface
         $resolvedHandler = $this->handlerResolver->resolve($routeHandler);
 
         if ($resolvedHandler === null) {
-            return new Response(500, [], 'Route handler not callable');
+            throw new HandlerNotResolvableException('Route handler not callable');
         }
 
         /** @var array<int, callable|string|\Psr\Http\Server\MiddlewareInterface> $routeMiddleware */

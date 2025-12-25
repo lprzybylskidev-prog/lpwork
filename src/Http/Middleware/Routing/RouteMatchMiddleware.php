@@ -11,6 +11,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use LPwork\Http\Request\RequestContext;
 use LPwork\Http\Request\RequestContextStore;
+use LPwork\Http\Routing\Exception\MethodNotAllowedException;
+use LPwork\Http\Routing\Exception\RouteNotFoundException;
 
 /**
  * Matches the incoming request to a route definition.
@@ -41,9 +43,18 @@ class RouteMatchMiddleware implements MiddlewareInterface
 
         switch ($result[0]) {
             case Dispatcher::NOT_FOUND:
-                return new Response(404, [], 'Not Found');
+                throw new RouteNotFoundException(
+                    $request->getMethod(),
+                    $request->getUri()->getPath(),
+                );
             case Dispatcher::METHOD_NOT_ALLOWED:
-                return new Response(405, [], 'Method Not Allowed');
+                /** @var array<int, string> $allowed */
+                $allowed = $result[1] ?? [];
+                throw new MethodNotAllowedException(
+                    $request->getMethod(),
+                    $request->getUri()->getPath(),
+                    $allowed,
+                );
             case Dispatcher::FOUND:
                 $routeInfo = $result[1];
                 $params = $result[2];

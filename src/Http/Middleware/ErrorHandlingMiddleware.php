@@ -14,6 +14,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use LPwork\Http\Exception\InvalidRouteArgumentsException;
+use LPwork\Http\Routing\Exception\MethodNotAllowedException;
+use LPwork\Http\Routing\Exception\RouteNotFoundException;
+use LPwork\Http\Routing\Exception\HandlerNotResolvableException;
 
 /**
  * Captures errors and normalizes error responses for API and HTML contexts.
@@ -86,6 +89,17 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
             return $response;
         } catch (InvalidRouteArgumentsException $throwable) {
             return $this->renderClientException($request, $throwable);
+        } catch (RouteNotFoundException $throwable) {
+            return $this->renderRoutingError($request, 404, $throwable->getMessage());
+        } catch (MethodNotAllowedException $throwable) {
+            return $this->renderRoutingError(
+                $request,
+                405,
+                $throwable->getMessage(),
+                $throwable->allowedMethods(),
+            );
+        } catch (HandlerNotResolvableException $throwable) {
+            return $this->renderRoutingError($request, 500, $throwable->getMessage());
         } catch (\Throwable $throwable) {
             $context = $this->errorContextFactory->fromRequest(
                 $request,
@@ -137,6 +151,42 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
         ]);
 
         return $this->renderError($request, $status, $reason, null, $errorId, $context);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param int $status
+     * @param string $message
+     * @param array<int,string>|null $allowed
+     *
+     * @return ResponseInterface
+     */
+    private function renderRoutingError(
+        ServerRequestInterface $request,
+        int $status,
+        string $message,
+        ?array $allowed = null,
+    ): ResponseInterface {
+        if (!$this->shouldLogClientErrors()) {
+            $response = $this->renderError($request, $status, $message, null, null);
+        } else {
+            $context = $this->errorContextFactory->fromRequest(
+                $request,
+                \bin2hex(\random_bytes(16)),
+                $status,
+                null,
+            );
+            $errorId = $this->errorLogger->log(new \RuntimeException($message), [
+                'error_context' => $context->toArray(),
+            ]);
+            $response = $this->renderError($request, $status, $message, null, $errorId, $context);
+        }
+
+        if ($allowed !== null && $status === 405) {
+            $response = $response->withHeader('Allow', \implode(', ', $allowed));
+        }
+
+        return $response;
     }
 
     /**

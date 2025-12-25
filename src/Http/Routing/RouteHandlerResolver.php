@@ -5,6 +5,8 @@ namespace LPwork\Http\Routing;
 
 use Psr\Container\ContainerInterface;
 use LPwork\Http\Routing\Contract\RouteHandlerResolverInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * Resolves route handler definitions into callables using the container when needed.
@@ -96,6 +98,10 @@ final class RouteHandlerResolver implements RouteHandlerResolverInterface
         }
 
         $instance = $this->container->get($handlerDefinition);
+
+        if ($instance instanceof RequestHandlerInterface) {
+            return static fn(ServerRequestInterface $request) => $instance->handle($request);
+        }
 
         if (\is_callable($instance)) {
             return $instance;

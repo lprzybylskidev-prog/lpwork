@@ -1,20 +1,20 @@
 <?php
 declare(strict_types=1);
 
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use LPwork\Http\Response\ResponseFactory;
 
 /** @var \LPwork\Http\Routing\RouteCollection $routes */
 
 $routes->get(
     '/',
-    static function (
-        ServerRequestInterface $request,
-        ResponseFactory $responses,
-    ): \Psr\Http\Message\ResponseInterface {
+    static function (ServerRequestInterface $request): ResponseInterface {
         $name = $request->getQueryParams()['name'] ?? 'world';
 
-        return $responses->json(['message' => \sprintf('Hello, %s!', $name)]);
+        $body = \json_encode(['message' => \sprintf('Hello, %s!', $name)], \JSON_THROW_ON_ERROR);
+
+        return new Response(200, ['Content-Type' => 'application/json'], $body);
     },
     'hello',
 );
