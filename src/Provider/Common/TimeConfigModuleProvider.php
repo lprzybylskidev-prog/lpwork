@@ -42,7 +42,7 @@ final class TimeConfigModuleProvider
             CacheConfiguration::class => \DI\factory(static function (
                 Env $env,
             ): CacheConfiguration {
-                $configDirectory = \dirname(__DIR__, 2) . '/config/configs';
+                $configDirectory = \dirname(__DIR__, 3) . '/config/configs';
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
                 $cacheConfig = $configs['cache'] ?? [];
@@ -57,7 +57,7 @@ final class TimeConfigModuleProvider
                 $translationConfig = [
                     'locale' => $env->getString('APP_LOCALE', 'en'),
                     'fallback_locale' => $env->getString('APP_FALLBACK_LOCALE', 'en'),
-                    'path' => \dirname(__DIR__, 2) . '/config/lang',
+                    'path' => \dirname(__DIR__, 3) . '/config/lang',
                     'cache_enabled' => (bool) ($translationCache['enabled'] ?? true),
                     'cache_pool' => (string) ($translationCache['pool'] ?? 'filesystem'),
                     'cache_prefix' => (string) ($translationCache['prefix'] ?? 'translations:'),
@@ -69,7 +69,7 @@ final class TimeConfigModuleProvider
                 Env $env,
                 CacheConfiguration $cacheConfiguration,
             ): ConfigRepositoryInterface {
-                $configDirectory = \dirname(__DIR__, 2) . '/config/configs';
+                $configDirectory = \dirname(__DIR__, 3) . '/config/configs';
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
                 $configCache = $cacheConfiguration->configCache();
