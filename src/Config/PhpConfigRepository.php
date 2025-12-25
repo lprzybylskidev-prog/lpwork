@@ -28,13 +28,23 @@ class PhpConfigRepository implements ConfigRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function get(string $key, mixed $default = null): mixed
+    public function get(string $key, mixed ...$default): mixed
     {
+        $defaultCount = \count($default);
+
+        if ($defaultCount > 1) {
+            throw new \InvalidArgumentException(
+                'Only a single default value may be provided for configuration lookups.',
+            );
+        }
+
+        $hasDefault = $defaultCount === 1;
+        $providedDefault = $hasDefault ? $default[0] : null;
         [$namespace, $path] = $this->splitKey($key);
 
         if (!\array_key_exists($namespace, $this->configs)) {
-            if ($default !== null) {
-                return $default;
+            if ($hasDefault) {
+                return $providedDefault;
             }
 
             throw new ConfigValueNotFoundException(
@@ -50,8 +60,8 @@ class PhpConfigRepository implements ConfigRepositoryInterface
 
         foreach ($path as $segment) {
             if (!\is_array($value) || !\array_key_exists($segment, $value)) {
-                if ($default !== null) {
-                    return $default;
+                if ($hasDefault) {
+                    return $providedDefault;
                 }
 
                 throw new ConfigValueNotFoundException(

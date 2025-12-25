@@ -47,9 +47,9 @@ class CachedConfigRepository implements ConfigRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function get(string $key, mixed $default = null): mixed
+    public function get(string $key, mixed ...$default): mixed
     {
-        return $this->loadCached()->get($key, $default);
+        return $this->loadCached()->get($key, ...$default);
     }
 
     /**

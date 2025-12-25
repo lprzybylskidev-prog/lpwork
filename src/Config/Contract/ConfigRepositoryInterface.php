@@ -12,11 +12,11 @@ interface ConfigRepositoryInterface
      * Returns a configuration value using dot notation (e.g. "app.name").
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed  ...$default
      *
      * @return mixed
      */
-    public function get(string $key, mixed $default = null): mixed;
+    public function get(string $key, mixed ...$default): mixed;
 
     /**
      * Returns a string configuration value.
