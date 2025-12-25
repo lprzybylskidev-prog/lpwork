@@ -8,7 +8,6 @@ use LPwork\Cache\CacheConfiguration;
 use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Cache\Contract\CacheManagerInterface;
 use LPwork\Cache\Contract\CacheProviderInterface;
-use LPwork\Cache\DefaultCacheProvider;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
