@@ -8,11 +8,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Default PSR-7 response emitter with streaming support.
+ * SAPI-based PSR-7 response emitter with streaming support.
  */
-final class ResponseEmitter implements ResponseEmitterInterface
+final class SapiResponseEmitter implements ResponseEmitterInterface
 {
     /**
+     * @inheritDoc
      */
     public function emit(ResponseInterface $response, ServerRequestInterface $request): void
     {
