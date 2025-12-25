@@ -15,6 +15,7 @@
 /storage/cache/*
 !/storage/cache/.gitkeep
 !/storage/cache/di/
+/storage/cache/di/*
 !/storage/cache/di/.gitkeep
 !/storage/logs/
 /storage/logs/*
