@@ -30,6 +30,7 @@ use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Config\MiddlewareProvider as AppMiddlewareProvider;
+use Psr\Container\ContainerInterface;
 
 /**
  * Registers routing, middleware and dispatcher setup for HTTP runtime.
@@ -51,7 +52,11 @@ final class HttpRoutingModuleProvider
             ),
             RouteLoaderInterface::class => \DI\get(RouteLoader::class),
             RouteHandlerResolverInterface::class => \DI\autowire(RouteHandlerResolver::class),
-            HandlerArgumentResolverInterface::class => \DI\autowire(HandlerArgumentResolver::class),
+            HandlerArgumentResolverInterface::class => \DI\factory(static function (
+                ContainerInterface $container,
+            ): HandlerArgumentResolverInterface {
+                return new HandlerArgumentResolver($container);
+            }),
             FastRouteDispatcherFactory::class => \DI\autowire(FastRouteDispatcherFactory::class),
             Dispatcher::class => \DI\factory(static function (
                 RouteLoaderInterface $loader,

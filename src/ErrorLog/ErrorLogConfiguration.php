@@ -36,6 +36,11 @@ final class ErrorLogConfiguration
     private array $redis;
 
     /**
+     * @var bool
+     */
+    private bool $logClientErrors;
+
+    /**
      * @param array<string, mixed> $config
      */
     public function __construct(array $config)
@@ -45,6 +50,7 @@ final class ErrorLogConfiguration
         $this->file = (array) ($config['file'] ?? []);
         $this->database = (array) ($config['database'] ?? []);
         $this->redis = (array) ($config['redis'] ?? []);
+        $this->logClientErrors = (bool) ($config['log_client_errors'] ?? false);
     }
 
     /**
@@ -85,6 +91,14 @@ final class ErrorLogConfiguration
     public function redis(): array
     {
         return $this->redis;
+    }
+
+    /**
+     * @return bool
+     */
+    public function logClientErrors(): bool
+    {
+        return $this->logClientErrors;
     }
 
     /**

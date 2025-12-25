@@ -5,6 +5,7 @@ namespace LPwork\Http\Middleware;
 
 use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
+use LPwork\ErrorLog\ErrorLogConfiguration;
 use LPwork\Http\Error\ErrorResponseBuilder;
 use LPwork\Http\Error\ErrorContextFactory;
 use LPwork\Http\Request\RequestContextStore;
@@ -41,21 +42,29 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     private ErrorContextFactory $errorContextFactory;
 
     /**
-     * @param ErrorResponseBuilder $responseBuilder
-     * @param ErrorLoggerInterface $errorLogger
+     * @var ErrorLogConfiguration
+     */
+    private ErrorLogConfiguration $errorLogConfiguration;
+
+    /**
+     * @param ErrorResponseBuilder    $responseBuilder
+     * @param ErrorLoggerInterface    $errorLogger
      * @param ErrorIdProviderInterface $errorIdProvider
-     * @param ErrorContextFactory  $errorContextFactory
+     * @param ErrorContextFactory     $errorContextFactory
+     * @param ErrorLogConfiguration   $errorLogConfiguration
      */
     public function __construct(
         ErrorResponseBuilder $responseBuilder,
         ErrorLoggerInterface $errorLogger,
         ErrorIdProviderInterface $errorIdProvider,
         ErrorContextFactory $errorContextFactory,
+        ErrorLogConfiguration $errorLogConfiguration,
     ) {
         $this->responseBuilder = $responseBuilder;
         $this->errorLogger = $errorLogger;
         $this->errorIdProvider = $errorIdProvider;
         $this->errorContextFactory = $errorContextFactory;
+        $this->errorLogConfiguration = $errorLogConfiguration;
     }
 
     /**
@@ -72,18 +81,12 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
             $response = $handler->handle($request);
 
             if ($this->isErrorStatus($response->getStatusCode())) {
-                return $this->renderError(
-                    $request,
-                    $response->getStatusCode(),
-                    $response->getReasonPhrase() ?: null,
-                    null,
-                    null,
-                );
+                return $this->handleClientErrorResponse($request, $response);
             }
 
             return $response;
         } catch (InvalidRouteArgumentsException $throwable) {
-            return $this->renderError($request, 400, $throwable->getMessage(), $throwable, null);
+            return $this->renderClientException($request, $throwable);
         } catch (\Throwable $throwable) {
             $context = $this->errorContextFactory->fromRequest(
                 $request,
@@ -105,6 +108,78 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
                 $context,
             );
         }
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     *
+     * @return ResponseInterface
+     */
+    private function handleClientErrorResponse(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        $status = $response->getStatusCode();
+        $reason = $response->getReasonPhrase() ?: null;
+
+        if (!$this->shouldLogClientErrors()) {
+            return $this->renderError($request, $status, $reason, null, null);
+        }
+
+        $context = $this->errorContextFactory->fromRequest(
+            $request,
+            \bin2hex(\random_bytes(16)),
+            $status,
+            null,
+        );
+        $errorId = $this->errorLogger->log(new \RuntimeException($reason ?? 'HTTP error'), [
+            'error_context' => $context->toArray(),
+        ]);
+
+        return $this->renderError($request, $status, $reason, null, $errorId, $context);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param InvalidRouteArgumentsException $throwable
+     *
+     * @return ResponseInterface
+     */
+    private function renderClientException(
+        ServerRequestInterface $request,
+        InvalidRouteArgumentsException $throwable,
+    ): ResponseInterface {
+        if (!$this->shouldLogClientErrors()) {
+            return $this->renderError($request, 400, $throwable->getMessage(), $throwable, null);
+        }
+
+        $context = $this->errorContextFactory->fromRequest(
+            $request,
+            \bin2hex(\random_bytes(16)),
+            400,
+            $throwable,
+        );
+        $errorId = $this->errorLogger->log($throwable, [
+            'error_context' => $context->toArray(),
+        ]);
+
+        return $this->renderError(
+            $request,
+            400,
+            $throwable->getMessage(),
+            $throwable,
+            $errorId,
+            $context,
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldLogClientErrors(): bool
+    {
+        return $this->errorLogConfiguration->logClientErrors();
     }
 
     /**

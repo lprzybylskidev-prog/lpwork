@@ -88,9 +88,7 @@ class CacheProvider implements CacheProviderInterface
         }
 
         $key = (string) ($configCache['key'] ?? 'config:repository');
-        $configs = $this->configLoader->loadDirectory(
-            \dirname(__DIR__, 3) . '/config/configs',
-        );
+        $configs = $this->configLoader->loadDirectory(\dirname(__DIR__, 3) . '/config/configs');
 
         $item = $pool->getItem($key);
         $item->set($configs);

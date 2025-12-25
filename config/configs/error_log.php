@@ -13,12 +13,18 @@ use LPwork\Environment\Env;
  * database.*: settings for DB backend (connection/table).
  * redis.*: settings for Redis backend (connection/prefix/TTL/list limit).
  * response.*: propagation of error identifiers to clients.
+ * log_client_errors: when true, also log 4xx errors (useful in dev).
  */
 return [
     // Active error log driver.
     'driver' => $env->getString('ERROR_LOG_DRIVER', 'file'),
     // Logical level for filtering (reserved, currently unused).
     'level' => $env->getString('ERROR_LOG_LEVEL', 'error'),
+    // Whether to log 4xx client errors (recommended in dev).
+    'log_client_errors' => $env->getBool(
+        'ERROR_LOG_LOG_CLIENT_ERRORS',
+        \strtolower($env->getString('APP_ENV', 'prod')) === 'dev',
+    ),
     'file' => [
         // Rotation mode: single, daily, or monthly.
         'mode' => $env->getString('ERROR_LOG_FILE_MODE', 'daily'),
