@@ -55,7 +55,9 @@ class RouteMatchMiddleware implements MiddlewareInterface
                     $params,
                 );
 
-                $request = $request->withAttribute(RequestContext::ATTRIBUTE, $context);
+                $request = $request
+                    ->withAttribute(RequestContext::ATTRIBUTE, $context)
+                    ->withAttribute('route.params', $params);
                 RequestContextStore::set($context);
 
                 return $handler->handle($request);

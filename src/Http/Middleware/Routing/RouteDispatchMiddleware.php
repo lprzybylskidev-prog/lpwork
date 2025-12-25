@@ -10,6 +10,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Container\ContainerInterface;
 use LPwork\Http\Request\RequestContext;
+use LPwork\Http\Routing\HandlerArgumentResolver;
+use LPwork\Http\Routing\RouteHandlerResolver;
 
 /**
  * Dispatches a matched route handler, applying route-specific middlewares.
@@ -22,11 +24,23 @@ class RouteDispatchMiddleware implements MiddlewareInterface
     private ContainerInterface $container;
 
     /**
+     * @var RouteHandlerResolver
+     */
+    private RouteHandlerResolver $handlerResolver;
+
+    /**
+     * @var HandlerArgumentResolver
+     */
+    private HandlerArgumentResolver $argumentResolver;
+
+    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->handlerResolver = new RouteHandlerResolver($container);
+        $this->argumentResolver = new HandlerArgumentResolver($container);
     }
 
     /**
@@ -49,21 +63,48 @@ class RouteDispatchMiddleware implements MiddlewareInterface
             return new Response(500, [], 'Route handler not resolved');
         }
 
+        $resolvedHandler = $this->handlerResolver->resolve($routeHandler);
+
+        if ($resolvedHandler === null) {
+            return new Response(500, [], 'Route handler not callable');
+        }
+
         /** @var array<int, callable|string|\Psr\Http\Server\MiddlewareInterface> $routeMiddleware */
         $routeMiddleware = $context->middleware();
 
-        $finalHandler = new class ($routeHandler) implements RequestHandlerInterface {
+        $routeParams = $context->parameters();
+
+        $finalHandler = new class ($resolvedHandler, $this->argumentResolver, $routeParams)
+            implements RequestHandlerInterface
+        {
             /**
              * @var callable
              */
             private $routeHandler;
 
             /**
-             * @param callable $routeHandler
+             * @var HandlerArgumentResolver
              */
-            public function __construct(callable $routeHandler)
-            {
+            private HandlerArgumentResolver $argumentResolver;
+
+            /**
+             * @var array<string, string>
+             */
+            private array $routeParams;
+
+            /**
+             * @param callable $routeHandler
+             * @param HandlerArgumentResolver $argumentResolver
+             * @param array<string, string> $routeParams
+             */
+            public function __construct(
+                callable $routeHandler,
+                HandlerArgumentResolver $argumentResolver,
+                array $routeParams,
+            ) {
                 $this->routeHandler = $routeHandler;
+                $this->argumentResolver = $argumentResolver;
+                $this->routeParams = $routeParams;
             }
 
             /**
@@ -73,7 +114,12 @@ class RouteDispatchMiddleware implements MiddlewareInterface
             {
                 /** @var callable $handler */
                 $handler = $this->routeHandler;
-                $response = $handler($request);
+                $args = $this->argumentResolver->resolveArguments(
+                    $handler,
+                    $request,
+                    $this->routeParams,
+                );
+                $response = $handler(...$args);
 
                 if (!$response instanceof ResponseInterface) {
                     return new Response(500, [], 'Invalid route response');

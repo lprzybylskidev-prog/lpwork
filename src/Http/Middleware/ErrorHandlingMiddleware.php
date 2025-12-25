@@ -13,6 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use LPwork\Http\Exception\InvalidRouteArgumentsException;
 
 /**
  * Captures errors and normalizes error responses for API and HTML contexts.
@@ -81,6 +82,8 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
             }
 
             return $response;
+        } catch (InvalidRouteArgumentsException $throwable) {
+            return $this->renderError($request, 400, $throwable->getMessage(), $throwable, null);
         } catch (\Throwable $throwable) {
             $context = $this->errorContextFactory->fromRequest(
                 $request,
