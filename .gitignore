@@ -5,34 +5,10 @@
 .env.*
 !.env.example
 
-/storage/*
+/storage/**
 !/storage/.gitkeep
 !/storage/db.sqlite3.example
-
-# errors
-!/storage/errors/
-/storage/errors/*
-!/storage/errors/.gitkeep
-
-# cache
-!/storage/cache/
-/storage/cache/*
-!/storage/cache/.gitkeep
-
-# cache/di
-!/storage/cache/di/
-/storage/cache/di/*
-!/storage/cache/di/.gitkeep
-
-# logs
-!/storage/logs/
-/storage/logs/*
-!/storage/logs/.gitkeep
-
-# sessions
-!/storage/sessions/
-/storage/sessions/*
-!/storage/sessions/.gitkeep
+!/storage/**/.gitkeep
 
 !/app/.gitkeep
 
