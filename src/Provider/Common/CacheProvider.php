@@ -87,7 +87,7 @@ class CacheProvider implements CacheProviderInterface
             return;
         }
 
-        $key = (string) ($configCache['key'] ?? 'config:repository');
+        $key = (string) ($configCache['key'] ?? 'configs');
         $configs = $this->configLoader->loadDirectory(\dirname(__DIR__, 3) . '/config/configs');
 
         $item = $pool->getItem($key);
@@ -111,7 +111,7 @@ class CacheProvider implements CacheProviderInterface
             return;
         }
 
-        $key = (string) ($routingCache['key'] ?? 'routes:dispatcher');
+        $key = (string) ($routingCache['key'] ?? 'routes');
         $routes = $this->routeLoader->load();
         $data = $this->dispatcherFactory->generateData($routes);
         $item = $pool->getItem($key);
@@ -135,7 +135,7 @@ class CacheProvider implements CacheProviderInterface
             return;
         }
 
-        $key = (string) ($configCache['key'] ?? 'config:repository');
+        $key = (string) ($configCache['key'] ?? 'configs');
         $pool->deleteItem($key);
     }
 
@@ -155,7 +155,7 @@ class CacheProvider implements CacheProviderInterface
             return;
         }
 
-        $key = (string) ($routingCache['key'] ?? 'routes:dispatcher');
+        $key = (string) ($routingCache['key'] ?? 'routes');
         $pool->deleteItem($key);
     }
 }

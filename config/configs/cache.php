@@ -8,8 +8,7 @@ declare(strict_types=1);
  * default_pool: name of the pool used when none specified.
  * pools.*: named cache pools with driver-specific settings.
  * Supported drivers: array, filesystem, redis, pdo.
- * routing: cache settings for FastRoute dispatcher (optional).
- * config_cache: cache settings for configuration repository (optional).
+ * caches: logical caches used by the framework (config/routing/translations).
  */
 return [
     // Name of the default cache pool.
@@ -56,28 +55,30 @@ return [
             'table' => $env->getString('CACHE_PDO_TABLE', 'cache_items'),
         ],
     ],
-    'routing' => [
-        // Enable FastRoute dispatcher cache (true/false).
-        'enabled' => $env->getBool('ROUTE_CACHE_ENABLED', false),
-        // Cache pool name used for routing cache.
-        'pool' => $env->getString('ROUTE_CACHE_POOL', 'filesystem'),
-        // Cache key for dispatcher.
-        'key' => $env->getString('ROUTE_CACHE_KEY', 'routes:dispatcher'),
-    ],
-    'config_cache' => [
-        // Enable configuration cache (true/false).
-        'enabled' => $env->getBool('CONFIG_CACHE_ENABLED', false),
-        // Cache pool name used for configuration cache.
-        'pool' => $env->getString('CONFIG_CACHE_POOL', 'filesystem'),
-        // Cache key for configuration repository payload.
-        'key' => $env->getString('CONFIG_CACHE_KEY', 'config:repository'),
-    ],
-    'translations' => [
-        // Enable translation catalogue cache (true/false).
-        'enabled' => $env->getBool('TRANSLATION_CACHE_ENABLED', true),
-        // Cache pool name used for translation catalogues (optional).
-        'pool' => $env->getString('TRANSLATION_CACHE_POOL', 'filesystem'),
-        // Cache key prefix for translation catalogue.
-        'prefix' => $env->getString('TRANSLATION_CACHE_PREFIX', 'translations:'),
+    'caches' => [
+        'config' => [
+            // Enable configuration cache (true/false).
+            'enabled' => $env->getBool('CONFIG_CACHE_ENABLED', false),
+            // Cache pool name used for configuration cache.
+            'pool' => $env->getString('CONFIG_CACHE_POOL', 'filesystem'),
+            // Cache key for configuration repository payload.
+            'key' => $env->getString('CONFIG_CACHE_KEY', 'configs'),
+        ],
+        'routes' => [
+            // Enable FastRoute dispatcher cache (true/false).
+            'enabled' => $env->getBool('ROUTE_CACHE_ENABLED', false),
+            // Cache pool name used for routing cache.
+            'pool' => $env->getString('ROUTE_CACHE_POOL', 'filesystem'),
+            // Cache key for dispatcher.
+            'key' => $env->getString('ROUTE_CACHE_KEY', 'routes'),
+        ],
+        'translations' => [
+            // Enable translation catalogue cache (true/false).
+            'enabled' => $env->getBool('TRANSLATION_CACHE_ENABLED', true),
+            // Cache pool name used for translation catalogues (optional).
+            'pool' => $env->getString('TRANSLATION_CACHE_POOL', 'filesystem'),
+            // Cache key prefix for translation catalogue.
+            'prefix' => $env->getString('TRANSLATION_CACHE_PREFIX', 'translations'),
+        ],
     ],
 ];

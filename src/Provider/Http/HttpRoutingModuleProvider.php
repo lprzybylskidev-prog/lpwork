@@ -72,7 +72,7 @@ final class HttpRoutingModuleProvider
 
                 if ($enabled) {
                     $poolName = (string) ($routingCache['pool'] ?? 'filesystem');
-                    $key = (string) ($routingCache['key'] ?? 'routes:dispatcher');
+                    $key = (string) ($routingCache['key'] ?? 'routes');
                     $pool = $cacheFactory->createPool(
                         $poolName,
                         $cacheConfiguration,

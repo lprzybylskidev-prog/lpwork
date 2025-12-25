@@ -73,7 +73,7 @@ final class ConfigModuleProvider
 
                 if ($enabled) {
                     $poolName = (string) ($configCache['pool'] ?? 'filesystem');
-                    $key = (string) ($configCache['key'] ?? 'config:repository');
+                    $key = (string) ($configCache['key'] ?? 'configs');
 
                     try {
                         $poolConfig = $cacheConfiguration->pool($poolName);

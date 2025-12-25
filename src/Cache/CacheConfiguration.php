@@ -7,7 +7,7 @@ use LPwork\Cache\Exception\CacheConfigurationException;
 use LPwork\Config\Support\ConfigNormalizer;
 
 /**
- * Typed configuration holder for cache pools and routing/config cache options.
+ * Typed configuration holder for cache pools and logical cache definitions.
  */
 final class CacheConfiguration
 {
@@ -24,19 +24,9 @@ final class CacheConfiguration
     private array $pools;
 
     /**
-     * @var array<string, mixed>
+     * @var array<string, array<string, mixed>>
      */
-    private array $routing;
-
-    /**
-     * @var array<string, mixed>
-     */
-    private array $configCache;
-
-    /**
-     * @var array<string, mixed>
-     */
-    private array $translations;
+    private array $caches;
 
     /**
      * @param array<string, mixed> $config
@@ -50,9 +40,25 @@ final class CacheConfiguration
             false,
         );
         $this->pools = (array) ($config['pools'] ?? []);
-        $this->routing = (array) ($config['routing'] ?? []);
-        $this->configCache = (array) ($config['config_cache'] ?? []);
-        $this->translations = (array) ($config['translations'] ?? []);
+        $this->caches = (array) ($config['caches'] ?? []);
+
+        // Backward compatibility: allow legacy keys if caches are not provided.
+        if ($this->caches === []) {
+            foreach (['config', 'routing', 'routes', 'translations'] as $legacyKey) {
+                if (isset($config[$legacyKey])) {
+                    $targetKey = $legacyKey === 'routing' ? 'routes' : $legacyKey;
+                    $this->caches[$targetKey] = (array) $config[$legacyKey];
+                }
+            }
+
+            if ($this->caches === []) {
+                $this->caches = [
+                    'config' => [],
+                    'routes' => [],
+                    'translations' => [],
+                ];
+            }
+        }
 
         if ($this->pools !== [] && !isset($this->pools[$this->defaultPool])) {
             throw new CacheConfigurationException(
@@ -67,6 +73,36 @@ final class CacheConfiguration
     public function defaultPool(): string
     {
         return $this->defaultPool;
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function caches(): array
+    {
+        return $this->caches;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function cacheNames(): array
+    {
+        return \array_keys($this->caches);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array<string, mixed>
+     */
+    public function cache(string $name): array
+    {
+        if (!isset($this->caches[$name])) {
+            throw new CacheConfigurationException(\sprintf('Cache "%s" is not defined.', $name));
+        }
+
+        return (array) $this->caches[$name];
     }
 
     /**
@@ -90,7 +126,7 @@ final class CacheConfiguration
      */
     public function routingCache(): array
     {
-        return $this->routing;
+        return $this->caches['routes'] ?? ($this->caches['routing'] ?? []);
     }
 
     /**
@@ -98,7 +134,7 @@ final class CacheConfiguration
      */
     public function configCache(): array
     {
-        return $this->configCache;
+        return $this->caches['config'] ?? [];
     }
 
     /**
@@ -106,7 +142,7 @@ final class CacheConfiguration
      */
     public function translations(): array
     {
-        return $this->translations;
+        return $this->caches['translations'] ?? [];
     }
 
     /**
