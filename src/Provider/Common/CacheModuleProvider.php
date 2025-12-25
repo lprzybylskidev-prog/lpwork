@@ -8,6 +8,7 @@ use LPwork\Cache\CacheConfiguration;
 use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Cache\Contract\CacheManagerInterface;
 use LPwork\Cache\Contract\CacheProviderInterface;
+use LPwork\Provider\Common\CacheProvider;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -42,7 +43,7 @@ final class CacheModuleProvider
             ): Psr16Cache {
                 return new Psr16Cache($pool);
             }),
-            CacheProviderInterface::class => \DI\autowire(DefaultCacheProvider::class),
+            CacheProviderInterface::class => \DI\autowire(CacheProvider::class),
             CacheManagerInterface::class => \DI\autowire(\LPwork\Cache\CacheManager::class),
         ]);
     }
