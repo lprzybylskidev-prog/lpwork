@@ -163,6 +163,12 @@ class ErrorHandlingMiddleware implements MiddlewareInterface
     {
         $accept = $request->getHeaderLine('Accept');
 
-        return \stripos($accept, 'application/json') !== false;
+        if (\stripos($accept, 'application/json') !== false) {
+            return true;
+        }
+
+        $path = $request->getUri()->getPath();
+
+        return \str_starts_with($path, '/api');
     }
 }

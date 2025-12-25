@@ -65,20 +65,16 @@ class ErrorResponseBuilder
     ): ResponseInterface {
         $isDev = $this->isDev();
         $body = [
-            'code' => $status,
+            'errorId' => $this->shouldExposeApiErrorId() ? $errorId : null,
+            'message' => $message ?? 'Internal Server Error',
         ];
 
-        if ($this->shouldExposeApiErrorId()) {
-            $body['error_id'] = $errorId;
+        if (!$this->shouldExposeApiErrorId()) {
+            unset($body['errorId']);
         }
 
-        if ($isDev) {
-            $body['message'] = $message ?? 'Error';
-            if ($context !== null) {
-                $body['context'] = $context->toArray();
-            } else {
-                $body['trace'] = $throwable !== null ? $throwable->getTraceAsString() : null;
-            }
+        if ($isDev && $context !== null) {
+            $body['context'] = $context->toArray();
         }
 
         $json = \json_encode($body, \JSON_THROW_ON_ERROR);

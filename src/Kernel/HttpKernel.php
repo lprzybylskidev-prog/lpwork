@@ -63,7 +63,7 @@ class HttpKernel
 
         $response = $this->handle($request, $middlewares);
 
-        $this->emitResponse($response);
+        $this->emitResponse($response, $request);
     }
 
     /**
@@ -148,11 +148,14 @@ class HttpKernel
      * Emits the HTTP response to the client.
      *
      * @param ResponseInterface $response
+     * @param ServerRequestInterface $request
      *
      * @return void
      */
-    private function emitResponse(ResponseInterface $response): void
-    {
+    private function emitResponse(
+        ResponseInterface $response,
+        ServerRequestInterface $request,
+    ): void {
         if (!\headers_sent()) {
             \http_response_code($response->getStatusCode());
 
@@ -163,6 +166,21 @@ class HttpKernel
             }
         }
 
-        echo (string) $response->getBody();
+        if (\strcasecmp($request->getMethod(), 'HEAD') === 0) {
+            return;
+        }
+
+        $body = $response->getBody();
+
+        if ($body->isSeekable()) {
+            $body->rewind();
+        }
+
+        while (!$body->eof()) {
+            echo $body->read(8192);
+            if (\function_exists('flush')) {
+                \flush();
+            }
+        }
     }
 }
