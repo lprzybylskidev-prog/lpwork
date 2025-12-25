@@ -46,7 +46,8 @@ final class Env
      */
     public function getString(string $key, ?string $default = null): string
     {
-        $value = $this->getRaw($key, $default);
+        $args = \func_num_args() > 1 ? [$default] : [];
+        $value = $this->getRaw($key, ...$args);
 
         return $value;
     }
@@ -61,7 +62,13 @@ final class Env
      */
     public function getInt(string $key, ?int $default = null): int
     {
-        $value = $this->getRaw($key, $default !== null ? (string) $default : null);
+        $args = [];
+
+        if (\func_num_args() > 1) {
+            $args[] = $default !== null ? (string) $default : null;
+        }
+
+        $value = $this->getRaw($key, ...$args);
 
         if (!\is_numeric($value)) {
             throw new EnvValueInvalidException(
@@ -82,7 +89,13 @@ final class Env
      */
     public function getFloat(string $key, ?float $default = null): float
     {
-        $value = $this->getRaw($key, $default !== null ? (string) $default : null);
+        $args = [];
+
+        if (\func_num_args() > 1) {
+            $args[] = $default !== null ? (string) $default : null;
+        }
+
+        $value = $this->getRaw($key, ...$args);
 
         if (!\is_numeric($value)) {
             throw new EnvValueInvalidException(
@@ -103,7 +116,13 @@ final class Env
      */
     public function getBool(string $key, ?bool $default = null): bool
     {
-        $value = $this->getRaw($key, $default !== null ? ($default ? 'true' : 'false') : null);
+        $args = [];
+
+        if (\func_num_args() > 1) {
+            $args[] = $default !== null ? ($default ? 'true' : 'false') : null;
+        }
+
+        $value = $this->getRaw($key, ...$args);
         $normalized = \strtolower($value);
 
         if (\in_array($normalized, ['1', 'true', 'yes', 'on'], true)) {
@@ -132,19 +151,30 @@ final class Env
     }
 
     /**
-     * @param string      $key
-     * @param string|null $default
+     * @param string       $key
+     * @param string|null ...$default
      *
      * @return string
      */
-    private function getRaw(string $key, ?string $default = null): string
+    private function getRaw(string $key, ?string ...$default): string
     {
+        $defaultCount = \count($default);
+
+        if ($defaultCount > 1) {
+            throw new \InvalidArgumentException(
+                'Only a single default value may be provided for env lookups.',
+            );
+        }
+
+        $hasDefault = $defaultCount === 1;
+        $providedDefault = $hasDefault ? $default[0] : null;
+
         if ($this->has($key)) {
             return $this->values[$key];
         }
 
-        if ($default !== null) {
-            return $default;
+        if ($hasDefault) {
+            return (string) $providedDefault;
         }
 
         throw new EnvValueNotFoundException(\sprintf('Environment key "%s" is missing.', $key));
