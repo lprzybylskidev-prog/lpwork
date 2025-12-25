@@ -85,7 +85,8 @@ class Bootstrap
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAttributes(true);
 
-        $appEnv = $_ENV['APP_ENV'] ?? \getenv('APP_ENV') ?? 'dev';
+        $appEnvRaw = $_ENV['APP_ENV'] ?? \getenv('APP_ENV');
+        $appEnv = $appEnvRaw !== false && $appEnvRaw !== null ? (string) $appEnvRaw : 'dev';
 
         if ($appEnv === 'prod') {
             $cacheDir = \dirname(__DIR__, 2) . '/storage/cache/di';
