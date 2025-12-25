@@ -117,7 +117,7 @@ class CacheClearCommand extends Command
         if ($name === 'config') {
             $configCache = $this->configuration->cache('config');
             if (!(bool) ($configCache['enabled'] ?? false)) {
-                $output->writeln('<comment>Configuration cache is disabled in settings.</comment>');
+                $output->writeln('<comment>Config cache is disabled in settings.</comment>');
                 return true;
             }
             $poolName = (string) ($configCache['pool'] ?? 'filesystem');
@@ -130,7 +130,7 @@ class CacheClearCommand extends Command
             );
             $pool->deleteItem($key);
             $output->writeln(
-                \sprintf('<info>Configuration cache cleared (%s:%s).</info>', $poolName, $key),
+                \sprintf('<info>Config cache cleared (%s:%s).</info>', $poolName, $key),
             );
             return true;
         }
@@ -138,7 +138,7 @@ class CacheClearCommand extends Command
         if ($name === 'routes') {
             $routing = $this->configuration->cache('routes');
             if (!(bool) ($routing['enabled'] ?? false)) {
-                $output->writeln('<comment>Routing cache is disabled in settings.</comment>');
+                $output->writeln('<comment>Routes cache is disabled in settings.</comment>');
                 return true;
             }
             $poolName = (string) ($routing['pool'] ?? 'filesystem');
@@ -151,7 +151,7 @@ class CacheClearCommand extends Command
             );
             $pool->deleteItem($key);
             $output->writeln(
-                \sprintf('<info>Routing cache cleared (%s:%s).</info>', $poolName, $key),
+                \sprintf('<info>Routes cache cleared (%s:%s).</info>', $poolName, $key),
             );
             return true;
         }
@@ -159,7 +159,7 @@ class CacheClearCommand extends Command
         if ($name === 'translations') {
             $translations = $this->configuration->cache('translations');
             if (!(bool) ($translations['enabled'] ?? true)) {
-                $output->writeln('<comment>Translation cache is disabled in settings.</comment>');
+                $output->writeln('<comment>Translations cache is disabled in settings.</comment>');
                 return true;
             }
             $poolName = (string) ($translations['pool'] ?? 'filesystem');
@@ -214,11 +214,7 @@ class CacheClearCommand extends Command
             return [$poolArg];
         }
 
-        if (\in_array('config', $names, true)) {
-            return ['config'];
-        }
-
-        return $names !== [] ? [\reset($names)] : [];
+        return $names;
     }
 
     /**

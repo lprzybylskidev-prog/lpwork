@@ -58,7 +58,7 @@ return [
     'caches' => [
         'config' => [
             // Enable configuration cache (true/false).
-            'enabled' => $env->getBool('CONFIG_CACHE_ENABLED', false),
+            'enabled' => $env->getBool('CONFIG_CACHE_ENABLED', true),
             // Cache pool name used for configuration cache.
             'pool' => $env->getString('CONFIG_CACHE_POOL', 'filesystem'),
             // Cache key for configuration repository payload.
@@ -66,7 +66,7 @@ return [
         ],
         'routes' => [
             // Enable FastRoute dispatcher cache (true/false).
-            'enabled' => $env->getBool('ROUTE_CACHE_ENABLED', false),
+            'enabled' => $env->getBool('ROUTE_CACHE_ENABLED', true),
             // Cache pool name used for routing cache.
             'pool' => $env->getString('ROUTE_CACHE_POOL', 'filesystem'),
             // Cache key for dispatcher.

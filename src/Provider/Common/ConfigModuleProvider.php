@@ -5,7 +5,6 @@ namespace LPwork\Provider\Common;
 
 use DI\ContainerBuilder;
 use LPwork\Cache\CacheConfiguration;
-use LPwork\Cache\Exception\CacheConfigurationException;
 use LPwork\Config\CachedConfigRepository;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Config\PhpConfigLoader;
@@ -15,8 +14,6 @@ use LPwork\Http\HttpConfiguration;
 use LPwork\Mail\MailConfiguration;
 use LPwork\Security\SecurityConfiguration;
 use LPwork\Translation\TranslationConfiguration;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * Registers environment handling and configuration repositories.
@@ -78,30 +75,32 @@ final class ConfigModuleProvider
                     try {
                         $poolConfig = $cacheConfiguration->pool($poolName);
                         $driver = (string) ($poolConfig['driver'] ?? 'array');
+                        $defaultTtl = (int) ($poolConfig['default_ttl'] ?? 0);
+                        $lifetime = $defaultTtl > 0 ? $defaultTtl : 0;
+                        $namespace = (string) ($poolConfig['namespace'] ?? '');
 
                         if ($driver === 'array') {
-                            $defaultTtl = (int) ($poolConfig['default_ttl'] ?? 0);
-                            $ttlValue = $defaultTtl > 0 ? $defaultTtl : null;
-                            $pool = new ArrayAdapter(
+                            $pool = new \Symfony\Component\Cache\Adapter\ArrayAdapter(
                                 storeSerialized: false,
-                                defaultLifetime: $ttlValue,
+                                defaultLifetime: $lifetime,
                             );
 
                             return new CachedConfigRepository($configs, $pool, $key);
                         }
 
                         if ($driver === 'filesystem') {
-                            $defaultTtl = (int) ($poolConfig['default_ttl'] ?? 0);
-                            $ttlValue = $defaultTtl > 0 ? $defaultTtl : null;
-                            $namespace = (string) ($poolConfig['namespace'] ?? '');
                             $path =
                                 (string) ($poolConfig['path'] ??
                                     \dirname(__DIR__, 3) . '/storage/cache');
-                            $pool = new FilesystemAdapter($namespace, $ttlValue, $path);
+                            $pool = new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
+                                $namespace,
+                                $lifetime,
+                                $path,
+                            );
 
                             return new CachedConfigRepository($configs, $pool, $key);
                         }
-                    } catch (CacheConfigurationException) {
+                    } catch (\Throwable) {
                         // fall through to non-cached repository
                     }
                 }

@@ -168,13 +168,7 @@ class CacheWarmCommand extends Command
         $item->set($configs);
         $pool->save($item);
 
-        $output->writeln(
-            \sprintf(
-                '<info>Configuration cache warmed in pool \"%s\" with key \"%s\".</info>',
-                $poolName,
-                $key,
-            ),
-        );
+        $output->writeln(\sprintf('<info>Config cache warmed (%s:%s).</info>', $poolName, $key));
     }
 
     /**
@@ -206,11 +200,7 @@ class CacheWarmCommand extends Command
             );
             $pool->deleteItem($key);
             $output->writeln(
-                \sprintf(
-                    '<info>Routing cache reset (%s:%s). Rebuilt on next request.</info>',
-                    $poolName,
-                    $key,
-                ),
+                \sprintf('<info>Routes cache warmed (%s:%s).</info>', $poolName, $key),
             );
             return true;
         }
@@ -273,11 +263,7 @@ class CacheWarmCommand extends Command
             return [$poolArg];
         }
 
-        if (\in_array('config', $names, true)) {
-            return ['config'];
-        }
-
-        return $names !== [] ? [\reset($names)] : [];
+        return $names;
     }
 
     /**

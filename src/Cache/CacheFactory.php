@@ -58,29 +58,26 @@ class CacheFactory implements CacheFactoryInterface
         $driver = (string) ($poolConfig['driver'] ?? 'array');
         $namespace = (string) ($poolConfig['namespace'] ?? '');
         $defaultTtl = $poolConfig['default_ttl'] ?? null;
-
-        if ($defaultTtl !== null) {
-            $defaultTtl = (int) $defaultTtl;
-        }
+        $defaultLifetime = $defaultTtl === null ? 0 : (int) $defaultTtl;
 
         return match ($driver) {
-            'array' => new ArrayAdapter(storeSerialized: false, defaultLifetime: $defaultTtl),
+            'array' => new ArrayAdapter(storeSerialized: false, defaultLifetime: $defaultLifetime),
             'filesystem' => new FilesystemAdapter(
                 namespace: $namespace,
-                defaultLifetime: $defaultTtl,
+                defaultLifetime: $defaultLifetime,
                 directory: (string) ($poolConfig['path'] ?? ''),
             ),
             'redis' => $this->createRedisAdapter(
                 $poolConfig,
                 $redisConnections,
                 $namespace,
-                $defaultTtl,
+                $defaultLifetime,
             ),
             'pdo' => $this->createPdoAdapter(
                 $poolConfig,
                 $databaseConnections,
                 $namespace,
-                $defaultTtl,
+                $defaultLifetime,
             ),
             default => throw new CacheConfigurationException(
                 \sprintf('Cache driver "%s" is not supported.', $driver),
@@ -92,7 +89,7 @@ class CacheFactory implements CacheFactoryInterface
      * @param array<string, mixed>       $config
      * @param RedisConnectionManagerInterface      $connections
      * @param string                     $namespace
-     * @param int|null                   $defaultTtl
+     * @param int                   $defaultTtl
      *
      * @return CacheItemPoolInterface
      */
@@ -100,7 +97,7 @@ class CacheFactory implements CacheFactoryInterface
         array $config,
         RedisConnectionManagerInterface $connections,
         string $namespace,
-        ?int $defaultTtl,
+        int $defaultTtl,
     ): CacheItemPoolInterface {
         $connectionName = (string) ($config['connection'] ?? 'default');
         $client = $connections->get($connectionName)->client();
@@ -112,7 +109,7 @@ class CacheFactory implements CacheFactoryInterface
      * @param array<string, mixed>                 $config
      * @param DatabaseConnectionManagerInterface  $connections
      * @param string                               $namespace
-     * @param int|null                             $defaultTtl
+     * @param int                             $defaultTtl
      *
      * @return CacheItemPoolInterface
      */
@@ -120,7 +117,7 @@ class CacheFactory implements CacheFactoryInterface
         array $config,
         DatabaseConnectionManagerInterface $connections,
         string $namespace,
-        ?int $defaultTtl,
+        int $defaultTtl,
     ): CacheItemPoolInterface {
         $connectionName = (string) ($config['connection'] ?? 'default');
         $table = (string) ($config['table'] ?? 'cache_items');
