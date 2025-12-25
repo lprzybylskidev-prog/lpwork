@@ -9,7 +9,7 @@ namespace LPwork\Queue;
 interface QueueHandlerProviderInterface
 {
     /**
-        * @return array<string, class-string<\LPwork\Queue\Contract\QueueHandlerInterface>|callable>
+     * @return array<string, class-string<\LPwork\Queue\Contract\QueueHandlerInterface>|callable>
      */
     public function getHandlers(): array;
 }
