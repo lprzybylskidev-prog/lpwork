@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace LPwork\Provider\Common;
 
-use Carbon\CarbonImmutable;
 use DI\ContainerBuilder;
 use LPwork\Cache\CacheConfiguration;
 use LPwork\Cache\Exception\CacheConfigurationException;
@@ -15,17 +14,14 @@ use LPwork\Environment\Env;
 use LPwork\Http\HttpConfiguration;
 use LPwork\Mail\MailConfiguration;
 use LPwork\Security\SecurityConfiguration;
-use LPwork\Time\CarbonClock;
-use LPwork\Time\TimezoneContext;
 use LPwork\Translation\TranslationConfiguration;
-use Psr\Clock\ClockInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
- * Registers environment, configuration and time-related services.
+ * Registers environment handling and configuration repositories.
  */
-final class TimeConfigModuleProvider
+final class ConfigModuleProvider
 {
     /**
      * @param ContainerBuilder $containerBuilder
@@ -39,9 +35,7 @@ final class TimeConfigModuleProvider
 
                 return Env::fromArray($envVars);
             }),
-            CacheConfiguration::class => \DI\factory(static function (
-                Env $env,
-            ): CacheConfiguration {
+            CacheConfiguration::class => \DI\factory(static function (Env $env): CacheConfiguration {
                 $configDirectory = \dirname(__DIR__, 3) . '/config/configs';
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
@@ -100,7 +94,7 @@ final class TimeConfigModuleProvider
                             $namespace = (string) ($poolConfig['namespace'] ?? '');
                             $path =
                                 (string) ($poolConfig['path'] ??
-                                    \dirname(__DIR__, 2) . '/storage/cache');
+                                    \dirname(__DIR__, 3) . '/storage/cache');
                             $pool = new FilesystemAdapter($namespace, $ttlValue, $path);
 
                             return new CachedConfigRepository($configs, $pool, $key);
@@ -132,24 +126,6 @@ final class TimeConfigModuleProvider
                 $securityConfig = $config->get('security', []);
 
                 return new SecurityConfiguration((array) $securityConfig);
-            }),
-            TimezoneContext::class => \DI\factory(static function (
-                ConfigRepositoryInterface $config,
-            ): TimezoneContext {
-                $timezone = $config->getString('app.timezone', 'UTC');
-
-                return new TimezoneContext($timezone);
-            }),
-            \DateTimeZone::class => \DI\factory(static function (
-                TimezoneContext $timezoneContext,
-            ): \DateTimeZone {
-                return $timezoneContext->timezone();
-            }),
-            ClockInterface::class => \DI\autowire(CarbonClock::class),
-            CarbonImmutable::class => \DI\factory(static function (
-                TimezoneContext $timezoneContext,
-            ): CarbonImmutable {
-                return CarbonImmutable::now($timezoneContext->timezone());
             }),
         ]);
     }

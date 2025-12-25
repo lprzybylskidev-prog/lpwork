@@ -5,6 +5,7 @@ namespace LPwork\Provider;
 
 use DI\ContainerBuilder;
 use LPwork\Provider\Common\CacheModuleProvider;
+use LPwork\Provider\Common\ConfigModuleProvider;
 use LPwork\Provider\Common\ConsoleModuleProvider;
 use LPwork\Provider\Common\DatabaseModuleProvider;
 use LPwork\Provider\Common\ErrorHandlingModuleProvider;
@@ -20,7 +21,7 @@ use LPwork\Provider\Common\RedisModuleProvider;
 use LPwork\Provider\Common\RoutingModuleProvider;
 use LPwork\Provider\Common\SecurityModuleProvider;
 use LPwork\Provider\Common\SessionModuleProvider;
-use LPwork\Provider\Common\TimeConfigModuleProvider;
+use LPwork\Provider\Common\TimeModuleProvider;
 use LPwork\Provider\Common\TranslationModuleProvider;
 use LPwork\Provider\Common\ValidationModuleProvider;
 use LPwork\Provider\Common\VersionModuleProvider;
@@ -42,7 +43,8 @@ class CommonProvider implements ProviderInterface
      */
     public function register(ContainerBuilder $containerBuilder): void
     {
-        (new TimeConfigModuleProvider())->register($containerBuilder);
+        (new ConfigModuleProvider())->register($containerBuilder);
+        (new TimeModuleProvider())->register($containerBuilder);
         (new RedisModuleProvider())->register($containerBuilder);
         (new DatabaseModuleProvider())->register($containerBuilder);
         (new CacheModuleProvider())->register($containerBuilder);
