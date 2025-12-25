@@ -3,11 +3,16 @@ declare(strict_types=1);
 
 namespace LPwork\WebSocket;
 
+use LPwork\Config\Exception\InvalidConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
+
 /**
  * Holds WebSocket servers configuration.
  */
 final class WebSocketConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -23,8 +28,19 @@ final class WebSocketConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultServer = (string) ($config['default_server'] ?? 'default');
+        $this->defaultServer = $this->stringVal(
+            $config['default_server'] ?? null,
+            'websocket.default_server',
+            'default',
+            false,
+        );
         $this->servers = (array) ($config['servers'] ?? []);
+
+        if ($this->servers !== [] && !isset($this->servers[$this->defaultServer])) {
+            throw new InvalidConfigurationException(
+                \sprintf('Default WebSocket server "%s" is not defined.', $this->defaultServer),
+            );
+        }
     }
 
     /**

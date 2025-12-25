@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LPwork\Http\Session;
 
 use LPwork\Http\Session\Exception\SessionConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
 
 /**
  * Typed session configuration holder.
  */
 final class SessionConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -35,8 +38,8 @@ final class SessionConfiguration
      */
     public function __construct(array $config)
     {
-        $this->driver = (string) ($config['driver'] ?? 'php');
-        $this->lifetime = (int) ($config['lifetime'] ?? 7200);
+        $this->driver = $this->stringVal($config['driver'] ?? null, 'session.driver', 'php', false);
+        $this->lifetime = $this->intVal($config['lifetime'] ?? null, 'session.lifetime', 7200, 1);
         $this->cookie = (array) ($config['cookie'] ?? []);
         $this->drivers = (array) ($config['drivers'] ?? []);
     }

@@ -5,6 +5,7 @@ namespace LPwork\Filesystem;
 
 use LPwork\Filesystem\Contract\FilesystemManagerInterface;
 use LPwork\Filesystem\Exception\FilesystemNotFoundException;
+use LPwork\Config\Support\ConfigNormalizer;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\FilesystemOperator;
@@ -15,6 +16,8 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  */
 class FilesystemManager implements FilesystemManagerInterface
 {
+    use ConfigNormalizer;
+
     /**
      * @var array<string, array<string, mixed>>
      */
@@ -80,12 +83,12 @@ class FilesystemManager implements FilesystemManagerInterface
         $driver = $config['driver'] ?? 'local';
 
         if ($driver === 'local') {
-            $root = $config['root'] ?? null;
-
-            if ($root === null || $root === '') {
-                throw new FilesystemNotFoundException('Local filesystem root is not configured.');
-            }
-
+            $root = $this->stringVal(
+                $config['root'] ?? null,
+                'filesystem.disks.local.root',
+                null,
+                false,
+            );
             $normalizedRoot = $this->normalizeRoot($root);
 
             return new LocalFilesystemAdapter($normalizedRoot);

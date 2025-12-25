@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LPwork\Logging;
 
 use LPwork\Logging\Exception\LoggingConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
 
 /**
  * Typed configuration holder for application logging.
  */
 final class LogConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -25,8 +28,19 @@ final class LogConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultChannel = (string) ($config['default_channel'] ?? 'stderr');
+        $this->defaultChannel = $this->stringVal(
+            $config['default_channel'] ?? null,
+            'logging.default_channel',
+            'stderr',
+            false,
+        );
         $this->channels = (array) ($config['channels'] ?? []);
+
+        if ($this->channels !== [] && !isset($this->channels[$this->defaultChannel])) {
+            throw new LoggingConfigurationException(
+                \sprintf('Default log channel "%s" is not defined.', $this->defaultChannel),
+            );
+        }
     }
 
     /**

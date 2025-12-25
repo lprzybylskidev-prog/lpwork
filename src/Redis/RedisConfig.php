@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace LPwork\Redis;
 
+use LPwork\Config\Support\ConfigNormalizer;
+
 /**
  * Value object holding Redis connection configuration.
  */
 class RedisConfig
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -48,13 +52,22 @@ class RedisConfig
      */
     public function __construct(array $config)
     {
-        $this->scheme = (string) ($config['scheme'] ?? 'tcp');
-        $this->host = (string) ($config['host'] ?? '127.0.0.1');
-        $this->port = (int) ($config['port'] ?? 6379);
-        $this->database = (int) ($config['database'] ?? 0);
-        $this->username = $config['username'] !== '' ? $config['username'] ?? null : null;
-        $this->password = $config['password'] !== '' ? $config['password'] ?? null : null;
-        $this->prefix = $config['prefix'] !== '' ? $config['prefix'] ?? null : null;
+        $this->scheme = $this->stringVal($config['scheme'] ?? null, 'redis.scheme', 'tcp', false);
+        $this->host = $this->stringVal($config['host'] ?? null, 'redis.host', '127.0.0.1', false);
+        $this->port = $this->intVal($config['port'] ?? null, 'redis.port', 6379, 1);
+        $this->database = $this->intVal($config['database'] ?? null, 'redis.database', 0, 0);
+        $this->username =
+            $config['username'] !== ''
+                ? $this->stringVal($config['username'] ?? null, 'redis.username', null, true)
+                : null;
+        $this->password =
+            $config['password'] !== ''
+                ? $this->stringVal($config['password'] ?? null, 'redis.password', null, true)
+                : null;
+        $this->prefix =
+            $config['prefix'] !== ''
+                ? $this->stringVal($config['prefix'] ?? null, 'redis.prefix', null, true)
+                : null;
     }
 
     /**

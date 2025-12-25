@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace LPwork\Http;
 
+use LPwork\Config\Support\ConfigNormalizer;
+
 /**
  * Typed configuration for HTTP helpers and middleware.
  */
 final class HttpConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var bool
      */
@@ -46,13 +50,38 @@ final class HttpConfiguration
         // Support flattened config (current) and legacy nested "body_parsing".
         $bodyParsing = (array) ($config['body_parsing'] ?? $config);
 
-        $this->bodyParsingEnabled = (bool) ($bodyParsing['enabled'] ?? true);
-        $this->maxBodySize = (int) ($bodyParsing['max_body_size'] ?? 0);
-        $this->rejectInvalidJson = (bool) ($bodyParsing['reject_invalid_json'] ?? true);
-        $this->allowedContentTypes = \array_values((array) ($bodyParsing['allowed_types'] ?? []));
+        $this->bodyParsingEnabled = $this->boolVal(
+            $bodyParsing['enabled'] ?? null,
+            'http.body_parsing.enabled',
+            true,
+        );
+        $this->maxBodySize = $this->intVal(
+            $bodyParsing['max_body_size'] ?? null,
+            'http.body_parsing.max_body_size',
+            0,
+            0,
+        );
+        $this->rejectInvalidJson = $this->boolVal(
+            $bodyParsing['reject_invalid_json'] ?? null,
+            'http.body_parsing.reject_invalid_json',
+            true,
+        );
+        $this->allowedContentTypes = $this->stringList(
+            $bodyParsing['allowed_types'] ?? [],
+            'http.body_parsing.allowed_types',
+        );
         $jsonConfig = (array) ($bodyParsing['json'] ?? []);
-        $this->jsonMaxDepth = (int) ($jsonConfig['max_depth'] ?? 512);
-        $this->jsonAssoc = (bool) ($jsonConfig['assoc'] ?? false);
+        $this->jsonMaxDepth = $this->intVal(
+            $jsonConfig['max_depth'] ?? null,
+            'http.body_parsing.json.max_depth',
+            512,
+            1,
+        );
+        $this->jsonAssoc = $this->boolVal(
+            $jsonConfig['assoc'] ?? null,
+            'http.body_parsing.json.assoc',
+            false,
+        );
     }
 
     /**

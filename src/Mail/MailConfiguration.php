@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LPwork\Mail;
 
 use LPwork\Mail\Exception\MailConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
 
 /**
  * Typed configuration holder for mail transports.
  */
 final class MailConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -25,8 +28,19 @@ final class MailConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultConnection = (string) ($config['default_connection'] ?? 'smtp');
+        $this->defaultConnection = $this->stringVal(
+            $config['default_connection'] ?? null,
+            'mail.default_connection',
+            'smtp',
+            false,
+        );
         $this->connections = (array) ($config['connections'] ?? []);
+
+        if ($this->connections !== [] && !isset($this->connections[$this->defaultConnection])) {
+            throw new MailConfigurationException(
+                \sprintf('Default mail connection "%s" is not defined.', $this->defaultConnection),
+            );
+        }
     }
 
     /**

@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace LPwork\Translation;
 
+use LPwork\Config\Support\ConfigNormalizer;
+
 /**
  * Typed translation configuration holder.
  */
 final class TranslationConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -43,12 +47,42 @@ final class TranslationConfiguration
      */
     public function __construct(array $config)
     {
-        $this->locale = (string) ($config['locale'] ?? 'en');
-        $this->fallbackLocale = (string) ($config['fallback_locale'] ?? 'en');
-        $this->path = (string) ($config['path'] ?? '');
-        $this->cachePool = (string) ($config['cache_pool'] ?? 'filesystem');
-        $this->cachePrefix = (string) ($config['cache_prefix'] ?? 'translations:');
-        $this->cacheEnabled = (bool) ($config['cache_enabled'] ?? true);
+        $this->locale = $this->stringVal(
+            $config['locale'] ?? null,
+            'translation.locale',
+            'en',
+            false,
+        );
+        $this->fallbackLocale = $this->stringVal(
+            $config['fallback_locale'] ?? null,
+            'translation.fallback_locale',
+            'en',
+            false,
+        );
+        $this->path = $this->stringVal($config['path'] ?? null, 'translation.path', '', true);
+        $this->cachePool = $this->stringVal(
+            $config['cache_pool'] ?? null,
+            'translation.cache_pool',
+            'filesystem',
+            false,
+        );
+        $this->cachePrefix = $this->stringVal(
+            $config['cache_prefix'] ?? null,
+            'translation.cache_prefix',
+            'translations:',
+            true,
+        );
+        $this->cacheEnabled = $this->boolVal(
+            $config['cache_enabled'] ?? null,
+            'translation.cache_enabled',
+            true,
+        );
+
+        if ($this->cacheEnabled && $this->cachePool === '') {
+            throw new \RuntimeException(
+                'Translation cache pool must be set when cache is enabled.',
+            );
+        }
     }
 
     /**

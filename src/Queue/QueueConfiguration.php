@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LPwork\Queue;
 
 use LPwork\Queue\Exception\QueueConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
 
 /**
  * Typed configuration holder for queue definitions.
  */
 final class QueueConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -30,9 +33,23 @@ final class QueueConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultQueue = (string) ($config['default_queue'] ?? 'default');
+        $this->defaultQueue = $this->stringVal(
+            $config['default_queue'] ?? null,
+            'queue.default_queue',
+            'default',
+            false,
+        );
         $this->queues = (array) ($config['queues'] ?? []);
         $this->retry = (array) ($config['retry'] ?? []);
+
+        if ($this->queues !== [] && !isset($this->queues[$this->defaultQueue])) {
+            throw new QueueConfigurationException(
+                \sprintf(
+                    'Default queue "%s" is not defined in queues configuration.',
+                    $this->defaultQueue,
+                ),
+            );
+        }
     }
 
     /**

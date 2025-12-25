@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LPwork\Cache;
 
 use LPwork\Cache\Exception\CacheConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
 
 /**
  * Typed configuration holder for cache pools and routing/config cache options.
  */
 final class CacheConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -40,11 +43,22 @@ final class CacheConfiguration
      */
     public function __construct(array $config)
     {
-        $this->defaultPool = (string) ($config['default_pool'] ?? 'array');
+        $this->defaultPool = $this->stringVal(
+            $config['default_pool'] ?? null,
+            'cache.default_pool',
+            'array',
+            false,
+        );
         $this->pools = (array) ($config['pools'] ?? []);
         $this->routing = (array) ($config['routing'] ?? []);
         $this->configCache = (array) ($config['config_cache'] ?? []);
         $this->translations = (array) ($config['translations'] ?? []);
+
+        if ($this->pools !== [] && !isset($this->pools[$this->defaultPool])) {
+            throw new CacheConfigurationException(
+                \sprintf('Default cache pool "%s" is not defined.', $this->defaultPool),
+            );
+        }
     }
 
     /**

@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LPwork\ErrorLog;
 
 use LPwork\ErrorLog\Exception\ErrorLogConfigurationException;
+use LPwork\Config\Support\ConfigNormalizer;
 
 /**
  * Typed configuration for error logging.
  */
 final class ErrorLogConfiguration
 {
+    use ConfigNormalizer;
+
     /**
      * @var string
      */
@@ -45,12 +48,50 @@ final class ErrorLogConfiguration
      */
     public function __construct(array $config)
     {
-        $this->driver = (string) ($config['driver'] ?? 'file');
-        $this->level = (string) ($config['level'] ?? 'error');
+        $this->driver = $this->stringVal(
+            $config['driver'] ?? null,
+            'error_log.driver',
+            'file',
+            false,
+        );
+        $this->level = $this->stringVal(
+            $config['level'] ?? null,
+            'error_log.level',
+            'error',
+            false,
+        );
         $this->file = (array) ($config['file'] ?? []);
         $this->database = (array) ($config['database'] ?? []);
         $this->redis = (array) ($config['redis'] ?? []);
-        $this->logClientErrors = (bool) ($config['log_client_errors'] ?? false);
+        $this->logClientErrors = $this->boolVal(
+            $config['log_client_errors'] ?? null,
+            'error_log.log_client_errors',
+            false,
+        );
+
+        $this->assertSupportedDriver($this->driver);
+
+        if ($this->driver === 'file' && ($this->file['directory'] ?? '') === '') {
+            throw new ErrorLogConfigurationException('File error log requires "directory" path.');
+        }
+
+        if (
+            $this->driver === 'database' &&
+            !isset($this->database['connection'], $this->database['table'])
+        ) {
+            throw new ErrorLogConfigurationException(
+                'Database error log requires "connection" and "table".',
+            );
+        }
+
+        if (
+            $this->driver === 'redis' &&
+            !isset($this->redis['connection'], $this->redis['prefix'])
+        ) {
+            throw new ErrorLogConfigurationException(
+                'Redis error log requires "connection" and "prefix".',
+            );
+        }
     }
 
     /**
