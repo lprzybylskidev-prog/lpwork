@@ -135,4 +135,8 @@ final class HttpConfiguration
     {
         return $this->jsonAssoc;
     }
+
+    /**
+     * @return array<string, mixed>
+     */
 }

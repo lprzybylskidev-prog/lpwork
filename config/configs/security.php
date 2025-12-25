@@ -41,22 +41,45 @@ return [
     ],
     'cors' => [
         // Enable CORS middleware (true/false).
-        'enabled' => $env->getBool('HTTP_CORS_ENABLED', false),
+        'enabled' => $env->getBool('SECURITY_CORS_ENABLED', false),
         // Allowed origins (use "*" to allow all).
-        'allow_origin' => [$env->getString('HTTP_CORS_ALLOW_ORIGIN', '*')],
+        'allow_origin' => \array_filter(
+            \array_map('trim', \explode(',', $env->getString('SECURITY_CORS_ALLOW_ORIGIN', '*'))),
+            static fn(string $v): bool => $v !== '',
+        ),
         // Allowed HTTP methods.
-        'allow_methods' => [
-            $env->getString('HTTP_CORS_ALLOW_METHODS', 'GET,POST,PUT,PATCH,DELETE,OPTIONS'),
-        ],
+        'allow_methods' => \array_filter(
+            \array_map(
+                'trim',
+                \explode(
+                    ',',
+                    $env->getString(
+                        'SECURITY_CORS_ALLOW_METHODS',
+                        'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+                    ),
+                ),
+            ),
+            static fn(string $v): bool => $v !== '',
+        ),
         // Allowed headers sent by the client.
-        'allow_headers' => [
-            $env->getString('HTTP_CORS_ALLOW_HEADERS', 'Content-Type,Authorization'),
-        ],
+        'allow_headers' => \array_filter(
+            \array_map(
+                'trim',
+                \explode(
+                    ',',
+                    $env->getString('SECURITY_CORS_ALLOW_HEADERS', 'Content-Type,Authorization'),
+                ),
+            ),
+            static fn(string $v): bool => $v !== '',
+        ),
         // Headers exposed to the client.
-        'expose_headers' => [$env->getString('HTTP_CORS_EXPOSE_HEADERS', '')],
+        'expose_headers' => \array_filter(
+            \array_map('trim', \explode(',', $env->getString('SECURITY_CORS_EXPOSE_HEADERS', ''))),
+            static fn(string $v): bool => $v !== '',
+        ),
         // Whether to allow credentials.
-        'allow_credentials' => $env->getBool('HTTP_CORS_ALLOW_CREDENTIALS', false),
+        'allow_credentials' => $env->getBool('SECURITY_CORS_ALLOW_CREDENTIALS', false),
         // Max age for preflight responses (seconds).
-        'max_age' => $env->getInt('HTTP_CORS_MAX_AGE', 600),
+        'max_age' => $env->getInt('SECURITY_CORS_MAX_AGE', 600),
     ],
 ];
