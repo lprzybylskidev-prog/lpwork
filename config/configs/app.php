@@ -17,7 +17,6 @@ if ($timezone === '') {
  * timezone: default timezone applied globally (PSR-20 clock + Carbon), trimmed and falling back to UTC when empty; accepts any IANA name (aliases allowed) and fails fast on invalid.
  * locale: default language/locale identifier.
  * scheme: base scheme for URL generation (http/https).
- * url: full base URL including host and port.
  * http_client: default PSR-18 client options used by the framework/app.
  */
 return [
@@ -33,15 +32,10 @@ return [
     'locale' => $env->getString('APP_LOCALE', 'en'),
     // Base scheme used for URL building.
     'scheme' => $env->getString('APP_SCHEME', 'http'),
-    // Base URL including host and port.
-    'url' => $env->getString('APP_URL', 'http://localhost:8080'),
     // Default HTTP client options (PSR-18 via Symfony HttpClient).
     'http_client' => [
         // Base URI for outgoing requests; empty to disable.
-        'base_uri' => $env->getString(
-            'HTTP_CLIENT_BASE_URI',
-            $env->getString('APP_URL', 'http://localhost:8080'),
-        ),
+        'base_uri' => $env->getString('HTTP_CLIENT_BASE_URI', ''),
         // Timeout in seconds for HTTP requests.
         'timeout' => $env->getFloat('HTTP_CLIENT_TIMEOUT', 30.0),
         // Maximum number of redirects to follow.
