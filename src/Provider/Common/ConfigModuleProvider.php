@@ -35,7 +35,9 @@ final class ConfigModuleProvider
 
                 return Env::fromArray($envVars);
             }),
-            CacheConfiguration::class => \DI\factory(static function (Env $env): CacheConfiguration {
+            CacheConfiguration::class => \DI\factory(static function (
+                Env $env,
+            ): CacheConfiguration {
                 $configDirectory = \dirname(__DIR__, 3) . '/config/configs';
                 $loader = new PhpConfigLoader($env);
                 $configs = $loader->loadDirectory($configDirectory);
