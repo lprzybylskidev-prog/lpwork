@@ -6,7 +6,7 @@ namespace LPwork\Http\Routing;
 /**
  * Loads route definitions from PHP files.
  */
-class RouteLoader
+class RouteLoader implements Contract\RouteLoaderInterface
 {
     /**
      * @var string

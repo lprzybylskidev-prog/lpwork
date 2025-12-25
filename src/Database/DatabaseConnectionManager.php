@@ -10,7 +10,7 @@ use LPwork\Time\TimezoneContext;
 /**
  * Manages named database connections.
  */
-class DatabaseConnectionManager
+class DatabaseConnectionManager implements Contract\DatabaseConnectionManagerInterface
 {
     /**
      * @var array<string, array<string, mixed>>

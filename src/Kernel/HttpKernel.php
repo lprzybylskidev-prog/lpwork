@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Kernel;
 
+use LPwork\Http\Contract\ResponseEmitterInterface;
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
 use LPwork\Http\Middleware\MiddlewareProvider as BuiltinMiddlewareProvider;
 use Nyholm\Psr7\Response;
@@ -33,18 +34,26 @@ class HttpKernel
     private MiddlewareProviderInterface $appMiddlewareProvider;
 
     /**
+     * @var ResponseEmitterInterface
+     */
+    private ResponseEmitterInterface $responseEmitter;
+
+    /**
      * @param ServerRequestCreator        $serverRequestCreator
      * @param BuiltinMiddlewareProvider   $builtinMiddlewareProvider
      * @param MiddlewareProviderInterface $appMiddlewareProvider
+     * @param ResponseEmitterInterface    $responseEmitter
      */
     public function __construct(
         ServerRequestCreator $serverRequestCreator,
         BuiltinMiddlewareProvider $builtinMiddlewareProvider,
         MiddlewareProviderInterface $appMiddlewareProvider,
+        ResponseEmitterInterface $responseEmitter,
     ) {
         $this->serverRequestCreator = $serverRequestCreator;
         $this->builtinMiddlewareProvider = $builtinMiddlewareProvider;
         $this->appMiddlewareProvider = $appMiddlewareProvider;
+        $this->responseEmitter = $responseEmitter;
     }
 
     /**
@@ -63,7 +72,7 @@ class HttpKernel
 
         $response = $this->handle($request, $middlewares);
 
-        $this->emitResponse($response, $request);
+        $this->responseEmitter->emit($response, $request);
     }
 
     /**
@@ -144,43 +153,4 @@ class HttpKernel
         return \array_values($byName);
     }
 
-    /**
-     * Emits the HTTP response to the client.
-     *
-     * @param ResponseInterface $response
-     * @param ServerRequestInterface $request
-     *
-     * @return void
-     */
-    private function emitResponse(
-        ResponseInterface $response,
-        ServerRequestInterface $request,
-    ): void {
-        if (!\headers_sent()) {
-            \http_response_code($response->getStatusCode());
-
-            foreach ($response->getHeaders() as $name => $values) {
-                foreach ($values as $value) {
-                    \header($name . ': ' . $value, false);
-                }
-            }
-        }
-
-        if (\strcasecmp($request->getMethod(), 'HEAD') === 0) {
-            return;
-        }
-
-        $body = $response->getBody();
-
-        if ($body->isSeekable()) {
-            $body->rewind();
-        }
-
-        while (!$body->eof()) {
-            echo $body->read(8192);
-            if (\function_exists('flush')) {
-                \flush();
-            }
-        }
-    }
 }

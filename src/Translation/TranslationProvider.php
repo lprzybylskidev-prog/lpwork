@@ -6,7 +6,7 @@ namespace LPwork\Translation;
 use LPwork\Cache\CacheConfiguration;
 use LPwork\Cache\CacheFactory;
 use LPwork\Redis\RedisConnectionManager;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -36,9 +36,9 @@ final class TranslationProvider
     private RedisConnectionManager $redisConnections;
 
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $databaseConnections;
+    private DatabaseConnectionManagerInterface $databaseConnections;
 
     /**
      * @var TranslatorFactory
@@ -49,8 +49,8 @@ final class TranslationProvider
      * @param TranslationConfiguration  $translationConfiguration
      * @param CacheConfiguration        $cacheConfiguration
      * @param CacheFactory              $cacheFactory
-     * @param RedisConnectionManager    $redisConnections
-     * @param DatabaseConnectionManager $databaseConnections
+     * @param RedisConnectionManager              $redisConnections
+     * @param DatabaseConnectionManagerInterface  $databaseConnections
      * @param TranslatorFactory         $translatorFactory
      */
     public function __construct(
@@ -58,7 +58,7 @@ final class TranslationProvider
         CacheConfiguration $cacheConfiguration,
         CacheFactory $cacheFactory,
         RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
         TranslatorFactory $translatorFactory,
     ) {
         $this->translationConfiguration = $translationConfiguration;

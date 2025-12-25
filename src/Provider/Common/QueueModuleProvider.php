@@ -18,7 +18,7 @@ use LPwork\Queue\Messenger\QueueSendersLocator;
 use LPwork\Queue\Messenger\QueueServiceLocator;
 use LPwork\Queue\Messenger\QueueTransport;
 use LPwork\Redis\RedisConnectionManager;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;

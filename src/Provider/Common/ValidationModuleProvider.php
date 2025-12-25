@@ -7,7 +7,7 @@ use DI\ContainerBuilder;
 use LPwork\Cache\CacheConfiguration;
 use LPwork\Cache\CacheFactory;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Redis\RedisConnectionManager;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ValidatorBuilder;
@@ -30,7 +30,7 @@ final class ValidationModuleProvider
                 CacheFactory $cacheFactory,
                 CacheConfiguration $cacheConfiguration,
                 RedisConnectionManager $redisConnections,
-                DatabaseConnectionManager $databaseConnections,
+                DatabaseConnectionManagerInterface $databaseConnections,
             ): ValidatorBuilder {
                 $settings = (array) $config->get('validation', []);
                 $builder = \Symfony\Component\Validator\Validation::createValidatorBuilder();

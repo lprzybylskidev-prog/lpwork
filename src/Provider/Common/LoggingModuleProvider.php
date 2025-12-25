@@ -6,7 +6,7 @@ namespace LPwork\Provider\Common;
 use Carbon\CarbonImmutable;
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Logging\LogConfiguration;
 use LPwork\Logging\LogFactory;
 use LPwork\Redis\RedisConnectionManager;
@@ -35,7 +35,7 @@ final class LoggingModuleProvider
                 LogFactory $factory,
                 LogConfiguration $configuration,
                 RedisConnectionManager $redisConnections,
-                DatabaseConnectionManager $databaseConnections,
+                DatabaseConnectionManagerInterface $databaseConnections,
                 CarbonImmutable $now,
             ): LoggerInterface {
                 return $factory->createDefault(

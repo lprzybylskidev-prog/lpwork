@@ -5,11 +5,12 @@ namespace LPwork\Http\Routing;
 
 use LPwork\Http\Exception\InvalidRouteArgumentsException;
 use Psr\Http\Message\ServerRequestInterface;
+use LPwork\Http\Routing\Contract\HandlerArgumentResolverInterface;
 
 /**
  * Resolves route handler arguments using reflection and route parameters.
  */
-final class HandlerArgumentResolver
+final class HandlerArgumentResolver implements HandlerArgumentResolverInterface
 {
     /**
      * @var \Psr\Container\ContainerInterface|null

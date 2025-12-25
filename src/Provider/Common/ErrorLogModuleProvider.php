@@ -5,7 +5,7 @@ namespace LPwork\Provider\Common;
 
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
@@ -37,7 +37,7 @@ final class ErrorLogModuleProvider
             ErrorLogWriterInterface::class => \DI\factory(static function (
                 ErrorLogConfiguration $config,
                 ErrorLogWriterFactory $factory,
-                DatabaseConnectionManager $databaseConnections,
+                DatabaseConnectionManagerInterface $databaseConnections,
                 RedisConnectionManager $redisConnections,
                 FilesystemManager $filesystemManager,
             ): ErrorLogWriterInterface {

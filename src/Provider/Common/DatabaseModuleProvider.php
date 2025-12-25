@@ -6,6 +6,7 @@ namespace LPwork\Provider\Common;
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Database\Contract\DatabaseConnectionInterface;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Database\DatabaseConnectionManager;
 use LPwork\Database\DatabaseTimezoneConfigurator;
 
@@ -32,8 +33,9 @@ final class DatabaseModuleProvider
 
                 return new DatabaseConnectionManager($connections, $default, $timezoneConfigurator);
             }),
+            DatabaseConnectionManagerInterface::class => \DI\get(DatabaseConnectionManager::class),
             DatabaseConnectionInterface::class => \DI\factory(static function (
-                DatabaseConnectionManager $manager,
+                DatabaseConnectionManagerInterface $manager,
                 ConfigRepositoryInterface $config,
             ): DatabaseConnectionInterface {
                 $default = $config->getString('database.default_connection', 'default');

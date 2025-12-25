@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Logging;
 
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Logging\Exception\LoggingConfigurationException;
 use LPwork\Logging\Handler\DatabaseLogHandler;
 use LPwork\Logging\Handler\RedisLogHandler;
@@ -22,7 +22,7 @@ class LogFactory
     /**
      * @param LogConfiguration           $configuration
      * @param RedisConnectionManager     $redisConnections
-     * @param DatabaseConnectionManager  $databaseConnections
+     * @param DatabaseConnectionManagerInterface  $databaseConnections
      * @param \Carbon\CarbonImmutable    $clock
      *
      * @return LoggerInterface
@@ -30,7 +30,7 @@ class LogFactory
     public function createDefault(
         LogConfiguration $configuration,
         RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
         \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {
         $defaultChannel = $configuration->defaultChannel();
@@ -50,7 +50,7 @@ class LogFactory
      * @param string                     $name
      * @param LogConfiguration           $configuration
      * @param RedisConnectionManager     $redisConnections
-     * @param DatabaseConnectionManager  $databaseConnections
+     * @param DatabaseConnectionManagerInterface  $databaseConnections
      * @param \Carbon\CarbonImmutable    $clock
      *
      * @return LoggerInterface
@@ -59,7 +59,7 @@ class LogFactory
         string $name,
         LogConfiguration $configuration,
         RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
         \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {
         $channelConfig = $configuration->channel($name);

@@ -5,7 +5,7 @@ namespace LPwork\Provider\Common;
 
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Filesystem\FilesystemManager;
 use LPwork\Http\Middleware\SessionMiddleware;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
@@ -45,7 +45,7 @@ final class SessionModuleProvider
                 SessionConfiguration $config,
                 SessionIdGeneratorInterface $idGenerator,
                 RedisConnectionManager $redisConnections,
-                DatabaseConnectionManager $databaseConnections,
+                DatabaseConnectionManagerInterface $databaseConnections,
                 FilesystemManager $filesystemManager,
                 ClockInterface $clock,
             ): SessionStoreInterface {

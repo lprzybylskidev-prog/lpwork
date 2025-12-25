@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace LPwork\Cache;
 
 use LPwork\Cache\Exception\CacheConfigurationException;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Redis\RedisConnectionManager;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -18,16 +18,16 @@ use Psr\Cache\CacheItemPoolInterface;
 class CacheFactory
 {
     /**
-     * @param CacheConfiguration         $configuration
-     * @param RedisConnectionManager     $redisConnections
-     * @param DatabaseConnectionManager  $databaseConnections
+     * @param CacheConfiguration                   $configuration
+     * @param RedisConnectionManager               $redisConnections
+     * @param DatabaseConnectionManagerInterface   $databaseConnections
      *
      * @return CacheItemPoolInterface
      */
     public function createDefaultPool(
         CacheConfiguration $configuration,
         RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
     ): CacheItemPoolInterface {
         $defaultPool = $configuration->defaultPool();
 
@@ -40,10 +40,10 @@ class CacheFactory
     }
 
     /**
-     * @param string                     $name
-     * @param CacheConfiguration         $configuration
-     * @param RedisConnectionManager     $redisConnections
-     * @param DatabaseConnectionManager  $databaseConnections
+     * @param string                               $name
+     * @param CacheConfiguration                   $configuration
+     * @param RedisConnectionManager               $redisConnections
+     * @param DatabaseConnectionManagerInterface   $databaseConnections
      *
      * @return CacheItemPoolInterface
      */
@@ -51,7 +51,7 @@ class CacheFactory
         string $name,
         CacheConfiguration $configuration,
         RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
     ): CacheItemPoolInterface {
         $poolConfig = $configuration->pool($name);
         $driver = (string) ($poolConfig['driver'] ?? 'array');
@@ -108,16 +108,16 @@ class CacheFactory
     }
 
     /**
-     * @param array<string, mixed>       $config
-     * @param DatabaseConnectionManager  $connections
-     * @param string                     $namespace
-     * @param int|null                   $defaultTtl
+     * @param array<string, mixed>                 $config
+     * @param DatabaseConnectionManagerInterface  $connections
+     * @param string                               $namespace
+     * @param int|null                             $defaultTtl
      *
      * @return CacheItemPoolInterface
      */
     private function createPdoAdapter(
         array $config,
-        DatabaseConnectionManager $connections,
+        DatabaseConnectionManagerInterface $connections,
         string $namespace,
         ?int $defaultTtl,
     ): CacheItemPoolInterface {

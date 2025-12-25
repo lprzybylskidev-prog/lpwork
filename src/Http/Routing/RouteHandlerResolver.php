@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace LPwork\Http\Routing;
 
 use Psr\Container\ContainerInterface;
+use LPwork\Http\Routing\Contract\RouteHandlerResolverInterface;
 
 /**
  * Resolves route handler definitions into callables using the container when needed.
  */
-final class RouteHandlerResolver
+final class RouteHandlerResolver implements RouteHandlerResolverInterface
 {
     /**
      * @var ContainerInterface

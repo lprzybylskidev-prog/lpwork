@@ -5,7 +5,7 @@ namespace LPwork\Http\Session\Store;
 
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Connection;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
 use LPwork\Http\Session\Contract\SessionStoreInterface;
 use LPwork\Http\Session\Exception\SessionConfigurationException;
@@ -20,9 +20,9 @@ use Psr\Clock\ClockInterface;
 class DatabaseSessionStore implements SessionStoreInterface
 {
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $connections;
+    private DatabaseConnectionManagerInterface $connections;
 
     /**
      * @var string
@@ -45,14 +45,14 @@ class DatabaseSessionStore implements SessionStoreInterface
     private ClockInterface $clock;
 
     /**
-     * @param DatabaseConnectionManager   $connections
+     * @param DatabaseConnectionManagerInterface $connections
      * @param string                      $connectionName
      * @param string                      $table
      * @param SessionIdGeneratorInterface $idGenerator
      * @param ClockInterface              $clock
      */
     public function __construct(
-        DatabaseConnectionManager $connections,
+        DatabaseConnectionManagerInterface $connections,
         string $connectionName,
         string $table,
         SessionIdGeneratorInterface $idGenerator,

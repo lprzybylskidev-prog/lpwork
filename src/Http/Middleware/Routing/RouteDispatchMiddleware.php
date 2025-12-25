@@ -10,8 +10,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Container\ContainerInterface;
 use LPwork\Http\Request\RequestContext;
-use LPwork\Http\Routing\HandlerArgumentResolver;
-use LPwork\Http\Routing\RouteHandlerResolver;
+use LPwork\Http\Routing\Contract\HandlerArgumentResolverInterface;
+use LPwork\Http\Routing\Contract\RouteHandlerResolverInterface;
 
 /**
  * Dispatches a matched route handler, applying route-specific middlewares.
@@ -24,23 +24,29 @@ class RouteDispatchMiddleware implements MiddlewareInterface
     private ContainerInterface $container;
 
     /**
-     * @var RouteHandlerResolver
+     * @var RouteHandlerResolverInterface
      */
-    private RouteHandlerResolver $handlerResolver;
+    private RouteHandlerResolverInterface $handlerResolver;
 
     /**
-     * @var HandlerArgumentResolver
+     * @var HandlerArgumentResolverInterface
      */
-    private HandlerArgumentResolver $argumentResolver;
+    private HandlerArgumentResolverInterface $argumentResolver;
 
     /**
-     * @param ContainerInterface $container
+     * @param ContainerInterface              $container
+     * @param RouteHandlerResolverInterface   $handlerResolver
+     * @param HandlerArgumentResolverInterface $argumentResolver
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(
+        ContainerInterface $container,
+        RouteHandlerResolverInterface $handlerResolver,
+        HandlerArgumentResolverInterface $argumentResolver,
+    )
     {
         $this->container = $container;
-        $this->handlerResolver = new RouteHandlerResolver($container);
-        $this->argumentResolver = new HandlerArgumentResolver($container);
+        $this->handlerResolver = $handlerResolver;
+        $this->argumentResolver = $argumentResolver;
     }
 
     /**

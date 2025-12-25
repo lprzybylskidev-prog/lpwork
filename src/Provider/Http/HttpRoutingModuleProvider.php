@@ -17,11 +17,16 @@ use LPwork\Http\Middleware\Routing\RouteDispatchMiddleware;
 use LPwork\Http\Middleware\Routing\RouteMatchMiddleware;
 use LPwork\Http\Middleware\SecurityHeadersMiddleware;
 use LPwork\Http\Routing\FastRouteDispatcherFactory;
+use LPwork\Http\Routing\Contract\RouteLoaderInterface;
+use LPwork\Http\Routing\Contract\RouteHandlerResolverInterface;
+use LPwork\Http\Routing\Contract\HandlerArgumentResolverInterface;
+use LPwork\Http\Routing\RouteHandlerResolver;
+use LPwork\Http\Routing\HandlerArgumentResolver;
 use LPwork\Http\Routing\RouteLoader;
 use LPwork\Http\Url\Contract\UrlGeneratorInterface;
 use LPwork\Http\Url\UrlGenerator;
 use LPwork\Redis\RedisConnectionManager;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Config\MiddlewareProvider as AppMiddlewareProvider;
@@ -44,14 +49,17 @@ final class HttpRoutingModuleProvider
                 \dirname(__DIR__, 3) . '/config/routes/routes.php',
                 \dirname(__DIR__, 2) . '/Http/Routes/routes.php',
             ),
+            RouteLoaderInterface::class => \DI\get(RouteLoader::class),
+            RouteHandlerResolverInterface::class => \DI\autowire(RouteHandlerResolver::class),
+            HandlerArgumentResolverInterface::class => \DI\autowire(HandlerArgumentResolver::class),
             FastRouteDispatcherFactory::class => \DI\autowire(FastRouteDispatcherFactory::class),
             Dispatcher::class => \DI\factory(static function (
-                RouteLoader $loader,
+                RouteLoaderInterface $loader,
                 FastRouteDispatcherFactory $factory,
                 CacheConfiguration $cacheConfiguration,
                 CacheFactory $cacheFactory,
                 RedisConnectionManager $redisConnections,
-                DatabaseConnectionManager $databaseConnections,
+                DatabaseConnectionManagerInterface $databaseConnections,
             ): Dispatcher {
                 $routes = $loader->load();
                 $routingCache = $cacheConfiguration->routingCache();
