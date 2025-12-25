@@ -85,6 +85,20 @@ class Bootstrap
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAttributes(true);
 
+        $appEnv = $_ENV['APP_ENV'] ?? \getenv('APP_ENV') ?? 'dev';
+
+        if ($appEnv === 'prod') {
+            $cacheDir = \dirname(__DIR__, 2) . '/storage/cache/di';
+
+            if (!\is_dir($cacheDir) && !\mkdir($cacheDir, 0777, true) && !\is_dir($cacheDir)) {
+                throw new InvalidArgumentException(
+                    \sprintf('Cannot create container cache directory at %s', $cacheDir),
+                );
+            }
+
+            $containerBuilder->enableCompilation($cacheDir);
+        }
+
         $providerFactory = new ProviderFactory($this->buildProviderContainer());
 
         foreach ($this->resolveProviders($runtimeType, $providerFactory) as $provider) {
