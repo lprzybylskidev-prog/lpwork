@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace LPwork\Http\Middleware;
 
 use LPwork\Http\Session\Contract\SessionInterface;
-use LPwork\Http\Session\SessionManager;
+use LPwork\Http\Session\Contract\SessionManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -21,14 +21,14 @@ class SessionMiddleware implements MiddlewareInterface
     public const ATTRIBUTE = 'session';
 
     /**
-     * @var SessionManager
+     * @var SessionManagerInterface
      */
-    private SessionManager $sessionManager;
+    private SessionManagerInterface $sessionManager;
 
     /**
-     * @param SessionManager $sessionManager
+     * @param SessionManagerInterface $sessionManager
      */
-    public function __construct(SessionManager $sessionManager)
+    public function __construct(SessionManagerInterface $sessionManager)
     {
         $this->sessionManager = $sessionManager;
     }

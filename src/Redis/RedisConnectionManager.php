@@ -4,12 +4,13 @@ declare(strict_types=1);
 namespace LPwork\Redis;
 
 use LPwork\Redis\Contract\RedisConnectionInterface;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use LPwork\Redis\Exception\RedisConnectionNotFoundException;
 
 /**
  * Manages named Redis connections.
  */
-class RedisConnectionManager
+class RedisConnectionManager implements RedisConnectionManagerInterface
 {
     /**
      * @var array<string, array<string, mixed>>

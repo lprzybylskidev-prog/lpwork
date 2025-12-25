@@ -9,7 +9,7 @@ use LPwork\Http\Session\Contract\SessionStoreInterface;
 use LPwork\Http\Session\Exception\SessionStorageException;
 use LPwork\Http\Session\SessionCookieParameters;
 use LPwork\Http\Session\SessionState;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Predis\ClientInterface;
 use Psr\Clock\ClockInterface;
 
@@ -19,9 +19,9 @@ use Psr\Clock\ClockInterface;
 class RedisSessionStore implements SessionStoreInterface
 {
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $connections;
+    private RedisConnectionManagerInterface $connections;
 
     /**
      * @var string
@@ -44,14 +44,14 @@ class RedisSessionStore implements SessionStoreInterface
     private ClockInterface $clock;
 
     /**
-     * @param RedisConnectionManager      $connections
+     * @param RedisConnectionManagerInterface $connections
      * @param string                      $connectionName
      * @param string                      $prefix
      * @param SessionIdGeneratorInterface $idGenerator
      * @param ClockInterface              $clock
      */
     public function __construct(
-        RedisConnectionManager $connections,
+        RedisConnectionManagerInterface $connections,
         string $connectionName,
         string $prefix,
         SessionIdGeneratorInterface $idGenerator,

@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace LPwork\Mail;
 
+use LPwork\Mail\Contract\MailManagerInterface;
+use LPwork\Mail\Contract\MailerFactoryInterface;
 use LPwork\Mail\Exception\MailConfigurationException;
 use Symfony\Component\Mailer\MailerInterface;
 
 /**
  * Provides access to configured mailers.
  */
-final class MailManager
+final class MailManager implements MailManagerInterface
 {
     /**
      * @var MailConfiguration
@@ -17,9 +19,9 @@ final class MailManager
     private MailConfiguration $config;
 
     /**
-     * @var MailerFactory
+     * @var MailerFactoryInterface
      */
-    private MailerFactory $factory;
+    private MailerFactoryInterface $factory;
 
     /**
      * @var array<string, MailerInterface>
@@ -28,9 +30,9 @@ final class MailManager
 
     /**
      * @param MailConfiguration $config
-     * @param MailerFactory     $factory
+     * @param MailerFactoryInterface $factory
      */
-    public function __construct(MailConfiguration $config, MailerFactory $factory)
+    public function __construct(MailConfiguration $config, MailerFactoryInterface $factory)
     {
         $this->config = $config;
         $this->factory = $factory;

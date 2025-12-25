@@ -6,6 +6,7 @@ namespace LPwork\Provider\Common;
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Redis\Contract\RedisConnectionInterface;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use LPwork\Redis\RedisConnectionManager;
 
 /**
@@ -27,8 +28,9 @@ final class RedisModuleProvider
 
                 return new RedisConnectionManager($connections, $default);
             }),
+            RedisConnectionManagerInterface::class => \DI\get(RedisConnectionManager::class),
             RedisConnectionInterface::class => \DI\factory(static function (
-                RedisConnectionManager $manager,
+                RedisConnectionManagerInterface $manager,
                 ConfigRepositoryInterface $config,
             ): RedisConnectionInterface {
                 $default = $config->getString('redis.default_connection', 'default');

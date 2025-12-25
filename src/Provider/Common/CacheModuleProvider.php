@@ -5,13 +5,12 @@ namespace LPwork\Provider\Common;
 
 use DI\ContainerBuilder;
 use LPwork\Cache\CacheConfiguration;
-use LPwork\Cache\CacheFactory;
-use LPwork\Cache\CacheManager;
+use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Cache\Contract\CacheManagerInterface;
 use LPwork\Cache\Contract\CacheProviderInterface;
 use LPwork\Cache\DefaultCacheProvider;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Psr16Cache;
 
@@ -26,11 +25,11 @@ final class CacheModuleProvider
     public function register(ContainerBuilder $containerBuilder): void
     {
         $containerBuilder->addDefinitions([
-            CacheFactory::class => \DI\autowire(CacheFactory::class),
+            CacheFactoryInterface::class => \DI\autowire(\LPwork\Cache\CacheFactory::class),
             CacheItemPoolInterface::class => \DI\factory(static function (
-                CacheFactory $factory,
+                CacheFactoryInterface $factory,
                 CacheConfiguration $configuration,
-                RedisConnectionManager $redisConnections,
+                RedisConnectionManagerInterface $redisConnections,
                 DatabaseConnectionManagerInterface $databaseConnections,
             ): CacheItemPoolInterface {
                 return $factory->createDefaultPool(
@@ -45,8 +44,7 @@ final class CacheModuleProvider
                 return new Psr16Cache($pool);
             }),
             CacheProviderInterface::class => \DI\autowire(DefaultCacheProvider::class),
-            CacheManager::class => \DI\autowire(CacheManager::class),
-            CacheManagerInterface::class => \DI\get(CacheManager::class),
+            CacheManagerInterface::class => \DI\autowire(\LPwork\Cache\CacheManager::class),
         ]);
     }
 }

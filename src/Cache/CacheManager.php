@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace LPwork\Cache;
 
+use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Cache\Contract\CacheManagerInterface;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Psr16Cache;
 
@@ -20,14 +21,14 @@ class CacheManager implements CacheManagerInterface
     private CacheConfiguration $configuration;
 
     /**
-     * @var CacheFactory
+     * @var CacheFactoryInterface
      */
-    private CacheFactory $factory;
+    private CacheFactoryInterface $factory;
 
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $redisConnections;
+    private RedisConnectionManagerInterface $redisConnections;
 
     /**
      * @var DatabaseConnectionManagerInterface
@@ -36,14 +37,14 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * @param CacheConfiguration                   $configuration
-     * @param CacheFactory                         $factory
-     * @param RedisConnectionManager               $redisConnections
+     * @param CacheFactoryInterface                $factory
+     * @param RedisConnectionManagerInterface      $redisConnections
      * @param DatabaseConnectionManagerInterface   $databaseConnections
      */
     public function __construct(
         CacheConfiguration $configuration,
-        CacheFactory $factory,
-        RedisConnectionManager $redisConnections,
+        CacheFactoryInterface $factory,
+        RedisConnectionManagerInterface $redisConnections,
         DatabaseConnectionManagerInterface $databaseConnections,
     ) {
         $this->configuration = $configuration;

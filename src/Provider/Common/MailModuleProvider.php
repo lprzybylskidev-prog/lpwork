@@ -6,6 +6,8 @@ namespace LPwork\Provider\Common;
 use DI\ContainerBuilder;
 use LPwork\Mail\MailManager;
 use LPwork\Mail\MailerFactory;
+use LPwork\Mail\Contract\MailerFactoryInterface;
+use LPwork\Mail\Contract\MailManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 
 /**
@@ -19,10 +21,11 @@ final class MailModuleProvider
     public function register(ContainerBuilder $containerBuilder): void
     {
         $containerBuilder->addDefinitions([
-            MailerFactory::class => \DI\autowire(MailerFactory::class),
+            MailerFactoryInterface::class => \DI\autowire(MailerFactory::class),
             MailManager::class => \DI\autowire(MailManager::class),
+            MailManagerInterface::class => \DI\get(MailManager::class),
             MailerInterface::class => \DI\factory(static function (
-                MailManager $manager,
+                MailManagerInterface $manager,
             ): MailerInterface {
                 return $manager->default();
             }),

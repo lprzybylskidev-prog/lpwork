@@ -5,6 +5,7 @@ namespace LPwork\Queue;
 
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\Queue\Contract\QueueHandlerInterface;
+use LPwork\Queue\Contract\QueueManagerInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -13,9 +14,9 @@ use Psr\Container\ContainerInterface;
 class QueueWorker
 {
     /**
-     * @var QueueManager
+     * @var QueueManagerInterface
      */
-    private QueueManager $queues;
+    private QueueManagerInterface $queues;
 
     /**
      * @var QueueHandlerProviderInterface
@@ -33,13 +34,13 @@ class QueueWorker
     private ErrorLoggerInterface $errorLogger;
 
     /**
-     * @param QueueManager                 $queues
+     * @param QueueManagerInterface         $queues
      * @param QueueHandlerProviderInterface $handlerProvider
-     * @param ContainerInterface           $container
-     * @param ErrorLoggerInterface         $errorLogger
+     * @param ContainerInterface            $container
+     * @param ErrorLoggerInterface          $errorLogger
      */
     public function __construct(
-        QueueManager $queues,
+        QueueManagerInterface $queues,
         QueueHandlerProviderInterface $handlerProvider,
         ContainerInterface $container,
         ErrorLoggerInterface $errorLogger,

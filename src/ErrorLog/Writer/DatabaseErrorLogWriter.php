@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\ErrorLog\Writer;
 
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
 use LPwork\ErrorLog\ErrorLogEntry;
 use LPwork\ErrorLog\Exception\ErrorLogWriteException;
@@ -14,9 +14,9 @@ use LPwork\ErrorLog\Exception\ErrorLogWriteException;
 class DatabaseErrorLogWriter implements ErrorLogWriterInterface
 {
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $connections;
+    private DatabaseConnectionManagerInterface $connections;
 
     /**
      * @var string
@@ -29,12 +29,12 @@ class DatabaseErrorLogWriter implements ErrorLogWriterInterface
     private string $table;
 
     /**
-     * @param DatabaseConnectionManager $connections
-     * @param string                    $connectionName
-     * @param string                    $table
+     * @param DatabaseConnectionManagerInterface $connections
+     * @param string                             $connectionName
+     * @param string                             $table
      */
     public function __construct(
-        DatabaseConnectionManager $connections,
+        DatabaseConnectionManagerInterface $connections,
         string $connectionName,
         string $table,
     ) {

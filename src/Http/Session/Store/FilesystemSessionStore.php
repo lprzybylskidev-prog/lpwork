@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace LPwork\Http\Session\Store;
 
 use Carbon\CarbonImmutable;
-use LPwork\Filesystem\FilesystemManager;
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
 use LPwork\Http\Session\Contract\SessionStoreInterface;
 use LPwork\Http\Session\Exception\SessionStorageException;
@@ -19,9 +19,9 @@ use Psr\Clock\ClockInterface;
 class FilesystemSessionStore implements SessionStoreInterface
 {
     /**
-     * @var FilesystemManager
+     * @var FilesystemManagerInterface
      */
-    private FilesystemManager $filesystems;
+    private FilesystemManagerInterface $filesystems;
 
     /**
      * @var string
@@ -44,14 +44,14 @@ class FilesystemSessionStore implements SessionStoreInterface
     private ClockInterface $clock;
 
     /**
-     * @param FilesystemManager           $filesystems
+     * @param FilesystemManagerInterface  $filesystems
      * @param string                      $disk
      * @param string                      $path
      * @param SessionIdGeneratorInterface $idGenerator
      * @param ClockInterface              $clock
      */
     public function __construct(
-        FilesystemManager $filesystems,
+        FilesystemManagerInterface $filesystems,
         string $disk,
         string $path,
         SessionIdGeneratorInterface $idGenerator,

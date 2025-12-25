@@ -7,6 +7,8 @@ use DI\ContainerBuilder;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use LPwork\Environment\Env;
+use LPwork\Translation\Contract\TranslationProviderInterface;
+use LPwork\Translation\Contract\TranslatorFactoryInterface;
 use LPwork\Translation\TranslationProvider;
 use LPwork\Translation\TranslatorFactory;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -23,9 +25,11 @@ final class TranslationModuleProvider
     {
         $containerBuilder->addDefinitions([
             TranslatorFactory::class => \DI\autowire(TranslatorFactory::class),
+            TranslatorFactoryInterface::class => \DI\get(TranslatorFactory::class),
             TranslationProvider::class => \DI\autowire(TranslationProvider::class),
+            TranslationProviderInterface::class => \DI\get(TranslationProvider::class),
             TranslatorInterface::class => \DI\factory(static function (
-                TranslationProvider $provider,
+                TranslationProviderInterface $provider,
             ): TranslatorInterface {
                 return $provider->createTranslator();
             }),

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Translation;
 
+use LPwork\Translation\Contract\TranslatorFactoryInterface;
 use LPwork\Translation\Exception\TranslationLoaderException;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Translation\Loader\ArrayLoader;
@@ -12,7 +13,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Builds Translator instances using JSON resources and cache pool for catalogues.
  */
-class TranslatorFactory
+class TranslatorFactory implements TranslatorFactoryInterface
 {
     /**
      * @param TranslationConfiguration $config

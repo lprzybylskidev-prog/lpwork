@@ -6,7 +6,7 @@ namespace LPwork\ErrorLog\Writer;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
 use LPwork\ErrorLog\ErrorLogEntry;
 use LPwork\ErrorLog\Exception\ErrorLogWriteException;
-use LPwork\Filesystem\FilesystemManager;
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
 
 /**
  * Writes error log entries to filesystem with basic rotation.
@@ -24,19 +24,19 @@ class FileErrorLogWriter implements ErrorLogWriterInterface
     private string $directory;
 
     /**
-     * @var FilesystemManager
+     * @var FilesystemManagerInterface
      */
-    private FilesystemManager $filesystemManager;
+    private FilesystemManagerInterface $filesystemManager;
 
     /**
-     * @param string             $mode
-     * @param string             $directory
-     * @param FilesystemManager  $filesystemManager
+     * @param string                       $mode
+     * @param string                       $directory
+     * @param FilesystemManagerInterface   $filesystemManager
      */
     public function __construct(
         string $mode,
         string $directory,
-        FilesystemManager $filesystemManager,
+        FilesystemManagerInterface $filesystemManager,
     ) {
         $this->mode = $mode;
         $this->directory = $directory;

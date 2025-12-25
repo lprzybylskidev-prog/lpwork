@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace LPwork\Cache;
 
+use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Cache\Exception\CacheConfigurationException;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\PdoAdapter;
@@ -15,18 +16,18 @@ use Psr\Cache\CacheItemPoolInterface;
 /**
  * Builds cache pools (PSR-6) and wraps them for PSR-16 where needed.
  */
-class CacheFactory
+class CacheFactory implements CacheFactoryInterface
 {
     /**
      * @param CacheConfiguration                   $configuration
-     * @param RedisConnectionManager               $redisConnections
+     * @param RedisConnectionManagerInterface      $redisConnections
      * @param DatabaseConnectionManagerInterface   $databaseConnections
      *
      * @return CacheItemPoolInterface
      */
     public function createDefaultPool(
         CacheConfiguration $configuration,
-        RedisConnectionManager $redisConnections,
+        RedisConnectionManagerInterface $redisConnections,
         DatabaseConnectionManagerInterface $databaseConnections,
     ): CacheItemPoolInterface {
         $defaultPool = $configuration->defaultPool();
@@ -42,7 +43,7 @@ class CacheFactory
     /**
      * @param string                               $name
      * @param CacheConfiguration                   $configuration
-     * @param RedisConnectionManager               $redisConnections
+     * @param RedisConnectionManagerInterface      $redisConnections
      * @param DatabaseConnectionManagerInterface   $databaseConnections
      *
      * @return CacheItemPoolInterface
@@ -50,7 +51,7 @@ class CacheFactory
     public function createPool(
         string $name,
         CacheConfiguration $configuration,
-        RedisConnectionManager $redisConnections,
+        RedisConnectionManagerInterface $redisConnections,
         DatabaseConnectionManagerInterface $databaseConnections,
     ): CacheItemPoolInterface {
         $poolConfig = $configuration->pool($name);
@@ -89,7 +90,7 @@ class CacheFactory
 
     /**
      * @param array<string, mixed>       $config
-     * @param RedisConnectionManager     $connections
+     * @param RedisConnectionManagerInterface      $connections
      * @param string                     $namespace
      * @param int|null                   $defaultTtl
      *
@@ -97,7 +98,7 @@ class CacheFactory
      */
     private function createRedisAdapter(
         array $config,
-        RedisConnectionManager $connections,
+        RedisConnectionManagerInterface $connections,
         string $namespace,
         ?int $defaultTtl,
     ): CacheItemPoolInterface {

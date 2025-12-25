@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace LPwork\Console\Command;
 
 use LPwork\Cache\CacheConfiguration;
-use LPwork\Cache\CacheFactory;
+use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Cache\Contract\CacheProviderInterface;
-use LPwork\Database\DatabaseConnectionManager;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,19 +25,19 @@ class CacheWarmCommand extends Command
     private CacheConfiguration $configuration;
 
     /**
-     * @var CacheFactory
+     * @var CacheFactoryInterface
      */
-    private CacheFactory $cacheFactory;
+    private CacheFactoryInterface $cacheFactory;
 
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $redisConnections;
+    private RedisConnectionManagerInterface $redisConnections;
 
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $databaseConnections;
+    private DatabaseConnectionManagerInterface $databaseConnections;
 
     /**
      * @var CacheProviderInterface|null
@@ -46,16 +46,16 @@ class CacheWarmCommand extends Command
 
     /**
      * @param CacheConfiguration        $configuration
-     * @param CacheFactory              $cacheFactory
-     * @param RedisConnectionManager    $redisConnections
-     * @param DatabaseConnectionManager $databaseConnections
+     * @param CacheFactoryInterface     $cacheFactory
+     * @param RedisConnectionManagerInterface    $redisConnections
+     * @param DatabaseConnectionManagerInterface $databaseConnections
      * @param CacheProviderInterface|null $provider
      */
     public function __construct(
         CacheConfiguration $configuration,
-        CacheFactory $cacheFactory,
-        RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        CacheFactoryInterface $cacheFactory,
+        RedisConnectionManagerInterface $redisConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
         ?CacheProviderInterface $provider = null,
     ) {
         parent::__construct();

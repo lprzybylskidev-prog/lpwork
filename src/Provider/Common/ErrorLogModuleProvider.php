@@ -9,12 +9,13 @@ use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\ErrorLog\Contract\ErrorIdProviderInterface;
 use LPwork\ErrorLog\Contract\ErrorLoggerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
+use LPwork\ErrorLog\Contract\ErrorLogWriterFactoryInterface;
 use LPwork\ErrorLog\ErrorIdProvider;
 use LPwork\ErrorLog\ErrorLogConfiguration;
 use LPwork\ErrorLog\ErrorLogWriterFactory;
 use LPwork\ErrorLog\ErrorLogger;
-use LPwork\Filesystem\FilesystemManager;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 
 /**
  * Registers error log facilities.
@@ -34,12 +35,13 @@ final class ErrorLogModuleProvider
 
                 return new ErrorLogConfiguration((array) $errorLogConfig);
             }),
+            ErrorLogWriterFactoryInterface::class => \DI\autowire(ErrorLogWriterFactory::class),
             ErrorLogWriterInterface::class => \DI\factory(static function (
                 ErrorLogConfiguration $config,
-                ErrorLogWriterFactory $factory,
+                ErrorLogWriterFactoryInterface $factory,
                 DatabaseConnectionManagerInterface $databaseConnections,
-                RedisConnectionManager $redisConnections,
-                FilesystemManager $filesystemManager,
+                RedisConnectionManagerInterface $redisConnections,
+                FilesystemManagerInterface $filesystemManager,
             ): ErrorLogWriterInterface {
                 return $factory->create(
                     $config,

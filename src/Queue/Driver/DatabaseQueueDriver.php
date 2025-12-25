@@ -5,7 +5,7 @@ namespace LPwork\Queue\Driver;
 
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Connection;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Queue\Contract\JobSerializerInterface;
 use LPwork\Queue\Contract\QueueDriverInterface;
 use LPwork\Queue\QueueJob;
@@ -16,9 +16,9 @@ use LPwork\Queue\QueueJob;
 class DatabaseQueueDriver implements QueueDriverInterface
 {
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $connections;
+    private DatabaseConnectionManagerInterface $connections;
 
     /**
      * @var string
@@ -36,13 +36,13 @@ class DatabaseQueueDriver implements QueueDriverInterface
     private JobSerializerInterface $serializer;
 
     /**
-     * @param DatabaseConnectionManager $connections
-     * @param string                    $connectionName
-     * @param string                    $table
-     * @param JobSerializerInterface    $serializer
+     * @param DatabaseConnectionManagerInterface $connections
+     * @param string                             $connectionName
+     * @param string                             $table
+     * @param JobSerializerInterface             $serializer
      */
     public function __construct(
-        DatabaseConnectionManager $connections,
+        DatabaseConnectionManagerInterface $connections,
         string $connectionName,
         string $table,
         JobSerializerInterface $serializer,

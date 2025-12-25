@@ -3,19 +3,20 @@ declare(strict_types=1);
 
 namespace LPwork\Queue;
 
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Queue\Contract\JobSerializerInterface;
 use LPwork\Queue\Contract\QueueDriverInterface;
+use LPwork\Queue\Contract\QueueManagerInterface;
 use LPwork\Queue\Driver\DatabaseQueueDriver;
 use LPwork\Queue\Driver\FilesystemQueueDriver;
 use LPwork\Queue\Driver\RedisQueueDriver;
 use LPwork\Queue\Exception\QueueConfigurationException;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 
 /**
  * Resolves queue drivers by name.
  */
-class QueueManager
+class QueueManager implements QueueManagerInterface
 {
     /**
      * @var QueueConfiguration
@@ -23,14 +24,14 @@ class QueueManager
     private QueueConfiguration $config;
 
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $redisConnections;
+    private RedisConnectionManagerInterface $redisConnections;
 
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $databaseConnections;
+    private DatabaseConnectionManagerInterface $databaseConnections;
 
     /**
      * @var JobSerializerInterface
@@ -43,15 +44,15 @@ class QueueManager
     private array $drivers = [];
 
     /**
-     * @param QueueConfiguration        $config
-     * @param RedisConnectionManager    $redisConnections
-     * @param DatabaseConnectionManager $databaseConnections
-     * @param JobSerializerInterface    $serializer
+     * @param QueueConfiguration                   $config
+     * @param RedisConnectionManagerInterface      $redisConnections
+     * @param DatabaseConnectionManagerInterface   $databaseConnections
+     * @param JobSerializerInterface               $serializer
      */
     public function __construct(
         QueueConfiguration $config,
-        RedisConnectionManager $redisConnections,
-        DatabaseConnectionManager $databaseConnections,
+        RedisConnectionManagerInterface $redisConnections,
+        DatabaseConnectionManagerInterface $databaseConnections,
         JobSerializerInterface $serializer,
     ) {
         $this->config = $config;

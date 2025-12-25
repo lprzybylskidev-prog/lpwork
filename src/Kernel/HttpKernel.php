@@ -152,5 +152,4 @@ class HttpKernel
 
         return \array_values($byName);
     }
-
 }

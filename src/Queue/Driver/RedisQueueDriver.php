@@ -7,7 +7,7 @@ use LPwork\Queue\Contract\JobSerializerInterface;
 use LPwork\Queue\Contract\QueueDriverInterface;
 use LPwork\Queue\Exception\QueueConfigurationException;
 use LPwork\Queue\QueueJob;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Predis\Client;
 
 /**
@@ -16,9 +16,9 @@ use Predis\Client;
 class RedisQueueDriver implements QueueDriverInterface
 {
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $connections;
+    private RedisConnectionManagerInterface $connections;
 
     /**
      * @var string
@@ -56,17 +56,17 @@ class RedisQueueDriver implements QueueDriverInterface
     private JobSerializerInterface $serializer;
 
     /**
-     * @param RedisConnectionManager $connections
-     * @param string                 $connectionName
-     * @param string                 $key
-     * @param string                 $mode
-     * @param string                 $group
-     * @param string                 $consumer
-     * @param int                    $blockSeconds
-     * @param JobSerializerInterface $serializer
+     * @param RedisConnectionManagerInterface $connections
+     * @param string                          $connectionName
+     * @param string                          $key
+     * @param string                          $mode
+     * @param string                          $group
+     * @param string                          $consumer
+     * @param int                             $blockSeconds
+     * @param JobSerializerInterface          $serializer
      */
     public function __construct(
-        RedisConnectionManager $connections,
+        RedisConnectionManagerInterface $connections,
         string $connectionName,
         string $key,
         string $mode,

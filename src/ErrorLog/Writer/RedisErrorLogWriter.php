@@ -6,7 +6,7 @@ namespace LPwork\ErrorLog\Writer;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
 use LPwork\ErrorLog\ErrorLogEntry;
 use LPwork\ErrorLog\Exception\ErrorLogWriteException;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Predis\ClientInterface;
 
 /**
@@ -15,9 +15,9 @@ use Predis\ClientInterface;
 class RedisErrorLogWriter implements ErrorLogWriterInterface
 {
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $connections;
+    private RedisConnectionManagerInterface $connections;
 
     /**
      * @var string
@@ -40,14 +40,14 @@ class RedisErrorLogWriter implements ErrorLogWriterInterface
     private int $maxEntries;
 
     /**
-     * @param RedisConnectionManager $connections
-     * @param string                 $connectionName
-     * @param string                 $prefix
-     * @param int                    $ttl
-     * @param int                    $maxEntries
+     * @param RedisConnectionManagerInterface $connections
+     * @param string                          $connectionName
+     * @param string                          $prefix
+     * @param int                             $ttl
+     * @param int                             $maxEntries
      */
     public function __construct(
-        RedisConnectionManager $connections,
+        RedisConnectionManagerInterface $connections,
         string $connectionName,
         string $prefix,
         int $ttl,

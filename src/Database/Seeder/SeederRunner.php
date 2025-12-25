@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Database\Seeder;
 
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Database\Seeder\Contract\SeederProviderInterface;
 
 /**
@@ -12,9 +12,9 @@ use LPwork\Database\Seeder\Contract\SeederProviderInterface;
 class SeederRunner
 {
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $connectionManager;
+    private DatabaseConnectionManagerInterface $connectionManager;
 
     /**
      * @var SeederProviderInterface
@@ -27,12 +27,12 @@ class SeederRunner
     private SeederProviderInterface $appProvider;
 
     /**
-     * @param DatabaseConnectionManager $connectionManager
-     * @param SeederProviderInterface   $frameworkProvider
-     * @param SeederProviderInterface   $appProvider
+     * @param DatabaseConnectionManagerInterface $connectionManager
+     * @param SeederProviderInterface            $frameworkProvider
+     * @param SeederProviderInterface            $appProvider
      */
     public function __construct(
-        DatabaseConnectionManager $connectionManager,
+        DatabaseConnectionManagerInterface $connectionManager,
         SeederProviderInterface $frameworkProvider,
         SeederProviderInterface $appProvider,
     ) {

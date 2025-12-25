@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Mail;
 
+use LPwork\Mail\Contract\MailerFactoryInterface;
 use LPwork\Mail\Exception\MailConfigurationException;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
@@ -11,7 +12,7 @@ use Symfony\Component\Mailer\Transport;
 /**
  * Builds mailers for configured transports.
  */
-final class MailerFactory
+final class MailerFactory implements MailerFactoryInterface
 {
     /**
      * Creates a mailer from a connection name.

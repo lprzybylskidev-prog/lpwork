@@ -13,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final class ResponseEmitter implements ResponseEmitterInterface
 {
     /**
-    */
+     */
     public function emit(ResponseInterface $response, ServerRequestInterface $request): void
     {
         if (!\headers_sent()) {

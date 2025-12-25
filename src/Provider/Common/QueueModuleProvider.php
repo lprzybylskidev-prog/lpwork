@@ -11,14 +11,13 @@ use LPwork\Queue\Contract\JobSerializerInterface;
 use LPwork\Queue\QueueConfiguration;
 use LPwork\Queue\QueueDispatcher;
 use LPwork\Queue\QueueHandlerProviderInterface;
+use LPwork\Queue\Contract\QueueManagerInterface;
 use LPwork\Queue\QueueManager;
 use LPwork\Queue\Serializer\JsonJobSerializer;
 use LPwork\Queue\Messenger\QueueJobHandler;
 use LPwork\Queue\Messenger\QueueSendersLocator;
 use LPwork\Queue\Messenger\QueueServiceLocator;
 use LPwork\Queue\Messenger\QueueTransport;
-use LPwork\Redis\RedisConnectionManager;
-use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
@@ -50,11 +49,15 @@ final class QueueModuleProvider
             }),
             JobSerializerInterface::class => \DI\autowire(JsonJobSerializer::class),
             QueueManager::class => \DI\autowire(QueueManager::class),
+            QueueManagerInterface::class => \DI\get(QueueManager::class),
             QueueDispatcher::class => \DI\autowire(QueueDispatcher::class),
+            \LPwork\Queue\Contract\QueueDispatcherInterface::class => \DI\get(
+                QueueDispatcher::class,
+            ),
             QueueHandlerProviderInterface::class => \DI\get(\Config\QueueProvider::class),
             'queue.transports' => \DI\factory(static function (
                 QueueConfiguration $queueConfiguration,
-                QueueManager $queueManager,
+                QueueManagerInterface $queueManager,
             ): array {
                 $transports = [];
 

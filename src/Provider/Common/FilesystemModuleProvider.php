@@ -5,6 +5,7 @@ namespace LPwork\Provider\Common;
 
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
 use LPwork\Filesystem\FilesystemManager;
 
 /**
@@ -26,6 +27,7 @@ final class FilesystemModuleProvider
 
                 return new FilesystemManager($disks, $default);
             }),
+            FilesystemManagerInterface::class => \DI\get(FilesystemManager::class),
         ]);
     }
 }

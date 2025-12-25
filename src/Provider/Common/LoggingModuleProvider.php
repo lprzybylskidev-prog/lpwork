@@ -7,9 +7,10 @@ use Carbon\CarbonImmutable;
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
+use LPwork\Logging\Contract\LogFactoryInterface;
 use LPwork\Logging\LogConfiguration;
 use LPwork\Logging\LogFactory;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -31,10 +32,11 @@ final class LoggingModuleProvider
                 return new LogConfiguration((array) $loggingConfig);
             }),
             LogFactory::class => \DI\autowire(LogFactory::class),
+            LogFactoryInterface::class => \DI\get(LogFactory::class),
             LoggerInterface::class => \DI\factory(static function (
-                LogFactory $factory,
+                LogFactoryInterface $factory,
                 LogConfiguration $configuration,
-                RedisConnectionManager $redisConnections,
+                RedisConnectionManagerInterface $redisConnections,
                 DatabaseConnectionManagerInterface $databaseConnections,
                 CarbonImmutable $now,
             ): LoggerInterface {

@@ -6,7 +6,7 @@ namespace LPwork\Provider\Common;
 use DI\ContainerBuilder;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
-use LPwork\Filesystem\FilesystemManager;
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
 use LPwork\Http\Middleware\SessionMiddleware;
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
 use LPwork\Http\Session\Contract\SessionInterface;
@@ -15,11 +15,12 @@ use LPwork\Http\Session\Exception\SessionConfigurationException;
 use LPwork\Http\Session\RandomSessionIdGenerator;
 use LPwork\Http\Session\SessionConfiguration;
 use LPwork\Http\Session\SessionManager;
+use LPwork\Http\Session\Contract\SessionManagerInterface;
 use LPwork\Http\Session\Store\DatabaseSessionStore;
 use LPwork\Http\Session\Store\FilesystemSessionStore;
 use LPwork\Http\Session\Store\PhpSessionStore;
 use LPwork\Http\Session\Store\RedisSessionStore;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Psr\Clock\ClockInterface;
 
 /**
@@ -44,9 +45,9 @@ final class SessionModuleProvider
             SessionStoreInterface::class => \DI\factory(static function (
                 SessionConfiguration $config,
                 SessionIdGeneratorInterface $idGenerator,
-                RedisConnectionManager $redisConnections,
+                RedisConnectionManagerInterface $redisConnections,
                 DatabaseConnectionManagerInterface $databaseConnections,
-                FilesystemManager $filesystemManager,
+                FilesystemManagerInterface $filesystemManager,
                 ClockInterface $clock,
             ): SessionStoreInterface {
                 $driver = $config->driver();
@@ -105,6 +106,7 @@ final class SessionModuleProvider
                 );
             }),
             SessionManager::class => \DI\autowire(SessionManager::class),
+            SessionManagerInterface::class => \DI\get(SessionManager::class),
             SessionInterface::class => \DI\factory(static function (
                 SessionManager $manager,
             ): SessionInterface {

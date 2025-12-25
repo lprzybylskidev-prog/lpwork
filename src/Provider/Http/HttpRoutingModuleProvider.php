@@ -6,7 +6,7 @@ namespace LPwork\Provider\Http;
 use DI\ContainerBuilder;
 use FastRoute\Dispatcher;
 use LPwork\Cache\CacheConfiguration;
-use LPwork\Cache\CacheFactory;
+use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Http\Middleware\BodyParsingMiddleware;
 use LPwork\Http\Middleware\Contract\MiddlewareProviderInterface;
 use LPwork\Http\Middleware\CorsMiddleware;
@@ -25,7 +25,7 @@ use LPwork\Http\Routing\HandlerArgumentResolver;
 use LPwork\Http\Routing\RouteLoader;
 use LPwork\Http\Url\Contract\UrlGeneratorInterface;
 use LPwork\Http\Url\UrlGenerator;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
@@ -57,8 +57,8 @@ final class HttpRoutingModuleProvider
                 RouteLoaderInterface $loader,
                 FastRouteDispatcherFactory $factory,
                 CacheConfiguration $cacheConfiguration,
-                CacheFactory $cacheFactory,
-                RedisConnectionManager $redisConnections,
+                CacheFactoryInterface $cacheFactory,
+                RedisConnectionManagerInterface $redisConnections,
                 DatabaseConnectionManagerInterface $databaseConnections,
             ): Dispatcher {
                 $routes = $loader->load();

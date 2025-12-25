@@ -5,6 +5,7 @@ namespace LPwork\Http\Session;
 
 use LPwork\Http\Session\Contract\SessionIdGeneratorInterface;
 use LPwork\Http\Session\Contract\SessionInterface;
+use LPwork\Http\Session\Contract\SessionManagerInterface;
 use LPwork\Http\Session\Contract\SessionStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -13,7 +14,7 @@ use Psr\Clock\ClockInterface;
 /**
  * Coordinates session lifecycle per request.
  */
-class SessionManager
+class SessionManager implements SessionManagerInterface
 {
     /**
      * @var SessionConfiguration

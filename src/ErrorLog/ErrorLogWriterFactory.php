@@ -3,33 +3,34 @@ declare(strict_types=1);
 
 namespace LPwork\ErrorLog;
 
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\ErrorLog\Contract\ErrorLogWriterInterface;
 use LPwork\ErrorLog\Exception\ErrorLogConfigurationException;
 use LPwork\ErrorLog\Writer\DatabaseErrorLogWriter;
 use LPwork\ErrorLog\Writer\FileErrorLogWriter;
 use LPwork\ErrorLog\Writer\RedisErrorLogWriter;
-use LPwork\Filesystem\FilesystemManager;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
+use LPwork\ErrorLog\Contract\ErrorLogWriterFactoryInterface;
 
 /**
  * Creates error log writers based on configuration.
  */
-final class ErrorLogWriterFactory
+final class ErrorLogWriterFactory implements ErrorLogWriterFactoryInterface
 {
     /**
      * @param ErrorLogConfiguration   $config
-     * @param DatabaseConnectionManager $databaseConnections
-     * @param RedisConnectionManager  $redisConnections
-     * @param FilesystemManager       $filesystemManager
+     * @param DatabaseConnectionManagerInterface $databaseConnections
+     * @param RedisConnectionManagerInterface    $redisConnections
+     * @param FilesystemManagerInterface         $filesystemManager
      *
      * @return ErrorLogWriterInterface
      */
     public function create(
         ErrorLogConfiguration $config,
-        DatabaseConnectionManager $databaseConnections,
-        RedisConnectionManager $redisConnections,
-        FilesystemManager $filesystemManager,
+        DatabaseConnectionManagerInterface $databaseConnections,
+        RedisConnectionManagerInterface $redisConnections,
+        FilesystemManagerInterface $filesystemManager,
     ): ErrorLogWriterInterface {
         $driver = $config->driver();
         $config->assertSupportedDriver($driver);

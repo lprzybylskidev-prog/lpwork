@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace LPwork\Console\Command;
 
 use LPwork\Config\Contract\ConfigRepositoryInterface;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Database\Seeder\SeederRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,9 +23,9 @@ class DatabaseSeedCommand extends Command
     private SeederRunner $seederRunner;
 
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $connectionManager;
+    private DatabaseConnectionManagerInterface $connectionManager;
 
     /**
      * @var ConfigRepositoryInterface
@@ -34,12 +34,12 @@ class DatabaseSeedCommand extends Command
 
     /**
      * @param SeederRunner               $seederRunner
-     * @param DatabaseConnectionManager  $connectionManager
+     * @param DatabaseConnectionManagerInterface  $connectionManager
      * @param ConfigRepositoryInterface  $config
      */
     public function __construct(
         SeederRunner $seederRunner,
-        DatabaseConnectionManager $connectionManager,
+        DatabaseConnectionManagerInterface $connectionManager,
         ConfigRepositoryInterface $config,
     ) {
         $this->seederRunner = $seederRunner;

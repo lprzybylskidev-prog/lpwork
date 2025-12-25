@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace LPwork\Logging;
 
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
+use LPwork\Logging\Contract\LogFactoryInterface;
 use LPwork\Logging\Exception\LoggingConfigurationException;
 use LPwork\Logging\Handler\DatabaseLogHandler;
 use LPwork\Logging\Handler\RedisLogHandler;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level as MonologLevel;
@@ -17,11 +18,11 @@ use Psr\Log\LoggerInterface;
 /**
  * Builds PSR-3 loggers using Monolog based on configuration.
  */
-class LogFactory
+class LogFactory implements LogFactoryInterface
 {
     /**
      * @param LogConfiguration           $configuration
-     * @param RedisConnectionManager     $redisConnections
+     * @param RedisConnectionManagerInterface      $redisConnections
      * @param DatabaseConnectionManagerInterface  $databaseConnections
      * @param \Carbon\CarbonImmutable    $clock
      *
@@ -29,7 +30,7 @@ class LogFactory
      */
     public function createDefault(
         LogConfiguration $configuration,
-        RedisConnectionManager $redisConnections,
+        RedisConnectionManagerInterface $redisConnections,
         DatabaseConnectionManagerInterface $databaseConnections,
         \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {
@@ -49,7 +50,7 @@ class LogFactory
      *
      * @param string                     $name
      * @param LogConfiguration           $configuration
-     * @param RedisConnectionManager     $redisConnections
+     * @param RedisConnectionManagerInterface      $redisConnections
      * @param DatabaseConnectionManagerInterface  $databaseConnections
      * @param \Carbon\CarbonImmutable    $clock
      *
@@ -58,7 +59,7 @@ class LogFactory
     public function createChannel(
         string $name,
         LogConfiguration $configuration,
-        RedisConnectionManager $redisConnections,
+        RedisConnectionManagerInterface $redisConnections,
         DatabaseConnectionManagerInterface $databaseConnections,
         \Carbon\CarbonImmutable $clock,
     ): LoggerInterface {

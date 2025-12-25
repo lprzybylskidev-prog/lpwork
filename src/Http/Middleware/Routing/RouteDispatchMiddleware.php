@@ -42,8 +42,7 @@ class RouteDispatchMiddleware implements MiddlewareInterface
         ContainerInterface $container,
         RouteHandlerResolverInterface $handlerResolver,
         HandlerArgumentResolverInterface $argumentResolver,
-    )
-    {
+    ) {
         $this->container = $container;
         $this->handlerResolver = $handlerResolver;
         $this->argumentResolver = $argumentResolver;
@@ -89,9 +88,9 @@ class RouteDispatchMiddleware implements MiddlewareInterface
             private $routeHandler;
 
             /**
-             * @var HandlerArgumentResolver
+             * @var HandlerArgumentResolverInterface
              */
-            private HandlerArgumentResolver $argumentResolver;
+            private HandlerArgumentResolverInterface $argumentResolver;
 
             /**
              * @var array<string, string>
@@ -100,12 +99,12 @@ class RouteDispatchMiddleware implements MiddlewareInterface
 
             /**
              * @param callable $routeHandler
-             * @param HandlerArgumentResolver $argumentResolver
+             * @param HandlerArgumentResolverInterface $argumentResolver
              * @param array<string, string> $routeParams
              */
             public function __construct(
                 callable $routeHandler,
-                HandlerArgumentResolver $argumentResolver,
+                HandlerArgumentResolverInterface $argumentResolver,
                 array $routeParams,
             ) {
                 $this->routeHandler = $routeHandler;

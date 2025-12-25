@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace LPwork\Filesystem;
 
+use LPwork\Filesystem\Contract\FilesystemManagerInterface;
 use LPwork\Filesystem\Exception\FilesystemNotFoundException;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemAdapter;
@@ -12,7 +13,7 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
 /**
  * Manages named filesystem disks.
  */
-class FilesystemManager
+class FilesystemManager implements FilesystemManagerInterface
 {
     /**
      * @var array<string, array<string, mixed>>

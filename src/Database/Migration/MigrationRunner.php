@@ -9,7 +9,7 @@ use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\Migrations\Configuration\Migration\ConfigurationArray;
 use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\MigratorConfiguration;
-use LPwork\Database\DatabaseConnectionManager;
+use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
 use LPwork\Database\Migration\Contract\MigrationProviderInterface;
 use LPwork\Database\Migration\Exception\MigrationConfigurationException;
 use LPwork\Database\Migration\Exception\MigrationErrorException;
@@ -20,9 +20,9 @@ use LPwork\Database\Migration\Exception\MigrationErrorException;
 class MigrationRunner
 {
     /**
-     * @var DatabaseConnectionManager
+     * @var DatabaseConnectionManagerInterface
      */
-    private DatabaseConnectionManager $connectionManager;
+    private DatabaseConnectionManagerInterface $connectionManager;
 
     /**
      * @var MigrationProviderInterface
@@ -40,12 +40,12 @@ class MigrationRunner
     private MigratorConfiguration $migratorConfiguration;
 
     /**
-     * @param DatabaseConnectionManager   $connectionManager
-     * @param MigrationProviderInterface $frameworkProvider
-     * @param MigrationProviderInterface $appProvider
+     * @param DatabaseConnectionManagerInterface $connectionManager
+     * @param MigrationProviderInterface         $frameworkProvider
+     * @param MigrationProviderInterface         $appProvider
      */
     public function __construct(
-        DatabaseConnectionManager $connectionManager,
+        DatabaseConnectionManagerInterface $connectionManager,
         MigrationProviderInterface $frameworkProvider,
         MigrationProviderInterface $appProvider,
     ) {

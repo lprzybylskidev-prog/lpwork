@@ -4,16 +4,18 @@ declare(strict_types=1);
 namespace LPwork\Translation;
 
 use LPwork\Cache\CacheConfiguration;
-use LPwork\Cache\CacheFactory;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Cache\Contract\CacheFactoryInterface;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
+use LPwork\Translation\Contract\TranslationProviderInterface;
+use LPwork\Translation\Contract\TranslatorFactoryInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Helper to build translation configuration from env/config and create translators.
  */
-final class TranslationProvider
+final class TranslationProvider implements TranslationProviderInterface
 {
     /**
      * @var TranslationConfiguration
@@ -26,14 +28,14 @@ final class TranslationProvider
     private CacheConfiguration $cacheConfiguration;
 
     /**
-     * @var CacheFactory
+     * @var CacheFactoryInterface
      */
-    private CacheFactory $cacheFactory;
+    private CacheFactoryInterface $cacheFactory;
 
     /**
-     * @var RedisConnectionManager
+     * @var RedisConnectionManagerInterface
      */
-    private RedisConnectionManager $redisConnections;
+    private RedisConnectionManagerInterface $redisConnections;
 
     /**
      * @var DatabaseConnectionManagerInterface
@@ -41,25 +43,25 @@ final class TranslationProvider
     private DatabaseConnectionManagerInterface $databaseConnections;
 
     /**
-     * @var TranslatorFactory
+     * @var TranslatorFactoryInterface
      */
-    private TranslatorFactory $translatorFactory;
+    private TranslatorFactoryInterface $translatorFactory;
 
     /**
      * @param TranslationConfiguration  $translationConfiguration
      * @param CacheConfiguration        $cacheConfiguration
-     * @param CacheFactory              $cacheFactory
-     * @param RedisConnectionManager              $redisConnections
+     * @param CacheFactoryInterface     $cacheFactory
+     * @param RedisConnectionManagerInterface $redisConnections
      * @param DatabaseConnectionManagerInterface  $databaseConnections
-     * @param TranslatorFactory         $translatorFactory
+     * @param TranslatorFactoryInterface        $translatorFactory
      */
     public function __construct(
         TranslationConfiguration $translationConfiguration,
         CacheConfiguration $cacheConfiguration,
-        CacheFactory $cacheFactory,
-        RedisConnectionManager $redisConnections,
+        CacheFactoryInterface $cacheFactory,
+        RedisConnectionManagerInterface $redisConnections,
         DatabaseConnectionManagerInterface $databaseConnections,
-        TranslatorFactory $translatorFactory,
+        TranslatorFactoryInterface $translatorFactory,
     ) {
         $this->translationConfiguration = $translationConfiguration;
         $this->cacheConfiguration = $cacheConfiguration;

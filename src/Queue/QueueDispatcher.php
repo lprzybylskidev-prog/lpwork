@@ -3,17 +3,19 @@ declare(strict_types=1);
 
 namespace LPwork\Queue;
 
+use LPwork\Queue\Contract\QueueDispatcherInterface;
+use LPwork\Queue\Contract\QueueManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Dispatches jobs to configured queues.
  */
-class QueueDispatcher
+class QueueDispatcher implements QueueDispatcherInterface
 {
     /**
-     * @var QueueManager
+     * @var QueueManagerInterface
      */
-    private QueueManager $queues;
+    private QueueManagerInterface $queues;
 
     /**
      * @var MessageBusInterface
@@ -21,10 +23,10 @@ class QueueDispatcher
     private MessageBusInterface $bus;
 
     /**
-     * @param QueueManager $queues
+     * @param QueueManagerInterface $queues
      * @param MessageBusInterface $bus
      */
-    public function __construct(QueueManager $queues, MessageBusInterface $bus)
+    public function __construct(QueueManagerInterface $queues, MessageBusInterface $bus)
     {
         $this->queues = $queues;
         $this->bus = $bus;

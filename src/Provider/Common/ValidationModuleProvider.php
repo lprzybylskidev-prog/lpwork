@@ -5,10 +5,10 @@ namespace LPwork\Provider\Common;
 
 use DI\ContainerBuilder;
 use LPwork\Cache\CacheConfiguration;
-use LPwork\Cache\CacheFactory;
+use LPwork\Cache\Contract\CacheFactoryInterface;
 use LPwork\Config\Contract\ConfigRepositoryInterface;
 use LPwork\Database\Contract\DatabaseConnectionManagerInterface;
-use LPwork\Redis\RedisConnectionManager;
+use LPwork\Redis\Contract\RedisConnectionManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ValidatorBuilder;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -27,9 +27,9 @@ final class ValidationModuleProvider
             ValidatorBuilder::class => \DI\factory(static function (
                 ConfigRepositoryInterface $config,
                 TranslatorInterface $translator,
-                CacheFactory $cacheFactory,
+                CacheFactoryInterface $cacheFactory,
                 CacheConfiguration $cacheConfiguration,
-                RedisConnectionManager $redisConnections,
+                RedisConnectionManagerInterface $redisConnections,
                 DatabaseConnectionManagerInterface $databaseConnections,
             ): ValidatorBuilder {
                 $settings = (array) $config->get('validation', []);
