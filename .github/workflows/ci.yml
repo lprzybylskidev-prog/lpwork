@@ -41,7 +41,15 @@ jobs:
         run: cp .env.example .env
 
       - name: Run framework tests
-        run: php lpwork test:lpwork
+        run: php lpwork test:lpwork 2>&1 | tee storage/ci-framework-tests.log
 
       - name: Run framework checks
-        run: php lpwork check
+        run: php lpwork check 2>&1 | tee storage/ci-framework-check.log
+
+      - name: Upload CI diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-diagnostics
+          path: storage/ci-*.log
+          if-no-files-found: ignore
