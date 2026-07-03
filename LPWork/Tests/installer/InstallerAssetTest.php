@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Tests\support\ProjectPaths;
 
-it('ships standalone installers that refuse to run until a tagged release archive URL is configured', function (): void {
+it('ships standalone installers configured for the immutable release archive', function (): void {
     $unixInstaller = ProjectPaths::root('installers/install-lpwork.sh');
     $powershellInstaller = ProjectPaths::root('installers/Install-LPWork.ps1');
 
@@ -14,8 +14,10 @@ it('ships standalone installers that refuse to run until a tagged release archiv
     $unix = file_get_contents($unixInstaller);
     $powershell = file_get_contents($powershellInstaller);
 
-    expect($unix)->toContain('__LPWORK_RELEASE_ARCHIVE_URL__')
-        ->and($powershell)->toContain('__LPWORK_RELEASE_ARCHIVE_URL__')
+    expect($unix)->toContain('https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.0.zip')
+        ->and($powershell)->toContain('https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.0.zip')
+        ->and($unix)->not->toContain('LPWORK_RELEASE_ARCHIVE_URL="__LPWORK_RELEASE_ARCHIVE_URL__"')
+        ->and($powershell)->not->toContain('$ReleaseArchiveUrl = \'__LPWORK_RELEASE_ARCHIVE_URL__\'')
         ->and($unix)->toContain('/archive/refs/tags/')
         ->and($powershell)->toContain('/archive/refs/tags/')
         ->and($unix)->toContain('releases/download/')
@@ -26,13 +28,6 @@ it('ships standalone installers that refuse to run until a tagged release archiv
         ->and($powershell)->not->toContain('composer install')
         ->and($unix)->not->toContain('npm install')
         ->and($powershell)->not->toContain('npm install');
-
-    $output = [];
-    $exitCode = 0;
-    exec('sh ' . escapeshellarg($unixInstaller) . ' Blog 2>&1', $output, $exitCode);
-
-    expect($exitCode)->toBe(1)
-        ->and(implode("\n", $output))->toContain('no immutable LPWork release archive URL is configured');
 });
 
 it('defines generated application cleanup and guidance asset locations', function (): void {
