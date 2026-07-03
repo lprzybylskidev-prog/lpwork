@@ -6,9 +6,9 @@ The repository is visible for CV, portfolio, and code-review purposes. Use, copy
 
 ## Project Status
 
-`v1.0.0` is planned as the first public LPWork snapshot, not the end of development. The framework remains an active learning and architecture project, with future work continuing through explicit roadmap items and immutable release tags.
+`v1.0.0` is the first public LPWork snapshot, not the end of development. The framework remains an active learning and architecture project, with future work continuing through explicit roadmap items and immutable release tags.
 
-LPWork is not distributed as a Composer package. Installable application snapshots are intended to come from tagged release archives through the standalone installers once a release archive URL has been configured.
+LPWork is not distributed as a Composer package. Installable application snapshots come from tagged release archives through the standalone installers.
 
 ## What LPWork Shows
 
@@ -68,7 +68,7 @@ php lpwork test:lpwork
 php lpwork check
 ```
 
-Before a public release tag, local maintainer hooks and CI should both pass. The immutable `v1.0.0` tag and installer release archive URLs should only be created after the first `main` push and a successful CI run.
+Before a public release tag, local maintainer hooks and CI should both pass. The immutable `v1.0.0` tag should only be created from a release commit after the protected `main` branch is green.
 
 ## License
 

@@ -6,7 +6,7 @@ These steps are for the framework maintainer repository at `lprzybylskidev-prog/
 
 - Keep the repository public only when the source-available permission model in `LICENSE.md` is acceptable for portfolio/CV review.
 - Confirm GitHub Actions permissions allow workflows to run with read-only repository contents access.
-- Do not create the `v1.0.0` tag yet.
+- Do not create the `v1.0.0` tag until the release metadata commit has passed CI on the protected `main` branch.
 - Do not configure branch protection or rulesets yet; GitHub needs the first `main` push and one successful workflow run before the real branch and check names are selectable.
 
 ## First Local Git Setup
@@ -44,6 +44,6 @@ Only after local hooks and CI pass:
 
 - set LPWork framework version metadata to `v1.0.0`;
 - fill both standalone installers with the immutable GitHub tag archive URL;
-- commit those release-specific changes;
+- commit those release-specific changes and merge them through protected `main`;
 - create immutable tag `v1.0.0`;
 - publish a GitHub release from the tag with notes that this is the first public snapshot, not the end of LPWork development.
