@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-LPWORK_RELEASE_ARCHIVE_URL="https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.0.zip"
+LPWORK_RELEASE_ARCHIVE_URL="https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.1.zip"
 LPWORK_RELEASE_ARCHIVE_PLACEHOLDER="__LPWORK_RELEASE_ARCHIVE_URL__"
 
 usage() {

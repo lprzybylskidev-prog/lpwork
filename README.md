@@ -68,7 +68,7 @@ php lpwork test:lpwork
 php lpwork check
 ```
 
-Before a public release tag, local maintainer hooks and CI should both pass. The immutable `v1.0.0` tag should only be created from a release commit after the protected `main` branch is green.
+Before a public release tag, local maintainer hooks and CI should both pass. Each immutable release tag should only be created from a release commit after the protected `main` branch is green.
 
 ## License
 

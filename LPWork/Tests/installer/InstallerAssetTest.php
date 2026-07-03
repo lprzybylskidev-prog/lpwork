@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use LPWork\Foundation\FrameworkMetadata;
 use Tests\support\ProjectPaths;
 
 it('ships standalone installers configured for the immutable release archive', function (): void {
@@ -14,8 +15,10 @@ it('ships standalone installers configured for the immutable release archive', f
     $unix = file_get_contents($unixInstaller);
     $powershell = file_get_contents($powershellInstaller);
 
-    expect($unix)->toContain('https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.0.zip')
-        ->and($powershell)->toContain('https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.0.zip')
+    $releaseArchiveUrl = 'https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/' . FrameworkMetadata::VERSION . '.zip';
+
+    expect($unix)->toContain($releaseArchiveUrl)
+        ->and($powershell)->toContain($releaseArchiveUrl)
         ->and($unix)->not->toContain('LPWORK_RELEASE_ARCHIVE_URL="__LPWORK_RELEASE_ARCHIVE_URL__"')
         ->and($powershell)->not->toContain('$ReleaseArchiveUrl = \'__LPWORK_RELEASE_ARCHIVE_URL__\'')
         ->and($unix)->toContain('/archive/refs/tags/')

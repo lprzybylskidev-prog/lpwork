@@ -47,6 +47,10 @@ final readonly class ApplicationAssetRenderer
     private function devServerEntry(AssetEntry $entry): string
     {
         if (!$this->devServers->reachable($this->devServerUrl())) {
+            if ($this->hasBuildManifest()) {
+                return $this->manifestEntry($entry);
+            }
+
             throw new ApplicationAssetDevServerUnavailableException($this->devServerUrl());
         }
 
@@ -70,6 +74,11 @@ final readonly class ApplicationAssetRenderer
         $tags[] = sprintf('<script type="module" src="%s"></script>', $this->escape($this->publicPath($manifestEntry->file())));
 
         return implode("\n", $tags);
+    }
+
+    private function hasBuildManifest(): bool
+    {
+        return $this->files->isFile($this->basePath . '/' . ApplicationAssetManifestReader::RELATIVE_PATH);
     }
 
     private function assertSourceFileExists(AssetEntry $entry): void
