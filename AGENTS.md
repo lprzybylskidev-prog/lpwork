@@ -191,6 +191,10 @@ The main goal is to avoid large corrective refactors later. When adding or chang
 
 - These Git workflow rules apply only after the framework repository has actually been initialized with Git. Do not initialize Git, create remotes, create branches, commit, tag, or push merely because this section exists.
 - LPWork `v1.0.0` is the first public/recruiter-readable framework snapshot, not the end of framework development. Do not describe the project as finished or frozen merely because `v1.0.0` is being prepared; future work should continue through explicit roadmap items, versioned branches where needed, and immutable release tags.
+- LPWork uses three-part release versions in the form `MAJOR.MINOR.PATCH`, published as immutable tags such as `v1.0.1`.
+- Increment `PATCH` for small bug fixes, release-correctness fixes, documentation clarifications, test adjustments, and behavior that restores the documented or intended framework behavior without changing the public API.
+- Increment `MINOR` for larger compatible improvement batches, framework hardening rounds, new options, tooling improvements, or cohesive capability upgrades that do not require applications to change existing public API usage.
+- Increment `MAJOR` for larger framework stages, new substantial feature sets, public API or application contract changes, installer contract changes, or architectural rebuilds that materially change how applications integrate with LPWork.
 - Once Git is active, AI agents are responsible for preparing clean commits and pushes for completed work when the current task includes repository maintenance, release work, or the user asks to commit/push the finished changes.
 - Before committing, inspect the worktree and separate unrelated changes into separate commits. Do not create one large commit that mixes independent framework behavior, documentation, tooling, configuration, formatting, and roadmap changes.
 - Commit messages must be written in English and use conventional lowercase prefixes such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, `build:`, or `ci:`.

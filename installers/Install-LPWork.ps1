@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ReleaseArchiveUrl = 'https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.0.zip'
+$ReleaseArchiveUrl = 'https://github.com/lprzybylskidev-prog/lpwork/archive/refs/tags/v1.0.1.zip'
 $ReleaseArchivePlaceholder = '__LPWORK_RELEASE_ARCHIVE_URL__'
 
 function Fail([string] $Message) {

@@ -9,7 +9,7 @@ namespace LPWork\Foundation;
  */
 final readonly class FrameworkMetadata
 {
-    public const string VERSION = 'v1.0.0';
+    public const string VERSION = 'v1.0.1';
 
     /**
      * Creates a new FrameworkMetadata instance.
