@@ -1,0 +1,36 @@
+# Local environment and private planning
+/.env
+/.env.*
+!/.env.example
+/lpwork-roadmap
+
+# Dependency installs
+/vendor/
+/node_modules/
+
+# Runtime storage and generated diagnostics
+/storage/*
+!/storage/.gitkeep
+/public/build/
+/tests/test-results/
+/test-results/
+/coverage/
+/playwright-report/
+
+# Tool caches
+/.phpunit.cache/
+/.php-cs-fixer.cache
+/.phpstan.cache/
+/.eslintcache
+/storage/cache/
+
+# Local IDE and OS noise
+/.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local devcontainer overrides
+/.devcontainer/.env
+/.devcontainer/docker-compose.override.yml

@@ -1,0 +1,38 @@
+{
+  "name": "lpwork-framework-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "frontend:dev": "vite --host 0.0.0.0",
+    "frontend:build": "vite build",
+    "frontend:preview": "vite preview",
+    "frontend:typecheck": "tsc --noEmit",
+    "frontend:lint": "eslint .",
+    "frontend:stylelint": "stylelint \"App/**/*.css\" --allow-empty-input",
+    "frontend:format": "prettier --write --ignore-unknown --no-error-on-unmatched-pattern package.json package-lock.json tsconfig.json \"*.config.{js,mjs,ts}\" \"LPWork/Tools/**/*.mjs\" \"LPWork/Tests/browser/**/*.mjs\" \"LPWork/Frontend/Resources/**/*.ts\" \"App/**/*.{ts,css}\" && eslint . --fix && stylelint \"App/**/*.css\" --allow-empty-input --fix",
+    "frontend:check": "npm run frontend:typecheck && npm run frontend:lint && npm run frontend:stylelint && prettier --check --ignore-unknown --no-error-on-unmatched-pattern package.json package-lock.json tsconfig.json \"*.config.{js,mjs,ts}\" \"LPWork/Tools/**/*.mjs\" \"LPWork/Tests/browser/**/*.mjs\" \"LPWork/Frontend/Resources/**/*.ts\" \"App/**/*.{ts,css}\"",
+    "frontend:test": "vitest run",
+    "frontend:test:watch": "vitest",
+    "browser:test": "playwright test",
+    "browser:test:ui": "playwright test --ui",
+    "browser:install": "playwright install chromium",
+    "ui:capture": "node LPWork/Tools/Playwright/capture-framework-view.mjs",
+    "ui:capture:welcome": "node LPWork/Tools/Playwright/capture-framework-view.mjs http://localhost:8080/ welcome",
+    "ui:test": "playwright test",
+    "debugbar:ws": "node LPWork/Tools/debugbar-websocket-server.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.0",
+    "eslint": "^10.6.0",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.4",
+    "stylelint": "^17.14.0",
+    "stylelint-config-standard": "^40.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.1",
+    "vite": "^8.1.3",
+    "vitest": "^4.1.9"
+  }
+}

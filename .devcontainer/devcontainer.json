@@ -1,0 +1,103 @@
+{
+  "name": "LPWork PHP Dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "php",
+  "runServices": [
+    "php",
+    "nginx",
+    "database",
+    "mysql",
+    "redis",
+    "adminer",
+    "redis-commander",
+    "mailpit",
+    "minio",
+    "localstack",
+    "soketi",
+    "statsd"
+  ],
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [
+    5173,
+    8080,
+    8082,
+    18083,
+    18084,
+    1025,
+    4566,
+    6001,
+    8025,
+    9000,
+    9001,
+    8125,
+    9102,
+    9601,
+    33060,
+    54320,
+    63790
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "christian-kohler.npm-intellisense",
+        "christian-kohler.path-intellisense",
+        "cweijan.vscode-database-client2",
+        "dbaeumer.vscode-eslint",
+        "EditorConfig.EditorConfig",
+        "esbenp.prettier-vscode",
+        "junstyle.php-cs-fixer",
+        "MehediDracula.php-namespace-resolver",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-containers",
+        "ms-playwright.playwright",
+        "neilbrayfield.php-docblocker",
+        "redhat.vscode-yaml",
+        "stylelint.vscode-stylelint",
+        "tamasfe.even-better-toml",
+        "vitest.explorer",
+        "xdebug.php-debug"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "[css]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[php]": {
+          "editor.defaultFormatter": "junstyle.php-cs-fixer",
+          "editor.formatOnSave": true
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "eslint.useFlatConfig": true,
+        "eslint.workingDirectories": [{ "mode": "auto" }],
+        "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+        "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.dist.php",
+        "php-cs-fixer.onsave": true,
+        "prettier.configPath": "${workspaceFolder}/prettier.config.js",
+        "stylelint.validate": ["css"],
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "intelephense.environment.phpVersion": "8.5.0",
+        "intelephense.files.exclude": [
+          "**/.git/**",
+          "**/.devcontainer/**",
+          "**/vendor/**",
+          "**/storage/**"
+        ]
+      }
+    }
+  },
+  "postCreateCommand": "sudo chown -R vscode:vscode /workspace/node_modules /workspace/package-lock.json 2>/dev/null || true; composer install && npm install && bash .devcontainer/setup-lpwork-shell.sh",
+  "remoteUser": "vscode"
+}

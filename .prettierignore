@@ -1,0 +1,13 @@
+AGENTS.md
+.devcontainer/
+.vscode/
+docs/
+node_modules/
+public/build/
+storage/
+vendor/
+*.md
+**/lang/*.json
+*.neon
+*.php
+*.xml

@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -eu
+
+php lpwork format --backend
+php lpwork test:lpwork
+php lpwork check

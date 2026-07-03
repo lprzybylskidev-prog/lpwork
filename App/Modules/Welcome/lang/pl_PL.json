@@ -1,0 +1,19 @@
+{
+    "lang": "pl",
+    "title": "LPWork",
+    "brand": "Strona główna",
+    "kicker": "Autorski framework PHP",
+    "heading": "LPWork",
+    "lede": "Backendowy zestaw modułów do budowania aplikacji HTTP, zadań CLI, kolejek, maili, storage, cache i diagnostyki.",
+    "map.label": "Mapa modułów frameworka",
+    "map.http": "HTTP",
+    "map.cli": "CLI",
+    "map.data": "Dane",
+    "map.work": "Praca",
+    "map.debug": "Debug",
+    "features.kicker": "Atlas runtime",
+    "features.heading": "Moduły frameworka",
+    "features.lede": "Lista funkcji dostępnych w tym szkielecie aplikacji.",
+    "features.count": ":count moduły",
+    "version.label": "LPWork :version"
+}

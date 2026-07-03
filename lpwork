@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use LPWork\Kernels\Cli\CliApplicationPathResolver;
+use LPWork\Kernels\Cli\CliEntrypoint;
+
+function lpwork_autoload_path(string $entrypointDirectory): string
+{
+    $candidates = [
+        $entrypointDirectory . '/vendor/autoload.php',
+        $entrypointDirectory . '/../../autoload.php',
+    ];
+
+    foreach ($candidates as $candidate) {
+        if (is_file($candidate)) {
+            return $candidate;
+        }
+    }
+
+    fwrite(STDERR, "Cannot locate Composer autoload file for LPWork CLI.\n");
+    exit(1);
+}
+
+$arguments = [];
+$serverArguments = $_SERVER['argv'] ?? [];
+
+if (is_array($serverArguments)) {
+    foreach ($serverArguments as $argument) {
+        if (is_string($argument)) {
+            $arguments[] = $argument;
+        }
+    }
+}
+
+$entrypointDirectory = __DIR__;
+
+require_once lpwork_autoload_path($entrypointDirectory);
+
+$workingDirectory = getcwd();
+$configuredBasePath = getenv('LPWORK_BASE_PATH');
+$basePath = new CliApplicationPathResolver($entrypointDirectory)->resolve(
+    $workingDirectory === false ? null : $workingDirectory,
+    $configuredBasePath === false ? null : $configuredBasePath,
+);
+
+exit(new CliEntrypoint($basePath, $arguments)->run());

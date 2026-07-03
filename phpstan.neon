@@ -1,0 +1,38 @@
+includes:
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+  level: max
+  paths:
+    - LPWork
+    - App
+    - public
+  tmpDir: storage/cache/phpstan
+  reportUnmatchedIgnoredErrors: true
+  treatPhpDocTypesAsCertain: true
+  polluteScopeWithLoopInitialAssignments: false
+  polluteScopeWithAlwaysIterableForeach: false
+  polluteScopeWithBlock: false
+  rememberPossiblyImpureFunctionValues: false
+
+services:
+  -
+    class: Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: Tests\support\phpstan\EnvironmentUsageRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: Tests\support\phpstan\ApplicationModuleShapeRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: Tests\support\phpstan\DirectSuperglobalUsageRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: Tests\support\phpstan\DirectGlobalFunctionUsageRule
+    tags:
+      - phpstan.rules.rule

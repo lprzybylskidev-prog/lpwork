@@ -1,0 +1,19 @@
+{
+    "lang": "en",
+    "title": "LPWork",
+    "brand": "Home page",
+    "kicker": "Custom PHP framework",
+    "heading": "LPWork",
+    "lede": "A backend module set for HTTP applications, CLI tasks, queues, mail, storage, cache, and diagnostics.",
+    "map.label": "Framework module map",
+    "map.http": "HTTP",
+    "map.cli": "CLI",
+    "map.data": "Data",
+    "map.work": "Work",
+    "map.debug": "Debug",
+    "features.kicker": "Runtime atlas",
+    "features.heading": "Framework modules",
+    "features.lede": "The feature set available in this application skeleton.",
+    "features.count": ":count modules",
+    "version.label": "LPWork :version"
+}

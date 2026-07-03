@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170" role="img" aria-labelledby="title">
+  <title id="title">LPWork</title>
+  <rect x="26" y="26" width="118" height="118" fill="#4288ce"/>
+  <rect x="42" y="42" width="86" height="86" fill="#2a2a2a"/>
+  <path d="M59 110V58h12v41h24v11H59Z" fill="#fff"/>
+  <path d="M98 110V58h24c12 0 20 7 20 18s-8 18-20 18h-12v16H98Zm12-27h11c6 0 9-3 9-7s-3-7-9-7h-11v14Z" fill="#fff"/>
+</svg>

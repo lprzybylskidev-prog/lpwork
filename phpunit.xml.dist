@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="vendor/autoload.php"
+    cacheDirectory="storage/cache/phpunit"
+    colors="true"
+>
+    <testsuites>
+        <testsuite name="LPWork">
+            <directory suffix="Test.php">LPWork/Tests</directory>
+        </testsuite>
+        <testsuite name="App">
+            <directory suffix="Test.php">App/Modules</directory>
+        </testsuite>
+    </testsuites>
+
+    <source>
+        <include>
+            <directory>LPWork</directory>
+            <directory>App</directory>
+        </include>
+    </source>
+</phpunit>
